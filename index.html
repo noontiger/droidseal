@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DroidSeal · 商业加固前的 Android 发布管线</title>
+<meta name="description" content="DroidSeal：商业加固前你能做的大多数内容。一键式端到端管线，超越初级安全水平。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0B0E14;
+    --bg-2:#0F131C;
+    --card:rgba(22,22,22,0.72);
+    --card-solid:#161616;
+    --border:#262626;
+    --border-soft:rgba(255,255,255,0.07);
+    --cyan:#00E5FF;
+    --cyan-dim:rgba(0,229,255,0.45);
+    --text:#FAFAFA;
+    --muted:#9A9AA2;
+    --muted-2:#6B6B73;
+    --maxw:1200px;
+    --r:14px;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    cursor:none;
+  }
+  @media (pointer:coarse){ body{cursor:auto} #cursor-dot,#cursor-ring{display:none!important} }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  /* ---------- background layers ---------- */
+  #bg{position:fixed;inset:0;z-index:1;pointer-events:none}
+  .aurora{
+    position:fixed;inset:-20% -20% -20% -20%;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(40% 35% at 22% 18%, rgba(0,229,255,0.16), transparent 60%),
+      radial-gradient(45% 40% at 82% 12%, rgba(80,120,255,0.12), transparent 60%),
+      radial-gradient(50% 45% at 60% 90%, rgba(0,229,255,0.10), transparent 60%),
+      radial-gradient(35% 30% at 12% 80%, rgba(120,80,255,0.10), transparent 60%);
+    will-change:transform;
+    transition:transform .12s linear;
+  }
+  .aurora::after{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
+    -webkit-mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
+  }
+  .grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* ---------- custom cursor ---------- */
+  #cursor-dot,#cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;will-change:transform}
+  #cursor-dot{width:7px;height:7px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  #cursor-ring{width:34px;height:34px;border:1.5px solid var(--cyan-dim);transition:width .2s ease,height .2s ease,border-color .2s ease,background .2s ease;margin:-17px 0 0 -17px}
+  #cursor-ring.hover{width:54px;height:54px;margin:-27px 0 0 -27px;border-color:var(--cyan);background:rgba(0,229,255,0.08)}
+  #cursor-ring.down{width:26px;height:26px;margin:-13px 0 0 -13px;border-color:#fff;background:rgba(255,255,255,0.12)}
+
+  /* ---------- progress bar ---------- */
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:9998;background:linear-gradient(90deg,var(--cyan),#7aa2ff);box-shadow:0 0 12px var(--cyan)}
+
+  /* ---------- layout helpers ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{position:relative;z-index:2}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--border);padding:6px 12px;border-radius:999px;background:rgba(0,229,255,0.04)}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+  h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:18px 0 12px}
+  .lead{color:var(--muted);max-width:640px;font-size:16px}
+  .section-pad{padding:110px 0}
+
+  /* ---------- header ---------- */
+  header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
+  header.scrolled{background:rgba(11,14,20,0.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .brand .logo{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,rgba(0,229,255,0.18),rgba(120,80,255,0.12));border:1px solid var(--cyan-dim)}
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
+  .nav-links a{transition:color .2s;position:relative}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--cyan);transition:width .25s}
+  .nav-links a:hover::after{width:100%}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:none;transition:transform .15s,box-shadow .25s,background .25s;white-space:nowrap}
+  .btn-primary{background:var(--cyan);color:#04222a;box-shadow:0 0 0 rgba(0,229,255,0)}
+  .btn-primary:hover{box-shadow:0 8px 30px rgba(0,229,255,0.35)}
+  .btn-ghost{background:rgba(255,255,255,0.03);border-color:var(--border);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--cyan-dim);background:rgba(0,229,255,0.06)}
+  .btn svg{width:16px;height:16px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:150px 0 90px;text-align:center}
+  .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:22px auto 18px;max-width:14ch}
+  .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),#7aa2ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{max-width:620px;margin:0 auto;color:var(--muted);font-size:17px}
+  .hero-cta{display:flex;gap:14px;justify-content:center;margin:30px 0 8px;flex-wrap:wrap}
+
+  /* terminal */
+  .terminal{max-width:680px;margin:46px auto 0;text-align:left;background:#0c0f16;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5);font-family:var(--mono);font-size:13.5px}
+  .terminal .bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#11151d;border-bottom:1px solid var(--border)}
+  .terminal .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .terminal .bar .r{background:#ff5f56}.terminal .bar .y{background:#ffbd2e}.terminal .bar .g{background:#27c93f}
+  .terminal .bar .name{margin-left:8px;color:var(--muted-2);font-size:12px}
+  .terminal .body{padding:18px 18px 20px;min-height:188px;white-space:pre-wrap;word-break:break-word;line-height:1.7}
+  .terminal .line{opacity:0;transform:translateY(4px);animation:ln .35s forwards}
+  @keyframes ln{to{opacity:1;transform:none}}
+  .terminal .c-prompt{color:var(--cyan)}
+  .terminal .c-cmd{color:#fff}
+  .terminal .c-ok{color:#27c93f}
+  .terminal .c-warn{color:#ffbd2e}
+  .terminal .c-dim{color:var(--muted-2)}
+  .terminal .c-cyan{color:var(--cyan)}
+  .caret{display:inline-block;width:8px;height:15px;background:var(--cyan);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* mode pills */
+  .pills{display:flex;gap:10px;justify-content:center;margin:22px 0 0;flex-wrap:wrap}
+  .pill{font-family:var(--mono);font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);cursor:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+  .pill .k{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,0.06);font-size:11px;color:var(--cyan)}
+  .pill:hover{color:var(--text);border-color:var(--cyan-dim)}
+  .pill.active{background:rgba(0,229,255,0.1);border-color:var(--cyan);color:#fff}
+
+  /* hero screenshot */
+  .hero-shot-wrap{margin:54px auto 0;max-width:1120px}
+  .hero-shot{width:100%;border-radius:8px;border:1.5px solid var(--cyan);
+    box-shadow:0 0 24px rgba(0,229,255,0.45),0 0 48px rgba(0,229,255,0.25),0 30px 80px rgba(0,0,0,0.55)}
+
+  /* ---------- pipeline grid ---------- */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+  .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .step::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(0,229,255,0.10),transparent 60%);opacity:0;transition:opacity .3s}
+  .step:hover{transform:translateY(-4px);border-color:var(--cyan-dim);box-shadow:0 16px 50px rgba(0,0,0,0.45)}
+  .step:hover::before{opacity:1}
+  .step .num{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.1em}
+  .step h3{font-size:17px;margin:10px 0 8px;font-weight:600}
+  .step p{color:var(--muted);font-size:14px}
+
+  /* ---------- modes ---------- */
+  .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+  .mode{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .mode:hover{transform:translateY(-4px);border-color:var(--cyan-dim);box-shadow:0 16px 50px rgba(0,0,0,0.45)}
+  .mode .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim);margin-bottom:16px}
+  .mode .ico svg{width:22px;height:22px;stroke:var(--cyan)}
+  .mode h3{font-size:19px;margin-bottom:8px}
+  .mode .tag{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-bottom:10px;display:block}
+  .mode p{color:var(--muted);font-size:14.5px}
+
+  /* ---------- capabilities ---------- */
+  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+  .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;transition:transform .25s,border-color .25s}
+  .cap:hover{transform:translateY(-4px);border-color:var(--cyan-dim)}
+  .cap .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);margin-bottom:14px}
+  .cap .ico svg{width:20px;height:20px;stroke:var(--cyan)}
+  .cap h3{font-size:16px;margin-bottom:6px}
+  .cap p{color:var(--muted);font-size:14px}
+
+  /* ---------- security ---------- */
+  .sec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin-top:44px}
+  .sec-list{display:flex;flex-direction:column;gap:14px}
+  .sec-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .sec-item .ck{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim)}
+  .sec-item .ck svg{width:16px;height:16px;stroke:var(--cyan)}
+  .sec-item h4{font-size:15px;margin-bottom:3px}
+  .sec-item p{color:var(--muted);font-size:13.5px}
+  .sec-visual{aspect-ratio:1/1;border-radius:18px;border:1px solid var(--border);background:radial-gradient(circle at 50% 40%,rgba(0,229,255,0.12),transparent 60%),#0c0f16;display:grid;place-items:center;position:relative;overflow:hidden}
+  .sec-visual .ring{position:absolute;border:1px solid var(--cyan-dim);border-radius:50%}
+  .sec-visual .ring.r1{width:60%;height:60%;animation:spin 18s linear infinite}
+  .sec-visual .ring.r2{width:80%;height:80%;border-style:dashed;animation:spin 28s linear infinite reverse}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .sec-visual .core{width:96px;height:96px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(0,229,255,0.22),rgba(120,80,255,0.14));border:1px solid var(--cyan-dim);box-shadow:0 0 50px rgba(0,229,255,0.3)}
+  .sec-visual .core svg{width:46px;height:46px;stroke:#fff}
+
+  /* ---------- final cta ---------- */
+  .cta-box{text-align:center;background:linear-gradient(180deg,rgba(0,229,255,0.06),rgba(0,229,255,0.01));border:1px solid var(--border);border-radius:22px;padding:64px 28px;position:relative;overflow:hidden}
+  .cta-box h2{font-size:clamp(26px,3.6vw,42px);font-weight:800;letter-spacing:-.02em}
+  .cta-box p{color:var(--muted);margin:14px 0 26px}
+  .copy-row{display:inline-flex;align-items:center;gap:0;background:#0c0f16;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:13px;margin:6px 0 24px}
+  .copy-row code{padding:12px 16px;color:var(--cyan)}
+  .copy-row button{border:none;border-left:1px solid var(--border);background:rgba(0,229,255,0.06);color:var(--text);padding:12px 16px;cursor:none;font-family:var(--mono);font-size:13px;transition:background .2s}
+  .copy-row button:hover{background:rgba(0,229,255,0.16)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);padding:48px 0 36px;margin-top:40px;position:relative;z-index:2}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot .links{display:flex;gap:22px;color:var(--muted);font-size:14px}
+  .foot .links a:hover{color:var(--cyan)}
+  .foot .copy{color:var(--muted-2);font-size:13px;font-family:var(--mono)}
+
+  /* ---------- reveal ---------- */
+  [data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  [data-reveal].in{opacity:1;transform:none}
+  .tilt{transform-style:preserve-3d;transition:transform .1s ease-out}
+  @media (hover:none){ [data-reveal]{opacity:1;transform:none} }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .grid-3,.modes-grid,.cap-grid{grid-template-columns:1fr 1fr}
+    .sec-grid{grid-template-columns:1fr}
+    .nav-links{display:none}
+  }
+  @media (max-width:600px){
+    .grid-3,.modes-grid,.cap-grid{grid-template-columns:1fr}
+    .hero{padding:120px 0 60px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;scroll-behavior:auto}
+    [data-reveal]{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <div class="aurora" id="aurora"></div>
+  <div class="grain"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+  <div class="progress" id="progress"></div>
+
+  <header id="header">
+    <div class="wrap nav">
+      <a href="#top" class="brand" data-cursor>
+        <span class="logo" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </span>
+        DroidSeal
+      </a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="#pipeline">管线</a>
+        <a href="#modes">模式</a>
+        <a href="#capabilities">能力</a>
+        <a href="#security">安全</a>
+      </nav>
+      <a href="#cta" class="btn btn-primary magnetic" data-cursor>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .6l3.5 6.9 7.8 1.1-5.6 5.5 1.3 7.7L12 18.6 4.9 22.3l1.3-7.7L.6 9.1 8.5 8z"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero wrap">
+      <span class="eyebrow" data-reveal><span class="dot"></span>商业加固前 · 一键端到端</span>
+      <h1 data-reveal>像聊天一样，跑完 <span class="grad">Android 发布加固</span></h1>
+      <p class="sub" data-reveal>DroidSeal 帮你完成商业加固前能做的大多数事——解包、Manifest 收紧、密钥扫描、R8 混淆、重打包、zipalign 对齐、apksigner 签名，一条管线全包。</p>
+      <div class="hero-cta" data-reveal>
+        <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
+        <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
+      </div>
+
+      <div class="terminal" data-reveal data-cursor>
+        <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="name">droidseal — zsh</span></div>
+        <div class="body" id="termBody"></div>
+      </div>
+
+      <div class="pills" data-reveal>
+        <button class="pill active" data-mode="one" data-cursor><span class="k">1</span>一键处理</button>
+        <button class="pill" data-mode="step" data-cursor><span class="k">2</span>分步处理</button>
+        <button class="pill" data-mode="diag" data-cursor><span class="k">3</span>环境诊断</button>
+      </div>
+
+      <div class="hero-shot-wrap" data-reveal>
+        <img class="hero-shot" src="./screenshot.png" alt="DroidSeal 终端运行截图" />
+      </div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section class="section-pad wrap" id="pipeline">
+      <span class="eyebrow" data-reveal><span class="dot"></span>Nine-Step Pipeline</span>
+      <h2 class="title" data-reveal>九步管线，端到端</h2>
+      <p class="lead" data-reveal>从 apk 到签名包，全程本机完成。每步可独立审计、可回退，默认规则开箱即用。</p>
+      <div class="grid-3">
+        <article class="step tilt" data-reveal data-cursor><div class="num">01</div><h3>解包反编译</h3><p>apktool 反编译资源与 smali，保留可审计的中间产物。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">02</div><h3>资源去冗余</h3><p>删除无用资源、对齐命名，缩减体积与攻击面。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">03</div><h3>Manifest 收紧</h3><p>权限最小化、exported 治理，堵住越权暴露。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">04</div><h3>密钥与字符串扫描</h3><p>定位硬编码 secrets，自动 redact，绝不落盘。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">05</div><h3>混淆加固</h3><p>R8 / ProGuard 重命名与内联，提升逆向成本。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">06</div><h3>原生库处理</h3><p>so 加固与符号剥离，保护 native 代码。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">07</div><h3>重打包</h3><p>资源回编译、完整性校验，确保可安装。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">08</div><h3>zipalign</h3><p>4 字节内存对齐，优化运行时性能。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">09</div><h3>apksigner 签名</h3><p>v3 签名、对齐验证，产出可发布包。</p></article>
+      </div>
+    </section>
+
+    <!-- MODES -->
+    <section class="section-pad wrap" id="modes">
+      <span class="eyebrow" data-reveal><span class="dot"></span>Three Modes</span>
+      <h2 class="title" data-reveal>三种模式，按需切换</h2>
+      <p class="lead" data-reveal>同一个引擎，三种节奏——从左到右边学边跑，或一条命令出包。</p>
+      <div class="modes-grid">
+        <article class="mode tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
+          <span class="tag">[2] STEP</span><h3>分步处理</h3>
+          <p>每步可审查、可回退，适合审计与学习，逐步看清管线在做什么。</p>
+        </article>
+        <article class="mode tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+          <span class="tag">[1] ONE-SHOT</span><h3>一键处理</h3>
+          <p>默认规则全跑，约 30 秒出包。把加固前的事交给一条命令。</p>
+        </article>
+        <article class="mode tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
+          <span class="tag">[3] DIAGNOSE</span><h3>环境诊断</h3>
+          <p>只扫描不改包，输出可读报告，先看清风险再决定怎么加固。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section class="section-pad wrap" id="capabilities">
+      <span class="eyebrow" data-reveal><span class="dot"></span>Capabilities</span>
+      <h2 class="title" data-reveal>能力网格</h2>
+      <p class="lead" data-reveal>不是黑盒工具，而是一套可审计、可复现、可集成的发布前流水线。</p>
+      <div class="cap-grid">
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <h3>本地优先</h3><p>全程本机执行，APK 不出设备，适合敏感构建。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>密钥脱敏</h3><p>扫描到的 secrets 自动 redact，永不落盘、永不外传。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></div>
+          <h3>可复现构建</h3><p>同输入同输出，结果可校验、可第三方复核。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6H14a3 3 0 013 3v0M8.5 18H14a3 3 0 01-3-3"/></svg></div>
+          <h3>CI 集成</h3><p>一条命令接入 GitHub Actions，发布前自动跑。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+          <h3>规则可配置</h3><p>清单与混淆规则可 fork 改写，贴合你的项目。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
+          <h3>审计日志</h3><p>每步留痕，可导出，出问题能回溯到具体动作。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section class="section-pad wrap" id="security">
+      <span class="eyebrow" data-reveal><span class="dot"></span>Security & Privacy</span>
+      <h2 class="title" data-reveal>安全与隐私，默认就做对</h2>
+      <div class="sec-grid">
+        <div class="sec-list">
+          <div class="sec-item" data-reveal>
+            <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <div><h4>本地优先执行</h4><p>APK 与密钥只在本机处理，不经过任何远端服务。</p></div>
+          </div>
+          <div class="sec-item" data-reveal>
+            <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <div><h4>Secrets redacted</h4><p>扫描出的明文密钥立即脱敏，报告里只留哈希摘要。</p></div>
+          </div>
+          <div class="sec-item" data-reveal>
+            <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <div><h4>MIT 开源可审计</h4><p>全部代码公开，任何人都能读、能改、能验证行为。</p></div>
+          </div>
+        </div>
+        <div class="sec-visual" data-reveal aria-hidden="true">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section-pad wrap" id="cta">
+      <div class="cta-box" data-reveal>
+        <h2>把加固前的事，交给一条命令</h2>
+        <p>开源 · MIT License · 本地优先 · 超越初级安全水平</p>
+        <div class="copy-row" data-cursor>
+          <code id="installCmd">curl -fsSL https://droidseal.dev/install.sh | sh</code>
+          <button id="copyBtn">复制</button>
+        </div>
+        <div class="hero-cta">
+          <a href="#top" class="btn btn-primary magnetic" data-cursor>开始使用</a>
+          <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <a href="#top" class="brand" data-cursor>
+        <span class="logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        DroidSeal
+      </a>
+      <nav class="links" aria-label="页脚链接">
+        <a href="#pipeline" data-cursor>管线</a>
+        <a href="#modes" data-cursor>模式</a>
+        <a href="#capabilities" data-cursor>能力</a>
+        <a href="#security" data-cursor>安全</a>
+        <a href="#cta" data-cursor>GitHub</a>
+      </nav>
+      <span class="copy">MIT License · © 2026 DroidSeal</span>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  /* ============ custom cursor ============ */
+  if(!isTouch){
+    var dot = document.getElementById('cursor-dot');
+    var ring = document.getElementById('cursor-ring');
+    var mx = window.innerWidth/2, my = window.innerHeight/2, rx = mx, ry = my;
+    window.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; dot.style.transform='translate('+mx+'px,'+my+'px) translate(-50%,-50%)'; });
+    (function cloop(){
+      rx += (mx-rx)*0.18; ry += (my-ry)*0.18;
+      ring.style.transform='translate('+rx+'px,'+ry+'px)';
+      requestAnimationFrame(cloop);
+    })();
+    function bindHover(){
+      document.querySelectorAll('a,button,[data-cursor],.step,.mode,.cap').forEach(function(el){
+        if(el.__ch) return; el.__ch=1;
+        el.addEventListener('mouseenter',function(){ ring.classList.add('hover'); });
+        el.addEventListener('mouseleave',function(){ ring.classList.remove('hover'); });
+      });
+    }
+    bindHover();
+    window.addEventListener('mousedown',function(){ ring.classList.add('down'); });
+    window.addEventListener('mouseup',function(){ ring.classList.remove('down'); });
+  }
+
+  /* ============ progress bar + header ============ */
+  var progress = document.getElementById('progress');
+  var header = document.getElementById('header');
+  function onScroll(){
+    var h = document.documentElement;
+    var sc = h.scrollTop, max = h.scrollHeight - h.clientHeight;
+    progress.style.width = (max>0 ? (sc/max*100):0) + '%';
+    header.classList.toggle('scrolled', sc>20);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* ============ reveal on scroll ============ */
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    },{threshold:0.12});
+    document.querySelectorAll('[data-reveal]').forEach(function(el,i){ el.style.transitionDelay=(i%6*60)+'ms'; io.observe(el); });
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ============ 3D tilt + magnetic ============ */
+  if(!isTouch && !reduce){
+    document.querySelectorAll('.tilt').forEach(function(el){
+      el.addEventListener('mousemove', function(e){
+        var r = el.getBoundingClientRect();
+        var px = (e.clientX-r.left)/r.width-0.5, py=(e.clientY-r.top)/r.height-0.5;
+        el.style.transform='perspective(800px) rotateX('+(-py*7)+'deg) rotateY('+(px*7)+'deg) translateY(-4px)';
+      });
+      el.addEventListener('mouseleave', function(){ el.style.transform=''; });
+    });
+    document.querySelectorAll('.magnetic').forEach(function(el){
+      el.addEventListener('mousemove', function(e){
+        var r=el.getBoundingClientRect();
+        var px=e.clientX-(r.left+r.width/2), py=e.clientY-(r.top+r.height/2);
+        el.style.transform='translate('+(px*0.25)+'px,'+(py*0.35)+'px)';
+      });
+      el.addEventListener('mouseleave', function(){ el.style.transform=''; });
+    });
+  }
+
+  /* ============ terminal typing ============ */
+  var termBody = document.getElementById('termBody');
+  var MODES = {
+    one: { cmd:'droidseal run app-release-unsigned.apk', out:[
+      ['c-dim','→ 载入 9 步管线 · 默认规则'],
+      ['c-ok','[01] 解包反编译 ......... ok'],
+      ['c-ok','[02] 资源去冗余 ......... ok'],
+      ['c-ok','[03] Manifest 收紧 ...... ok'],
+      ['c-warn','[04] 密钥扫描 ........ 2 处已 redact'],
+      ['c-ok','[05] R8 混淆 ............ ok'],
+      ['c-ok','[06] 原生库处理 ......... ok'],
+      ['c-ok','[07] 重打包 ............. ok'],
+      ['c-ok','[08] zipalign 对齐 ...... ok'],
+      ['c-ok','[09] apksigner 签名 ..... ok'],
+      ['c-cyan','✓ 输出 app-release-signed.apk']
+    ]},
+    step: { cmd:'droidseal step --interactive', out:[
+      ['c-dim','→ 分步模式 · 每步需确认'],
+      ['c-ok','[01] 解包反编译 ......... ok'],
+      ['c-prompt','? 继续 Manifest 收紧? [y/n] y'],
+      ['c-ok','[03] Manifest 收紧 ...... ok'],
+      ['c-warn','[04] 密钥扫描 ........ 1 处已 redact'],
+      ['c-cyan','› 已停在 [05]，随时回退']
+    ]},
+    diag: { cmd:'droidseal diagnose --report', out:[
+      ['c-dim','→ 只扫描 · 不改包'],
+      ['c-warn','[!] 发现 3 个 exported 组件'],
+      ['c-warn','[!] 检测到 2 处硬编码密钥'],
+      ['c-ok','[✓] R8 已启用'],
+      ['c-cyan','› 报告已生成 diagnose.md']
+    ]}
+  };
+  var curMode = 'one';
+  function typeTerminal(){
+    if(!termBody) return;
+    var m = MODES[curMode];
+    if(reduce){
+      termBody.innerHTML='';
+      var ph=document.createElement('div'); ph.className='line';
+      ph.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd">'+m.cmd+'</span>';
+      termBody.appendChild(ph);
+      m.out.forEach(function(item){ var d=document.createElement('div'); d.className='line';
+        d.innerHTML='<span class="'+item[0]+'">'+item[1]+'</span>'; termBody.appendChild(d); });
+      return;
+    }
+    termBody.innerHTML='';
+    var lines = [];
+    var prompt = document.createElement('div');
+    prompt.className='line';
+    prompt.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd"></span><span class="caret"></span>';
+    termBody.appendChild(prompt);
+    var cmdSpan = prompt.querySelector('.c-cmd');
+    var caret = prompt.querySelector('.caret');
+    var li=0, ci=0, oi=0, phase='cmd';
+    function step(){
+      if(phase==='cmd'){
+        if(ci<m.cmd.length){ cmdSpan.textContent=m.cmd.slice(0,++ci); setTimeout(step,28); return; }
+        phase='out'; caret.remove(); setTimeout(step,260); return;
+      }
+      if(phase==='out'){
+        if(oi<m.out.length){
+          var item=m.out[oi++];
+          var d=document.createElement('div'); d.className='line';
+          d.innerHTML='<span class="'+item[0]+'">'+item[1]+'</span>';
+          termBody.appendChild(d);
+          setTimeout(step, item[0]==='c-cyan'?420:150);
+          return;
+        }
+        if(!reduce){ phase='loop'; setTimeout(step,2600); return; }
+        return;
+      }
+      if(phase==='loop'){ termBody.innerHTML=''; ci=0; oi=0; phase='cmd';
+        prompt=document.createElement('div'); prompt.className='line';
+        prompt.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd"></span><span class="caret"></span>';
+        termBody.appendChild(prompt); cmdSpan=prompt.querySelector('.c-cmd'); caret=prompt.querySelector('.caret');
+        setTimeout(step,200); return;
+      }
+    }
+    step();
+  }
+  typeTerminal();
+  document.querySelectorAll('.pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('active');});
+      p.classList.add('active'); curMode=p.getAttribute('data-mode'); typeTerminal();
+    });
+  });
+
+  /* ============ copy install ============ */
+  var copyBtn=document.getElementById('copyBtn');
+  if(copyBtn){
+    copyBtn.addEventListener('click', function(){
+      var txt=document.getElementById('installCmd').textContent;
+      var done=function(){ copyBtn.textContent='已复制'; setTimeout(function(){copyBtn.textContent='复制';},1600); };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
+      else { done(); }
+    });
+  }
+
+  /* ============ background canvas (particles + drag) ============ */
+  var canvas=document.getElementById('bg'); var ctx=canvas.getContext('2d');
+  var DPR=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    W=canvas.width=Math.floor(window.innerWidth*DPR);
+    H=canvas.height=Math.floor(window.innerHeight*DPR);
+    canvas.style.width=window.innerWidth+'px'; canvas.style.height=window.innerHeight+'px';
+    initPts();
+  }
+  var pts=[];
+  function initPts(){
+    var N = window.innerWidth<700?42:92;
+    pts=[];
+    for(var i=0;i<N;i++){
+      pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.3*DPR,vy:(Math.random()-0.5)*0.3*DPR,r:(Math.random()*1.6+0.5)*DPR});
+    }
+  }
+  var mouse={x:-9999,y:-9999,down:false};
+  var trail=[];
+  window.addEventListener('mousemove', function(e){ mouse.x=e.clientX*DPR; mouse.y=e.clientY*DPR;
+    trail.push({x:mouse.x,y:mouse.y,big:mouse.down,life:1}); if(trail.length>46) trail.shift(); });
+  window.addEventListener('mousedown', function(){ mouse.down=true; });
+  window.addEventListener('mouseup', function(){ mouse.down=false; });
+
+  // drag-to-pan aurora
+  var aurora=document.getElementById('aurora');
+  var drag={x:0,y:0,tx:0,ty:0,lastX:0,lastY:0,active:false};
+  window.addEventListener('mousedown', function(e){ drag.active=true; drag.lastX=e.clientX; drag.lastY=e.clientY; });
+  window.addEventListener('mousemove', function(e){
+    if(!drag.active) return;
+    var dx=e.clientX-drag.lastX, dy=e.clientY-drag.lastY;
+    drag.lastX=e.clientX; drag.lastY=e.clientY;
+    drag.tx += dx; drag.ty += dy;
+    // clamp pan
+    drag.tx=Math.max(-200,Math.min(200,drag.tx));
+    drag.ty=Math.max(-160,Math.min(160,drag.ty));
+  });
+  window.addEventListener('mouseup', function(){ drag.active=false; drag.tx=0; drag.ty=0; });
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // particles
+    var i,j,d,dx,dy,R;
+    var baseR=130*DPR;
+    R = baseR*(mouse.down?2.4:1);
+    for(i=0;i<pts.length;i++){
+      var p=pts[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      dx=p.x-mouse.x; dy=p.y-mouse.y; d=Math.sqrt(dx*dx+dy*dy);
+      if(d<R && d>0.01){ var f=(R-d)/R*(mouse.down?2.0:0.8); p.x+=dx/d*f; p.y+=dy/d*f; }
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle='rgba(0,229,255,0.55)'; ctx.fill();
+    }
+    // links
+    var maxD=130*DPR;
+    for(i=0;i<pts.length;i++){ for(j=i+1;j<pts.length;j++){
+      var a=pts[i],b=pts[j]; dx=a.x-b.x; dy=a.y-b.y; d=Math.sqrt(dx*dx+dy*dy);
+      if(d<maxD){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle='rgba(0,229,255,'+(0.14*(1-d/maxD))+')'; ctx.lineWidth=DPR*0.6; ctx.stroke(); }
+    }}
+    // mouse glow
+    if(mouse.x>-9000){
+      var g=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,(mouse.down?90:46)*DPR);
+      g.addColorStop(0,'rgba(0,229,255,'+(mouse.down?0.28:0.14)+')'); g.addColorStop(1,'rgba(0,229,255,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(mouse.x,mouse.y,(mouse.down?90:46)*DPR,0,6.283); ctx.fill();
+      // link mouse to near particles
+      for(i=0;i<pts.length;i++){ var pp=pts[i]; dx=pp.x-mouse.x; dy=pp.y-mouse.y; d=Math.sqrt(dx*dx+dy*dy);
+        if(d<baseR*1.4){ ctx.beginPath(); ctx.moveTo(mouse.x,mouse.y); ctx.lineTo(pp.x,pp.y);
+          ctx.strokeStyle='rgba(0,229,255,'+(0.18*(1-d/(baseR*1.4)))+')'; ctx.lineWidth=DPR*0.7; ctx.stroke(); } }
+    }
+    // trail
+    for(i=trail.length-1;i>=0;i--){ var t=trail[i]; t.life-=0.035; if(t.life<=0){ trail.splice(i,1); continue; }
+      var rad=(t.big?30:14)*DPR*t.life;
+      var tg=ctx.createRadialGradient(t.x,t.y,0,t.x,t.y,rad);
+      tg.addColorStop(0,'rgba(0,229,255,'+(0.4*t.life*(t.big?1.3:1))+')'); tg.addColorStop(1,'rgba(0,229,255,0)');
+      ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(t.x,t.y,rad,0,6.283); ctx.fill();
+    }
+    // aurora pan (ease)
+    drag.x += (drag.tx-drag.x)*0.08; drag.y += (drag.ty-drag.y)*0.08;
+    var px=(mouse.x/W-0.5)*-18*DPR, py=(mouse.y/H-0.5)*-18*DPR;
+    aurora.style.transform='translate('+(px+drag.x*0.32)+'px,'+(py+drag.y*0.32)+'px)';
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  if(reduce){
+    // static single frame (no animation loop)
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){ var p=pts[i]; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle='rgba(0,229,255,0.45)'; ctx.fill(); }
+  } else {
+    draw();
+  }
+})();
+</script>
+</body>
+</html>
