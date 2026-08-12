@@ -1,0 +1,58 @@
+name: Bug report
+description: 报告可复现的 DroidSeal 缺陷
+title: "[Bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        不要上传真实 APK、JKS/PKCS12、密码或未脱敏日志。安全漏洞请阅读 SECURITY.md 并私下报告。
+  - type: input
+    id: version
+    attributes:
+      label: DroidSeal 版本
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统、终端、Bun 和 Android Build Tools 版本
+    validations:
+      required: true
+  - type: dropdown
+    id: input-kind
+    attributes:
+      label: 输入类型
+      options:
+        - APK
+        - Android 项目
+    validations:
+      required: true
+  - type: input
+    id: step
+    attributes:
+      label: 出现问题的步骤
+      placeholder: 例如 ZIP 对齐 / APK 签名 / 最终验证
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 最小复现步骤
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 错误码和脱敏输出
+      description: 删除密码、用户名、本机绝对路径、证书主体和真实包名
+      render: text
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我没有上传 APK、签名库、私钥、密码或其他第三方敏感材料
+          required: true
