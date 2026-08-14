@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DroidSeal · 商业加固前的 Android 发布管线</title>
-<meta name="description" content="DroidSeal：商业加固前你能做的大多数内容。一键式端到端管线，超越初级安全水平。" />
+<title>DroidSeal · 本地优先的 Android 安全发布流水线</title>
+<meta name="description" content="DroidSeal（Android 发布封签）：商业加固前你能做的大多数内容。本地优先、结果可验证的 14 步发布安全流水线。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -141,13 +141,14 @@
 
   /* ---------- pipeline grid ---------- */
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-  .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:14px;margin-top:44px}
+  .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 14px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
   .step::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(0,229,255,0.10),transparent 60%);opacity:0;transition:opacity .3s}
   .step:hover{transform:translateY(-4px);border-color:var(--cyan-dim);box-shadow:0 16px 50px rgba(0,0,0,0.45)}
   .step:hover::before{opacity:1}
-  .step .num{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.1em}
-  .step h3{font-size:17px;margin:10px 0 8px;font-weight:600}
-  .step p{color:var(--muted);font-size:14px}
+  .step .num{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.08em}
+  .step h3{font-size:14.5px;margin:7px 0 5px;font-weight:600;line-height:1.3}
+  .step p{color:var(--muted);font-size:12px;line-height:1.45}
 
   /* ---------- modes ---------- */
   .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
@@ -192,6 +193,8 @@
   .copy-row code{padding:12px 16px;color:var(--cyan)}
   .copy-row button{border:none;border-left:1px solid var(--border);background:rgba(0,229,255,0.06);color:var(--text);padding:12px 16px;cursor:none;font-family:var(--mono);font-size:13px;transition:background .2s}
   .copy-row button:hover{background:rgba(0,229,255,0.16)}
+  .cta-note{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0 0 22px}
+  .cta-note code{color:var(--cyan);background:rgba(0,229,255,0.06);padding:2px 6px;border-radius:5px}
 
   /* ---------- footer ---------- */
   footer{border-top:1px solid var(--border);padding:48px 0 36px;margin-top:40px;position:relative;z-index:2}
@@ -241,7 +244,7 @@
         <a href="#capabilities">能力</a>
         <a href="#security">安全</a>
       </nav>
-      <a href="#cta" class="btn btn-primary magnetic" data-cursor>
+      <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary magnetic" data-cursor>
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .6l3.5 6.9 7.8 1.1-5.6 5.5 1.3 7.7L12 18.6 4.9 22.3l1.3-7.7L.6 9.1 8.5 8z"/></svg>
         Star on GitHub
       </a>
@@ -251,9 +254,9 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero wrap">
-      <span class="eyebrow" data-reveal><span class="dot"></span>商业加固前 · 一键端到端</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>Android 发布封签 · v0.1.0 Alpha</span>
       <h1 data-reveal>像聊天一样，跑完 <span class="grad">Android 发布加固</span></h1>
-      <p class="sub" data-reveal>DroidSeal 帮你完成商业加固前能做的大多数事——解包、Manifest 收紧、密钥扫描、R8 混淆、重打包、zipalign 对齐、apksigner 签名，一条管线全包。</p>
+      <p class="sub" data-reveal>DroidSeal（Android 发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，一条本地优先的管线全包。</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
         <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
@@ -265,9 +268,9 @@
       </div>
 
       <div class="pills" data-reveal>
-        <button class="pill active" data-mode="one" data-cursor><span class="k">1</span>一键处理</button>
-        <button class="pill" data-mode="step" data-cursor><span class="k">2</span>分步处理</button>
-        <button class="pill" data-mode="diag" data-cursor><span class="k">3</span>环境诊断</button>
+        <button class="pill active" data-mode="guided" data-cursor><span class="k">1</span>分步处理</button>
+        <button class="pill" data-mode="oneclick" data-cursor><span class="k">2</span>一键处理</button>
+        <button class="pill" data-mode="doctor" data-cursor><span class="k">3</span>环境诊断</button>
       </div>
 
       <div class="hero-shot-wrap" data-reveal>
@@ -277,42 +280,47 @@
 
     <!-- PIPELINE -->
     <section class="section-pad wrap" id="pipeline">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Nine-Step Pipeline</span>
-      <h2 class="title" data-reveal>九步管线，端到端</h2>
-      <p class="lead" data-reveal>从 apk 到签名包，全程本机完成。每步可独立审计、可回退，默认规则开箱即用。</p>
-      <div class="grid-3">
-        <article class="step tilt" data-reveal data-cursor><div class="num">01</div><h3>解包反编译</h3><p>apktool 反编译资源与 smali，保留可审计的中间产物。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">02</div><h3>资源去冗余</h3><p>删除无用资源、对齐命名，缩减体积与攻击面。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">03</div><h3>Manifest 收紧</h3><p>权限最小化、exported 治理，堵住越权暴露。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">04</div><h3>密钥与字符串扫描</h3><p>定位硬编码 secrets，自动 redact，绝不落盘。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">05</div><h3>混淆加固</h3><p>R8 / ProGuard 重命名与内联，提升逆向成本。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">06</div><h3>原生库处理</h3><p>so 加固与符号剥离，保护 native 代码。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">07</div><h3>重打包</h3><p>资源回编译、完整性校验，确保可安装。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">08</div><h3>zipalign</h3><p>4 字节内存对齐，优化运行时性能。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">09</div><h3>apksigner 签名</h3><p>v3 签名、对齐验证，产出可发布包。</p></article>
+      <span class="eyebrow" data-reveal><span class="dot"></span>14-Step Pipeline</span>
+      <h2 class="title" data-reveal>14 步流水线，端到端</h2>
+      <p class="lead" data-reveal>从 APK 到签名产物，全程本机完成。每步生成独立制品，可审计、可回退，默认规则开箱即用。</p>
+      <div class="steps-grid">
+        <article class="step tilt" data-reveal data-cursor><div class="num">01</div><h3>环境诊断</h3><p>定位 JDK / Android SDK 等工具，标出所选流程的缺失项。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">02</div><h3>准备工作区</h3><p>验证输入、复制已有 APK，绝不原地修改。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">03</div><h3>签名库</h3><p>提前校验现有别名，或用 keytool 新建。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">04</div><h3>源码安全审计</h3><p>检查 R8 / 资源 / Manifest / 明文签名密码与源码启发式。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">05</div><h3>构建 Release APK</h3><p>执行项目自己的 Gradle Wrapper 并复制产物。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">06</div><h3>APK 安全审计</h3><p>解析 ZIP / DEX / ELF / AXML / ARSC；aapt 仅补充回退。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">07</div><h3>本地安全防护</h3><p>核验 R8、标准 DEX、反调试与完整性覆盖。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">08</div><h3>Release 归一化</h3><p>强制 debuggable=false，修改后验证，否则中止回退。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">09</div><h3>Web JS 发布处理</h3><p>可选 Terser 处理 assets/public、assets/www 脚本。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">10</div><h3>资源名混淆</h3><p>可选解析 resources.arsc，getIdentifier 命中时保留。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">11</div><h3>ZIP 对齐</h3><p>zipalign -p -f 4；保留有效现有签名时自动跳过。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">12</div><h3>APK 签名</h3><p>apksigner 输出新的签名 APK。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">13</div><h3>最终验证</h3><p>验证对齐、签名方案、证书并计算 SHA-256。</p></article>
+        <article class="step tilt" data-reveal data-cursor><div class="num">14</div><h3>生成报告</h3><p>JSON / Markdown、SBOM、发布门禁与覆盖矩阵。</p></article>
       </div>
     </section>
 
     <!-- MODES -->
     <section class="section-pad wrap" id="modes">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Three Modes</span>
-      <h2 class="title" data-reveal>三种模式，按需切换</h2>
-      <p class="lead" data-reveal>同一个引擎，三种节奏——从左到右边学边跑，或一条命令出包。</p>
+      <span class="eyebrow" data-reveal><span class="dot"></span>Three Entry Points</span>
+      <h2 class="title" data-reveal>三种入口，按需切换</h2>
+      <p class="lead" data-reveal>同一个引擎，三种节奏——分步学、一键跑，或先诊断环境再决定怎么加固。</p>
       <div class="modes-grid">
         <article class="mode tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
-          <span class="tag">[2] STEP</span><h3>分步处理</h3>
-          <p>每步可审查、可回退，适合审计与学习，逐步看清管线在做什么。</p>
+          <span class="tag">[1] GUIDED · /guided</span><h3>分步处理</h3>
+          <p>每一步执行前再次显示用途与影响，可“执行此步”或跳过；失败自动回退到步骤开始前的 APK。</p>
         </article>
         <article class="mode tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
-          <span class="tag">[1] ONE-SHOT</span><h3>一键处理</h3>
-          <p>默认规则全跑，约 30 秒出包。把加固前的事交给一条命令。</p>
+          <span class="tag">[2] ONE-CLICK · /oneclick</span><h3>一键处理</h3>
+          <p>填写信息后 14 步连续执行，一般失败自动回退继续；缺工具则暂停等待下载或修复后自动续跑。</p>
         </article>
         <article class="mode tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
-          <span class="tag">[3] DIAGNOSE</span><h3>环境诊断</h3>
-          <p>只扫描不改包，输出可读报告，先看清风险再决定怎么加固。</p>
+          <span class="tag">[3] DOCTOR · /doctor</span><h3>环境诊断</h3>
+          <p>定位 JDK / Android SDK 等工具，缺失项列出并提供下载与说明；只检查不改包。</p>
         </article>
       </div>
     </section>
@@ -321,31 +329,31 @@
     <section class="section-pad wrap" id="capabilities">
       <span class="eyebrow" data-reveal><span class="dot"></span>Capabilities</span>
       <h2 class="title" data-reveal>能力网格</h2>
-      <p class="lead" data-reveal>不是黑盒工具，而是一套可审计、可复现、可集成的发布前流水线。</p>
+      <p class="lead" data-reveal>不是黑盒工具，而是一套本地优先、可审计、可验证的发布前流水线。</p>
       <div class="cap-grid">
         <article class="cap tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          <h3>本地优先</h3><p>全程本机执行，APK 不出设备，适合敏感构建。</p>
-        </article>
-        <article class="cap tilt" data-reveal data-cursor>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <h3>密钥脱敏</h3><p>扫描到的 secrets 自动 redact，永不落盘、永不外传。</p>
+          <h3>本地优先</h3><p>不连接模型服务，不上传 APK、文件路径或签名凭据。</p>
         </article>
         <article class="cap tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></div>
-          <h3>可复现构建</h3><p>同输入同输出，结果可校验、可第三方复核。</p>
+          <h3>结果可验证</h3><p>输出签名验证、SHA-256、JSON 与 Markdown 报告。</p>
         </article>
         <article class="cap tilt" data-reveal data-cursor>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6H14a3 3 0 013 3v0M8.5 18H14a3 3 0 01-3-3"/></svg></div>
-          <h3>CI 集成</h3><p>一条命令接入 GitHub Actions，发布前自动跑。</p>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
+          <h3>步骤可回退</h3><p>每步独立制品，失败解释原因并恢复最近有效 APK。</p>
         </article>
         <article class="cap tilt" data-reveal data-cursor>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
-          <h3>规则可配置</h3><p>清单与混淆规则可 fork 改写，贴合你的项目。</p>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+          <h3>深度静态审计</h3><p>权限 / targetSdk / 签名 / 深链 / 硬编码密钥 / TLS 启发式。</p>
+        </article>
+        <article class="cap tilt" data-reveal data-cursor>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>密钥脱敏</h3><p>明文密码只留路径与行号，值从不进入报告或命令。</p>
         </article>
         <article class="cap tilt" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
-          <h3>审计日志</h3><p>每步留痕，可导出，出问题能回溯到具体动作。</p>
+          <h3>证据优先</h3><p>报告区分已确认 / 高 / 中 / 低置信度，并产出 CycloneDX SBOM。</p>
         </article>
       </div>
     </section>
@@ -358,15 +366,19 @@
         <div class="sec-list">
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>本地优先执行</h4><p>APK 与密钥只在本机处理，不经过任何远端服务。</p></div>
+            <div><h4>本地优先执行</h4><p>APK 与签名凭据只在本机处理，不连接模型服务、不上传任何数据。</p></div>
           </div>
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>Secrets redacted</h4><p>扫描出的明文密钥立即脱敏，报告里只留哈希摘要。</p></div>
+            <div><h4>明确的边界</h4><p>默认不注入脱壳 / Hook / 反调试 / 运行时篡改代码；相关攻击只作为威胁模型。</p></div>
           </div>
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>MIT 开源可审计</h4><p>全部代码公开，任何人都能读、能改、能验证行为。</p></div>
+            <div><h4>密钥绝不落盘</h4><p>明文密码只在内存，不写入报告、命令参数、配置文件或终端聊天记录。</p></div>
+          </div>
+          <div class="sec-item" data-reveal>
+            <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <div><h4>证据优先</h4><p>报告明确区分“已验证”与“仅建议”的控制项，不冒充服务端闭环。</p></div>
           </div>
         </div>
         <div class="sec-visual" data-reveal aria-hidden="true">
@@ -381,13 +393,14 @@
     <section class="section-pad wrap" id="cta">
       <div class="cta-box" data-reveal>
         <h2>把加固前的事，交给一条命令</h2>
-        <p>开源 · MIT License · 本地优先 · 超越初级安全水平</p>
+        <p>开源 · MIT License · 本地优先 · 当前支持 Windows x64（Alpha v0.1.0）</p>
         <div class="copy-row" data-cursor>
-          <code id="installCmd">curl -fsSL https://droidseal.dev/install.sh | sh</code>
+          <code id="installCmd">npm install --global droidseal</code>
           <button id="copyBtn">复制</button>
         </div>
+        <p class="cta-note">尚未发布到 npm，当前请从源码运行：<code>bun install --frozen-lockfile &amp;&amp; bun run dev</code></p>
         <div class="hero-cta">
-          <a href="#top" class="btn btn-primary magnetic" data-cursor>开始使用</a>
+          <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary magnetic" data-cursor>查看 GitHub</a>
           <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
         </div>
       </div>
@@ -404,9 +417,9 @@
         <a href="#modes" data-cursor>模式</a>
         <a href="#capabilities" data-cursor>能力</a>
         <a href="#security" data-cursor>安全</a>
-        <a href="#cta" data-cursor>GitHub</a>
+        <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" data-cursor>GitHub</a>
       </nav>
-      <span class="copy">MIT License · © 2026 DroidSeal</span>
+      <span class="copy">MIT License · Alpha v0.1.0 · © 2026 DroidSeal</span>
     </div>
   </footer>
 
@@ -483,43 +496,48 @@
   /* ============ terminal typing ============ */
   var termBody = document.getElementById('termBody');
   var MODES = {
-    one: { cmd:'droidseal run app-release-unsigned.apk', out:[
-      ['c-dim','→ 载入 9 步管线 · 默认规则'],
-      ['c-ok','[01] 解包反编译 ......... ok'],
-      ['c-ok','[02] 资源去冗余 ......... ok'],
-      ['c-ok','[03] Manifest 收紧 ...... ok'],
-      ['c-warn','[04] 密钥扫描 ........ 2 处已 redact'],
-      ['c-ok','[05] R8 混淆 ............ ok'],
-      ['c-ok','[06] 原生库处理 ......... ok'],
-      ['c-ok','[07] 重打包 ............. ok'],
-      ['c-ok','[08] zipalign 对齐 ...... ok'],
-      ['c-ok','[09] apksigner 签名 ..... ok'],
-      ['c-cyan','✓ 输出 app-release-signed.apk']
-    ]},
-    step: { cmd:'droidseal step --interactive', out:[
-      ['c-dim','→ 分步模式 · 每步需确认'],
-      ['c-ok','[01] 解包反编译 ......... ok'],
-      ['c-prompt','? 继续 Manifest 收紧? [y/n] y'],
-      ['c-ok','[03] Manifest 收紧 ...... ok'],
-      ['c-warn','[04] 密钥扫描 ........ 1 处已 redact'],
+    guided: { cmd:'/guided', out:[
+      ['c-dim','→ 分步向导 · 每步可确认 / 跳过'],
+      ['c-ok','[01] 环境诊断 ............ ok'],
+      ['c-ok','[02] 准备工作区 .......... ok'],
+      ['c-prompt','? 继续 源码安全审计? [y/n] y'],
+      ['c-ok','[04] 源码安全审计 ........ ok'],
+      ['c-warn','[04] 密钥扫描 .......... 2 处已 redact'],
       ['c-cyan','› 已停在 [05]，随时回退']
     ]},
-    diag: { cmd:'droidseal diagnose --report', out:[
-      ['c-dim','→ 只扫描 · 不改包'],
-      ['c-warn','[!] 发现 3 个 exported 组件'],
-      ['c-warn','[!] 检测到 2 处硬编码密钥'],
-      ['c-ok','[✓] R8 已启用'],
-      ['c-cyan','› 报告已生成 diagnose.md']
+    oneclick: { cmd:'/oneclick', out:[
+      ['c-dim','→ 一键流程 · 14 步连续执行'],
+      ['c-ok','[01] 环境诊断 ............ ok'],
+      ['c-ok','[02] 准备工作区 .......... ok'],
+      ['c-ok','[03] 签名库 .............. ok'],
+      ['c-ok','[04] 源码安全审计 ........ ok'],
+      ['c-warn','[04] 密钥扫描 .......... 2 处已 redact'],
+      ['c-ok','[05] 构建 Release APK .... ok'],
+      ['c-ok','[06] APK 安全审计 ........ ok'],
+      ['c-ok','[07] 本地安全防护 ........ ok'],
+      ['c-ok','[08] Release 归一化 ...... ok'],
+      ['c-ok','[11] ZIP 对齐 ............ ok'],
+      ['c-ok','[12] APK 签名 ............ ok'],
+      ['c-ok','[13] 最终验证 ............ ok'],
+      ['c-cyan','[14] 生成报告 · SHA-256 已计算']
+    ]},
+    doctor: { cmd:'/doctor', out:[
+      ['c-dim','→ 环境诊断 · 只检查不改包'],
+      ['c-ok','[✓] Bun 1.3.14'],
+      ['c-ok','[✓] JDK 17 · keytool'],
+      ['c-warn','[!] Android SDK 未检测到'],
+      ['c-dim','    → sdkmanager 可一键补全'],
+      ['c-cyan','› 缺失项已列出，下载后继续']
     ]}
   };
-  var curMode = 'one';
+  var curMode = 'guided';
   function typeTerminal(){
     if(!termBody) return;
     var m = MODES[curMode];
     if(reduce){
       termBody.innerHTML='';
       var ph=document.createElement('div'); ph.className='line';
-      ph.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd">'+m.cmd+'</span>';
+      ph.innerHTML='<span class="c-prompt">› </span><span class="c-cmd">'+m.cmd+'</span>';
       termBody.appendChild(ph);
       m.out.forEach(function(item){ var d=document.createElement('div'); d.className='line';
         d.innerHTML='<span class="'+item[0]+'">'+item[1]+'</span>'; termBody.appendChild(d); });
@@ -529,7 +547,7 @@
     var lines = [];
     var prompt = document.createElement('div');
     prompt.className='line';
-    prompt.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd"></span><span class="caret"></span>';
+    prompt.innerHTML='<span class="c-prompt">› </span><span class="c-cmd"></span><span class="caret"></span>';
     termBody.appendChild(prompt);
     var cmdSpan = prompt.querySelector('.c-cmd');
     var caret = prompt.querySelector('.caret');
@@ -553,7 +571,7 @@
       }
       if(phase==='loop'){ termBody.innerHTML=''; ci=0; oi=0; phase='cmd';
         prompt=document.createElement('div'); prompt.className='line';
-        prompt.innerHTML='<span class="c-prompt">$ </span><span class="c-cmd"></span><span class="caret"></span>';
+        prompt.innerHTML='<span class="c-prompt">› </span><span class="c-cmd"></span><span class="caret"></span>';
         termBody.appendChild(prompt); cmdSpan=prompt.querySelector('.c-cmd'); caret=prompt.querySelector('.caret');
         setTimeout(step,200); return;
       }
