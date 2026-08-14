@@ -21,7 +21,7 @@
     --text:#FAFAFA;
     --muted:#9A9AA2;
     --muted-2:#6B6B73;
-    --maxw:1200px;
+    --maxw:1140px;
     --r:14px;
     --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -76,7 +76,7 @@
   .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:9998;background:linear-gradient(90deg,var(--cyan),#7aa2ff);box-shadow:0 0 12px var(--cyan)}
 
   /* ---------- layout helpers ---------- */
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(40px,7vw,104px)}
   section{position:relative;z-index:2}
   .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--border);padding:6px 12px;border-radius:999px;background:rgba(0,229,255,0.04)}
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
@@ -89,7 +89,7 @@
   header.scrolled{background:rgba(11,14,20,0.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft)}
   .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em}
-  .brand .logo{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,rgba(0,229,255,0.18),rgba(120,80,255,0.12));border:1px solid var(--cyan-dim)}
+  .brand .logo{width:auto;height:28px;display:block;object-fit:contain}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
   .nav-links a{transition:color .2s;position:relative}
   .nav-links a:hover{color:var(--text)}
@@ -233,10 +233,7 @@
   <header id="header">
     <div class="wrap nav">
       <a href="#top" class="brand" data-cursor>
-        <span class="logo" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
-        </span>
-        DroidSeal
+        <img class="logo" src="./logo.png" alt="DroidSeal" />
       </a>
       <nav class="nav-links" aria-label="主导航">
         <a href="#pipeline">管线</a>
@@ -400,8 +397,7 @@
   <footer>
     <div class="wrap foot">
       <a href="#top" class="brand" data-cursor>
-        <span class="logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
-        DroidSeal
+        <img class="logo" src="./logo.png" alt="DroidSeal" />
       </a>
       <nav class="links" aria-label="页脚链接">
         <a href="#pipeline" data-cursor>管线</a>
