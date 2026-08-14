@@ -82,7 +82,7 @@
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
   h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:18px 0 12px}
   .lead{color:var(--muted);max-width:640px;font-size:16px}
-  .section-pad{padding:110px 0}
+  .section-pad{padding-top:110px;padding-bottom:110px}
 
   /* ---------- header ---------- */
   header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
@@ -103,7 +103,7 @@
   .btn svg{width:16px;height:16px}
 
   /* ---------- hero ---------- */
-  .hero{padding:150px 0 90px;text-align:center}
+  .hero{padding-top:150px;padding-bottom:90px;text-align:center}
   .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:22px auto 18px;max-width:14ch}
   .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),#7aa2ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero .sub{max-width:620px;margin:0 auto;color:var(--muted);font-size:17px}
@@ -140,7 +140,6 @@
     box-shadow:0 0 24px rgba(0,229,255,0.45),0 0 48px rgba(0,229,255,0.25),0 30px 80px rgba(0,0,0,0.55)}
 
   /* ---------- pipeline grid ---------- */
-  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
   .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:14px;margin-top:44px}
   .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 14px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
   .step::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(0,229,255,0.10),transparent 60%);opacity:0;transition:opacity .3s}
@@ -211,13 +210,13 @@
 
   /* ---------- responsive ---------- */
   @media (max-width:900px){
-    .grid-3,.modes-grid,.cap-grid{grid-template-columns:1fr 1fr}
+    .modes-grid,.cap-grid{grid-template-columns:1fr 1fr}
     .sec-grid{grid-template-columns:1fr}
     .nav-links{display:none}
   }
   @media (max-width:600px){
-    .grid-3,.modes-grid,.cap-grid{grid-template-columns:1fr}
-    .hero{padding:120px 0 60px}
+    .modes-grid,.cap-grid{grid-template-columns:1fr}
+    .hero{padding-top:120px;padding-bottom:60px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;scroll-behavior:auto}
@@ -502,7 +501,7 @@
       ['c-ok','[02] 准备工作区 .......... ok'],
       ['c-prompt','? 继续 源码安全审计? [y/n] y'],
       ['c-ok','[04] 源码安全审计 ........ ok'],
-      ['c-warn','[04] 密钥扫描 .......... 2 处已 redact'],
+      ['c-warn','    ↳ 硬编码密钥扫描 .... 2 处已 redact'],
       ['c-cyan','› 已停在 [05]，随时回退']
     ]},
     oneclick: { cmd:'/oneclick', out:[
@@ -511,7 +510,7 @@
       ['c-ok','[02] 准备工作区 .......... ok'],
       ['c-ok','[03] 签名库 .............. ok'],
       ['c-ok','[04] 源码安全审计 ........ ok'],
-      ['c-warn','[04] 密钥扫描 .......... 2 处已 redact'],
+      ['c-warn','    ↳ 硬编码密钥扫描 .... 2 处已 redact'],
       ['c-ok','[05] 构建 Release APK .... ok'],
       ['c-ok','[06] APK 安全审计 ........ ok'],
       ['c-ok','[07] 本地安全防护 ........ ok'],
@@ -600,12 +599,17 @@
   /* ============ background canvas (particles + drag) ============ */
   var canvas=document.getElementById('bg'); var ctx=canvas.getContext('2d');
   var DPR=Math.min(window.devicePixelRatio||1,2), W=0,H=0;
+  function drawStatic(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){ var p=pts[i]; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle='rgba(0,229,255,0.45)'; ctx.fill(); }
+  }
   function resize(){
     DPR=Math.min(window.devicePixelRatio||1,2);
     W=canvas.width=Math.floor(window.innerWidth*DPR);
     H=canvas.height=Math.floor(window.innerHeight*DPR);
     canvas.style.width=window.innerWidth+'px'; canvas.style.height=window.innerHeight+'px';
     initPts();
+    if(reduce) drawStatic();
   }
   var pts=[];
   function initPts(){
@@ -677,19 +681,13 @@
     }
     // aurora pan (ease)
     drag.x += (drag.tx-drag.x)*0.08; drag.y += (drag.ty-drag.y)*0.08;
-    var px=(mouse.x/W-0.5)*-18*DPR, py=(mouse.y/H-0.5)*-18*DPR;
+    var px=(mouse.x<-9000)?0:(mouse.x/W-0.5)*-18*DPR, py=(mouse.y<-9000)?0:(mouse.y/H-0.5)*-18*DPR;
     aurora.style.transform='translate('+(px+drag.x*0.32)+'px,'+(py+drag.y*0.32)+'px)';
     if(!reduce) requestAnimationFrame(draw);
   }
   window.addEventListener('resize', resize);
   resize();
-  if(reduce){
-    // static single frame (no animation loop)
-    ctx.clearRect(0,0,W,H);
-    for(var i=0;i<pts.length;i++){ var p=pts[i]; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle='rgba(0,229,255,0.45)'; ctx.fill(); }
-  } else {
-    draw();
-  }
+  if(!reduce){ draw(); }
 })();
 </script>
 </body>
