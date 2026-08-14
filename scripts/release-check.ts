@@ -42,10 +42,12 @@ const expectedPackageFiles = [
 const ignoredDirectories = new Set([
   ".git",
   ".droidseal",
+  ".venv",
   "dependencies",
   "dist",
   "node_modules",
   "verification-output",
+  "wheelhouse",
 ])
 const forbiddenExtensions = new Set([".apk", ".aab", ".jks", ".keystore", ".p12", ".pfx", ".pem", ".key"])
 const textExtensions = new Set([".ts", ".tsx", ".js", ".cjs", ".json", ".md", ".toml", ".yml", ".yaml", ".txt"])
