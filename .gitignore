@@ -32,3 +32,11 @@ dependencies/
 Thumbs.db
 .idea/
 .vscode/
+
+# PyPI 发布产物
+wheelhouse/
+*.whl
+droidseal/_bin/
+*.egg-info/
+build/
+.venv/

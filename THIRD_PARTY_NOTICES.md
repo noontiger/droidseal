@@ -1,91 +1,88 @@
-# Third-Party Software, Tools, and Services
+# Third-party software, tools, and services
 
-除非另有说明，DroidSeal 自身的源代码、文档和示例采用 MIT License。第三方软件继续受各自许可证、通知、服务条款、订阅和分发条件约束，不由 DroidSeal 重新授权。
+DroidSeal source code, documentation and examples are MIT-licensed unless a file says otherwise.
+Third-party components keep their own licenses, notices, service terms and redistribution conditions.
+DroidSeal does not relicense those components.
 
-## JavaScript 与 TypeScript 依赖
+## Exact executable inventory
 
-### 二进制中实际嵌入的应用组件
+The release build does not rely on a manually maintained list of runtime JavaScript packages.
+`Bun.build({ metafile: true })` records every input that enters the executable. The build then:
 
-| 组件 | 锁定版本 | 许可证 | 上游 |
+1. maps each `node_modules` input to its exact package and version;
+2. adds explicitly embedded native runtime packages, including `@opentui/core-win32-x64`;
+3. requires a declared license and a package LICENSE/COPYING/NOTICE file;
+4. copies those license files into `dist/third-party/licenses/`;
+5. generates `bundle-components.json`, `bundle-sbom.cdx.json` and
+   `THIRD_PARTY_NOTICES.generated.md`;
+6. records every compliance artifact's size and SHA-256 in `droidseal-build.json`.
+
+`bun run release:check` fails if a package lacks license evidence, if the generated inventory is
+missing, or if any generated artifact no longer matches its recorded hash. Build-only tools that do
+not enter the executable remain documented here and in the repository `licenses/` directory.
+
+## Direct application and build components
+
+| Component | Pinned version | Role | License |
 | --- | ---: | --- | --- |
-| Bun runtime | 1.3.14 | Bun 本体 MIT；静态链接组件另见 Bun 官方清单 | https://github.com/oven-sh/bun |
-| `@opentui/core` / Windows x64 native core | 0.4.5 | MIT | https://github.com/anomalyco/opentui |
-| `@opentui/solid` | 0.4.5 | MIT | https://github.com/anomalyco/opentui |
-| `solid-js` | 1.9.12 | MIT | https://github.com/solidjs/solid |
-| `terser`（运行时 Web JS 处理部分） | 5.49.0 | BSD-2-Clause | https://github.com/terser/terser |
+| Bun | 1.3.14 | bundler, compiler and embedded runtime | Bun is MIT; linked libraries are listed by Bun; JavaScriptCore/WebKit is LGPL-2.0-only; Bun-pinned TinyCC is LGPL-2.1-only |
+| `@opentui/core` | 0.4.5 | terminal UI runtime and Windows native core | MIT |
+| `@opentui/solid` | 0.4.5 | Solid renderer and build plugin | MIT |
+| `solid-js` | 1.9.12 | reactive UI runtime | MIT |
+| `terser` | 5.49.0 | release minifier and Web asset processing | BSD-2-Clause |
+| `@types/bun` | 1.3.14 | development type declarations | MIT |
+| TypeScript | 5.9.3 | development compiler | Apache-2.0 |
 
-### 直接开发依赖
+Pinned repository copies:
 
-| 组件 | 锁定版本 | 许可证 | 上游 |
-| --- | ---: | --- | --- |
-| `@types/bun` | 1.3.14 | MIT | https://github.com/oven-sh/bun |
-| `typescript` | 5.9.3 | Apache-2.0 | https://github.com/microsoft/TypeScript |
+- `licenses/Bun-1.3.14-LICENSE.md`
+- `licenses/Bun-LGPL-RELINKING.md`
+- `licenses/LGPL-2.0-only.txt`
+- `licenses/TinyCC-12882eee-COPYING`
+- `licenses/OpenTUI-MIT.txt`
+- `licenses/SolidJS-MIT.txt`
+- `licenses/Terser-BSD-2-Clause.txt`
 
-`bun.lock` 锁定的传递依赖还包含 MIT、Apache-2.0、BSD-2-Clause、BSD-3-Clause、ISC、BlueOak-1.0.0 和 CC-BY-4.0 许可组件。正式发布源码包或二进制前，应根据锁文件重新生成完整依赖清单，并随发行物提供适用的许可证和 NOTICE 文本。
+The generated release inventory is authoritative for code that actually enters a particular
+executable. `bun.lock` remains authoritative for the broader development dependency graph.
 
-npm 二进制包不声明 runtime npm dependencies，而是把上述实际运行代码编入 `droidseal.exe`。发行包随附：
+## Bun and LGPL review
 
-- `licenses/Bun-1.3.14-LICENSE.md`：取自 Bun `bun-v1.3.14` 官方标签，列出 JavaScriptCore/WebKit 及其他静态链接组件和相应许可；
-- `licenses/OpenTUI-MIT.txt`；
-- `licenses/SolidJS-MIT.txt`；
-- `licenses/Terser-BSD-2-Clause.txt`。
+Bun 1.3.14's official license states that Bun itself is MIT-licensed and statically links
+JavaScriptCore/WebKit under LGPL-2. It also states that users must have an opportunity to modify and
+relink that library. The release material therefore pins:
 
-Bun 官方许可说明明确指出其静态链接 LGPL-2 的 JavaScriptCore/WebKit，并说明修改、重新链接所需材料。DroidSeal 的 MIT 源码、构建脚本和精确 Bun 版本保持在公开仓库；发布者仍应在正式分发前复核 LGPL 重新链接材料及 Bun 清单中各静态库的通知义务。本文件记录工程边界，不构成法律意见。
+- Bun tag `bun-v1.3.14`;
+- WebKit commit `5488984d20e0dbfe4be2c3ba8fb18eb81a5e0e8b`, taken from that Bun tag's build scripts;
+- the standard LGPL-2.0-only text;
+- TinyCC commit `12882eee073cfe5c7621bcfadf679e1372d4537b`, taken from that Bun tag's build scripts, and its LGPL-2.1 license text;
+- public DroidSeal source, lockfile and executable build script;
+- a step-by-step modified-runtime relink procedure.
 
-## 项目治理文档
+See `licenses/Bun-LGPL-RELINKING.md`. A distributor must keep the exact DroidSeal, Bun, WebKit and TinyCC
+sources available for as long as it offers the binary. If upstream URLs are not sufficient for its
+channel or jurisdiction, it must mirror the exact source revisions next to the release. Changing Bun,
+WebKit, TinyCC or the executable build method requires a new review.
 
-`CODE_OF_CONDUCT.md` 改编自 Contributor Covenant 2.1，按照 Creative Commons Attribution 4.0 International License 提供。其归属链接已保留在该文件中。
+This is an engineering compliance review, not a legal certification. A distributor that requires a
+formal opinion must obtain one for its jurisdiction and distribution channel.
 
-## Android 开发工具
+## Optional external Android tools
 
-DroidSeal 可能发现、下载、安装或调用第三方提供的工具，包括：
+DroidSeal may discover, download, install or invoke Bun, a JDK and `keytool`, Android SDK command-line
+tools and Build Tools, `aapt`, `aapt2`, `zipalign`, `apksigner`, Gradle and a target project's Gradle
+Wrapper. These tools are not covered by DroidSeal's MIT license.
 
-- Bun runtime；
-- Java Development Kit 实现和 `keytool`；
-- Android SDK Command-line Tools 与 Build Tools；
-- `aapt`、`aapt2`、`zipalign` 和 `apksigner`；
-- Gradle 和项目自带 Gradle Wrapper。
+The repository and npm package do not redistribute a JDK or Android SDK. `bundle-toolchain.ts` lets a
+user fetch and verify tools on its own authorized machine. Eclipse Temurin is GPLv2 with Classpath
+Exception. Android SDK components remain subject to Google's terms and normally must not be
+redistributed as part of DroidSeal.
 
-这些工具不采用 DroidSeal 的 MIT License。通过 DroidSeal 下载、定位、安装或调用组件，不会授予超出组件发布方许可证和条款的任何权利。
+The generated local `dependencies/` and `droidseal-bundle/` directories are ignored and are not part
+of the public source repository or npm package.
 
-## 自动下载的工具
+## Community documents and trademarks
 
-DroidSeal 提供下载选项时会：
-
-- 标明发布方和组件；
-- 使用官方或明确受信任的来源；
-- 使用发布方提供的 SHA-256 或其他记录在案的完整性机制验证下载；
-- 在需要时显示适用许可说明；
-- 不静默修改系统 `PATH`；
-- 仅在用户明确确认后安装。
-
-用户仍需判断组件许可证和条款是否适用于其组织和用途。Android SDK 组件通过官方 `sdkmanager` 安装，相关许可由组件发布方管理。
-
-## 离线工具链包（`scripts/bundle-toolchain.ts`）
-
-本机工作副本还可运行 `bun run bundle:local`，将已安装的 Bun、Node.js/npm/npx、项目 npm 依赖、JDK 与 Android Build Tools 集中复制到被忽略的 `dependencies/` 目录；`droidseal.cmd` 只在本机使用该目录，不把其中二进制纳入开源发布物。
-
-为支持无网络环境运行，DroidSeal 提供 `bun run bundle:toolchain` 脚本，在**用户自己的联网机器**上预取并校验 Eclipse Temurin 21 与 Android SDK Build Tools，生成便携目录 `droidseal-bundle/`（含 `bundle-manifest.json` 的 SHA-256 清单）。使用者将其复制到 `~/.droidseal/bundle` 或用 `DROIDSEAL_BUNDLE_DIR` 指向它，DroidSeal 即可离线解析这些工具。
-
-关于许可与再分发：
-
-- **Eclipse Temurin（OpenJDK）** 采用 GPLv2 with Classpath Exception，其二进制由 Adoptium 官方源下载并按发布方 SHA-256 校验。
-- **Android SDK Build Tools** 受 Android SDK Terms and Conditions 约束，**通常禁止再分发**。因此该脚本只在运行者本机通过官方 `sdkmanager` 安装（视为运行者已接受 Google 许可），DroidSeal **不随仓库或 npm 包分发任何 JDK 或 Android SDK 二进制**（`droidseal-bundle/` 已在 `.gitignore` 排除）。
-- 生成的离线包仅供运行者在其被授权的机器/组织内部使用；对外再分发该包须自行确认符合上述上游条款。
-
-## 第三方商标
-
-Android、Java、Gradle、Bun、OpenTUI、Solid 及其他第三方产品名称和商标归各自权利人所有。它们出现在 DroidSeal 文档中仅表示技术引用、兼容或互操作，不表示背书或赞助。
-
-## 正式发行物
-
-正式发行物应由 CI 生成并附带：
-
-- 打包依赖及版本清单；
-- SPDX 许可证标识和必需许可证文本；
-- SBOM；
-- SHA-256 校验和；
-- 构建来源证明或 artifact attestation；
-- 无法识别许可证的依赖告警。
-
-本文件是总体政策，不替代每个正式版本对应的依赖许可证清单。
+`CODE_OF_CONDUCT.md` is adapted from Contributor Covenant 2.1 under CC BY 4.0. Android, Java, Gradle,
+Bun, OpenTUI, Solid and other third-party names and marks belong to their respective owners. Their
+appearance only describes compatibility or technical use and does not imply endorsement.

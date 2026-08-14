@@ -61,17 +61,28 @@ DEX 加密、VMP、类抽取、自定义类加载器等不是通用 ZIP 后处�
 
 ## 快速开始
 
-DroidSeal 尚未正式发布到 npm。当前可以从源码运行，要求 Bun 1.3 或更高版本：
+通过 npm 全局安装（Windows x64）：
 
 ```powershell
-cd C:\Users\User\DroidSeal
-bun install --frozen-lockfile
-bun run dev
+npm install --global droidseal
+droidseal
 ```
 
 非交互环境诊断和命令帮助：
 
 ```powershell
+droidseal doctor
+droidseal --help
+```
+
+### 从源码运行（面向开发者）
+
+要求 Bun 1.3 或更高版本：
+
+```powershell
+cd C:\Users\User\DroidSeal
+bun install --frozen-lockfile
+bun run dev
 bun src/index.tsx doctor
 bun src/index.tsx --help
 ```
@@ -593,6 +604,8 @@ ZIP 容器、AXML、ARSC、DEX/ELF 审计及流水线没有引入 `apktool`、`a
 | `brace-expansion` | `2.1.3` | 传递依赖 override | 安全固定传递依赖版本；DroidSeal 源码不直接导入。 |
 
 Bun API 与 `node:fs`、`node:path`、`node:crypto`、`node:zlib`、`node:os` 属于构建后嵌入 exe 的运行时能力，不是 npm 第三方包。OpenTUI、Solid 和 Terser 均只在源码开发/构建阶段安装；它们的实际运行代码会进入 `dist/droidseal.exe`，因此发布后的 npm 安装没有 runtime dependencies，但这些第三方实现仍属于产品运行边界。
+
+正式构建会使用 Bun metafile 逐一反查实际进入可执行文件的 npm 模块，并在 `dist/third-party/` 生成精确组件清单、CycloneDX SBOM、第三方通知和逐包许可证原文；`droidseal-build.json` 记录这些材料的大小与 SHA-256。Bun 运行时固定为 `1.3.14`，其 JavaScriptCore/WebKit LGPL-2.0-only 与 TinyCC LGPL-2.1-only 对应源码、固定提交和重新链接步骤见 [Bun LGPL 重新链接说明](licenses/Bun-LGPL-RELINKING.md)。发布检查会在 Bun 版本、官方许可证原文、清单或任一许可证证据漂移时失败。
 
 DroidSeal 还会按所选流程调用外部工具：
 

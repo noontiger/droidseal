@@ -3,6 +3,7 @@ import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises
 import path from "node:path"
 import solidPlugin from "@opentui/solid/bun-plugin"
 import { minify } from "terser"
+import { generateBundleCompliance } from "./bundle-compliance"
 
 const projectRoot = path.resolve(import.meta.dir, "..")
 const distDirectory = path.join(projectRoot, "dist")
@@ -40,6 +41,7 @@ try {
     naming: "droidseal-unminified.js",
     sourcemap: "none",
     minify: false,
+    metafile: true,
     external: ["@opentui/core-*"],
     plugins: [solidPlugin],
   })
@@ -136,6 +138,23 @@ try {
     await writeFile(target, asset.bytes)
   }
 
+  if (!result.metafile) throw new Error("Bun build did not return the required metafile")
+  const packageJson = JSON.parse(await readFile(path.join(projectRoot, "package.json"), "utf8")) as {
+    packageManager?: string
+  }
+  const expectedBunVersion = packageJson.packageManager?.match(/^bun@(.+)$/)?.[1]
+  if (!expectedBunVersion || Bun.version !== expectedBunVersion) {
+    throw new Error(`Bun version mismatch: expected ${expectedBunVersion ?? "bun@<missing>"}, received ${Bun.version}`)
+  }
+  const compliance = await generateBundleCompliance({
+    projectRoot,
+    distDirectory,
+    metafile: result.metafile,
+    bunVersion: Bun.version,
+    runtimePackages: ["@opentui/core-win32-x64"],
+    runtimeAssets: assets.map((asset) => asset.relativePath),
+  })
+
   const terserPackage = JSON.parse(
     await readFile(path.join(projectRoot, "node_modules", "terser", "package.json"), "utf8"),
   ) as { version?: string }
@@ -165,6 +184,12 @@ try {
       bytes: asset.bytes.byteLength,
       sha256: createHash("sha256").update(asset.bytes).digest("hex"),
     })),
+    compliance: {
+      generator: "scripts/bundle-compliance.ts",
+      bundlePackageCount: compliance.packages.length,
+      bunVersion: Bun.version,
+      artifacts: compliance.artifacts,
+    },
   }
   await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8")
 

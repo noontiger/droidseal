@@ -15,6 +15,9 @@ const requiredFiles = [
   "CHANGELOG.md",
   "droidseal-logo.png",
   "licenses/Bun-1.3.14-LICENSE.md",
+  "licenses/Bun-LGPL-RELINKING.md",
+  "licenses/LGPL-2.0-only.txt",
+  "licenses/TinyCC-12882eee-COPYING",
   "licenses/OpenTUI-MIT.txt",
   "licenses/SolidJS-MIT.txt",
   "licenses/Terser-BSD-2-Clause.txt",
@@ -81,6 +84,7 @@ const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "
   engines?: Record<string, string>
   os?: string[]
   cpu?: string[]
+  packageManager?: string
 }
 const repositoryUrl = typeof packageJson.repository === "string"
   ? packageJson.repository
@@ -100,6 +104,19 @@ if (JSON.stringify(packageJson.os) !== JSON.stringify(["win32"]) || JSON.stringi
 }
 if (packageJson.dependencies && Object.keys(packageJson.dependencies).length > 0) {
   findings.push("单文件二进制 npm 包不应安装运行时 npm 依赖")
+}
+if (packageJson.packageManager !== "bun@1.3.14") findings.push("packageManager must stay pinned to bun@1.3.14")
+
+const pinnedLicenseHashes = new Map([
+  ["licenses/Bun-1.3.14-LICENSE.md", "2c6160ec8fb853f7e8f97d9b249e756c9b0ac44860a68b6bf4f1b0bcbc5c3741"],
+  ["licenses/LGPL-2.0-only.txt", "86dc99d7e5060915ab1dfc1378b7dd351c62088bfa74067e8aa1868c6fdba7d8"],
+  ["licenses/TinyCC-12882eee-COPYING", "88f9284c6e8c212181e4c7f9886bb24a960a89ba31e801d12bc4e42b6e8aaab5"],
+])
+for (const [relative, expectedHash] of pinnedLicenseHashes) {
+  const file = path.join(root, relative)
+  if (!(await exists(file))) continue
+  const actualHash = createHash("sha256").update(await readFile(file)).digest("hex")
+  if (actualHash !== expectedHash) findings.push(`Pinned license text hash mismatch: ${relative}`)
 }
 for (const [name, version] of Object.entries({
   "@opentui/core": "0.4.5",
@@ -157,6 +174,7 @@ for (const file of distRelativePaths.filter((entry) => entry.endsWith(".js"))) {
 }
 
 let expectedAssetPaths: string[] = []
+let expectedCompliancePaths: string[] = []
 if (!(await exists(buildMetadataPath))) {
   findings.push("缺少 dist/droidseal-build.json 构建元数据")
 } else if (await exists(executablePath)) {
@@ -177,6 +195,12 @@ if (!(await exists(buildMetadataPath))) {
     }
     embeddedNative?: string[]
     assets?: Array<{ path?: string; bytes?: number; sha256?: string }>
+    compliance?: {
+      generator?: string
+      bundlePackageCount?: number
+      bunVersion?: string
+      artifacts?: Array<{ path?: string; bytes?: number; sha256?: string }>
+    }
   }
   const actualHash = createHash("sha256").update(executable).digest("hex")
   if (executable[0] !== 0x4d || executable[1] !== 0x5a) findings.push("dist/droidseal.exe 不是有效的 Windows PE 文件")
@@ -203,6 +227,12 @@ if (!(await exists(buildMetadataPath))) {
   if (!metadata.embeddedNative?.includes("@opentui/core-win32-x64/opentui.dll")) {
     findings.push("构建元数据未声明嵌入 OpenTUI Windows x64 原生库")
   }
+  if (
+    metadata.compliance?.generator !== "scripts/bundle-compliance.ts" ||
+    metadata.compliance?.bunVersion !== "1.3.14" ||
+    typeof metadata.compliance?.bundlePackageCount !== "number" ||
+    metadata.compliance.bundlePackageCount < 1
+  ) findings.push("Bundle compliance metadata is missing or not pinned to Bun 1.3.14")
 
   const executableText = executable.toString("latin1")
   for (const identifier of ["effectiveFindingConfidence", "auditSigningMaterials", "DroidSealPipeline"]) {
@@ -212,8 +242,13 @@ if (!(await exists(buildMetadataPath))) {
 
   const expectedAssets = metadata.assets ?? []
   expectedAssetPaths = expectedAssets.map((asset) => asset.path).filter((value): value is string => Boolean(value)).sort()
+  const complianceArtifacts = metadata.compliance?.artifacts ?? []
+  expectedCompliancePaths = complianceArtifacts
+    .map((artifact) => artifact.path)
+    .filter((value): value is string => Boolean(value))
+    .sort()
   const actualAssetPaths = distRelativePaths.filter((relative) => relative !== "droidseal.exe" && relative !== "droidseal-build.json")
-  if (JSON.stringify(expectedAssetPaths) !== JSON.stringify(actualAssetPaths)) {
+  if (JSON.stringify([...expectedAssetPaths, ...expectedCompliancePaths].sort()) !== JSON.stringify(actualAssetPaths)) {
     findings.push("dist 伴随资源与构建元数据清单不一致")
   }
   for (const asset of expectedAssets) {
@@ -227,6 +262,49 @@ if (!(await exists(buildMetadataPath))) {
     const bytes = await readFile(target)
     if (asset.bytes !== bytes.byteLength || asset.sha256 !== createHash("sha256").update(bytes).digest("hex")) {
       findings.push(`dist 构建资源哈希不一致：${asset.path}`)
+    }
+  }
+  for (const artifact of complianceArtifacts) {
+    if (!artifact.path) continue
+    const target = path.resolve(distDirectory, artifact.path)
+    const relative = path.relative(distDirectory, target)
+    if (relative.startsWith("..") || path.isAbsolute(relative) || !(await exists(target))) {
+      findings.push(`Invalid bundle compliance artifact path: ${artifact.path}`)
+      continue
+    }
+    const bytes = await readFile(target)
+    if (artifact.bytes !== bytes.byteLength || artifact.sha256 !== createHash("sha256").update(bytes).digest("hex")) {
+      findings.push(`Bundle compliance artifact hash mismatch: ${artifact.path}`)
+    }
+  }
+
+  const inventoryPath = path.join(distDirectory, "third-party", "bundle-components.json")
+  if (!(await exists(inventoryPath))) findings.push("Missing generated exact bundle component inventory")
+  else {
+    const inventory = JSON.parse(await readFile(inventoryPath, "utf8")) as {
+      runtime?: {
+        version?: string
+        license?: string
+        webkitCommit?: string
+        tinyccCommit?: string
+        relinkingInstructions?: string
+      }
+      packages?: Array<{ name?: string; version?: string; license?: string; copiedLicenseFiles?: unknown[] }>
+    }
+    if (
+      inventory.runtime?.version !== "1.3.14" ||
+      inventory.runtime?.license !== "MIT AND LGPL-2.0-only AND LGPL-2.1-only AND LicenseRef-Bun-Linked-Libraries" ||
+      inventory.runtime?.webkitCommit !== "5488984d20e0dbfe4be2c3ba8fb18eb81a5e0e8b" ||
+      inventory.runtime?.tinyccCommit !== "12882eee073cfe5c7621bcfadf679e1372d4537b" ||
+      inventory.runtime?.relinkingInstructions !== "licenses/Bun-LGPL-RELINKING.md"
+    ) findings.push("Generated bundle inventory has incorrect Bun LGPL component identity")
+    if (inventory.packages?.length !== metadata.compliance?.bundlePackageCount) {
+      findings.push("Generated bundle package count does not match build metadata")
+    }
+    for (const item of inventory.packages ?? []) {
+      if (!item.name || !item.version || !item.license || !item.copiedLicenseFiles?.length) {
+        findings.push("Generated bundle inventory contains a package without complete license evidence")
+      }
     }
   }
 }
@@ -281,6 +359,9 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
         "TRADEMARKS.md",
         "THIRD_PARTY_NOTICES.md",
         "licenses/Bun-1.3.14-LICENSE.md",
+        "licenses/Bun-LGPL-RELINKING.md",
+        "licenses/LGPL-2.0-only.txt",
+        "licenses/TinyCC-12882eee-COPYING",
         "licenses/OpenTUI-MIT.txt",
         "licenses/SolidJS-MIT.txt",
         "licenses/Terser-BSD-2-Clause.txt",
@@ -288,6 +369,7 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
         "dist/droidseal.exe",
         "dist/droidseal-build.json",
         ...expectedAssetPaths.map((asset) => `dist/${asset}`),
+        ...expectedCompliancePaths.map((artifact) => `dist/${artifact}`),
       ])
       for (const packed of packedPaths) {
         if (!allowedPaths.has(packed)) findings.push(`npm tarball 出现白名单外文件：${packed}`)

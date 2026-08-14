@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "droidseal"
+# 版本号需与 package.json 保持一致
+version = "0.1.0"
+description = "A simple, local-first Android release security pipeline (Windows x64 binary)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+keywords = [
+    "android",
+    "apk",
+    "apk-security",
+    "apk-signing",
+    "apksigner",
+    "zipalign",
+    "release-engineering",
+    "android-security",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Build Tools",
+]
+urls = { Homepage = "https://github.com/noontiger/droidseal#readme", Issues = "https://github.com/noontiger/droidseal/issues" }
+
+[project.scripts]
+droidseal = "droidseal:main"
+
+[tool.setuptools]
+packages = ["droidseal"]
+
+[tool.setuptools.package-data]
+droidseal = [
+    "_bin/*",
+    "_bin/third-party/*",
+    "_bin/third-party/licenses/*",
+    "_bin/third-party/licenses/*/*",
+]
