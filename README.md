@@ -5,6 +5,7 @@
 **A simple, local-first Android release security pipeline.**
 
 **一个简单易用、本地优先的 Android 安全发布流水线。**
+<img width="1920" height="1020" alt="screenshot" src="https://github.com/user-attachments/assets/6a6033c5-a82b-4fb4-bcfe-dfbfa9958b5b" />
 
 ```text
 ██████╗ ██████╗  ██████╗ ██╗██████╗ ███████╗███████╗ █████╗ ██╗
