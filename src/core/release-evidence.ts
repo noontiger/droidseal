@@ -148,8 +148,10 @@ async function safeRegularFile(root: string, target: string): Promise<boolean> {
   try {
     const info = await lstat(target)
     if (!info.isFile()) return false
-    const resolved = await realpath(target)
-    return isWithin(root, resolved)
+    // 两侧都先 realpath 规范化再比较,避免 Windows 上短文件名/大小写
+    // 等表示差异导致 isWithin 误判(如 CI 的 runneradmin 用户)。
+    const [resolvedRoot, resolved] = await Promise.all([realpath(root), realpath(target)])
+    return isWithin(resolvedRoot, resolved)
   } catch {
     return false
   }
