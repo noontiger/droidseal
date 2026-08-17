@@ -90,7 +90,9 @@ describe("wizard signing flow", () => {
   })
 
   test("rejects a project release label mistaken for a Gradle task", () => {
-    const draft = baseDraft()
+    // 输入路径用平台无关的相对路径：path.basename(path.resolve(...)) 在
+    // Windows 与 Linux CI 上都解析为 "app"，保证 "app-release" 稳定触发拒绝逻辑。
+    const draft = { ...baseDraft(), inputPath: path.join("work", "app") }
     const question = questionsFor(draft).find((q) => q.id === "gradleTask")!
 
     expect(() => applyAnswer(draft, question, "app-release")).toThrow("不是 Gradle 任务")
