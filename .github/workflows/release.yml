@@ -32,10 +32,16 @@ jobs:
           @"
           ## DroidSeal $version(Windows x64)
 
-          - 解压 zip 后直接运行 `droidseal.exe`(无需安装)
-          - 其他安装方式:`npm install --global droidseal`;或从源码构建(需 Bun 1.3+,步骤见仓库 README「快速开始」)
-          - 构建 commit:`${{ github.sha }}`
-          - SHA-256:`$hash`
+          - 解压 zip 后直接运行 droidseal.exe(无需安装)
+          - npm 安装:npm install --global droidseal
+          - pip 安装(pip install droidseal)即将上线
+          - 从源码构建(需 Bun 1.3+):
+            git clone https://github.com/noontiger/droidseal
+            cd droidseal
+            bun install --frozen-lockfile
+            bun run dev
+          - 构建 commit:${{ github.sha }}
+          - SHA-256:$hash
           "@ | Out-File -FilePath release_body.md -Encoding utf8
       - uses: softprops/action-gh-release@v2
         with:
