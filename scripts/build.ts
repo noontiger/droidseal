@@ -7,8 +7,10 @@ import { generateBundleCompliance } from "./bundle-compliance"
 
 const projectRoot = path.resolve(import.meta.dir, "..")
 const distDirectory = path.join(projectRoot, "dist")
-const platform = process.platform
-const arch = process.arch
+// DROIDSEAL_BUILD_PLATFORM/DROIDSEAL_BUILD_ARCH 允许在非目标平台主机上交叉构建
+//（例如在 Windows 上构建 Linux 二进制时，需确保目标平台的原生依赖已安装）。
+const platform = process.env.DROIDSEAL_BUILD_PLATFORM ?? process.platform
+const arch = process.env.DROIDSEAL_BUILD_ARCH ?? process.arch
 const isWindows = platform === "win32"
 const target = isWindows ? "windows-x64" : "linux-x64"
 const executableName = isWindows ? "droidseal.exe" : "droidseal"
