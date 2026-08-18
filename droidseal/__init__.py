@@ -1,6 +1,6 @@
-"""DroidSeal — Python 启动器（仅封装 Windows x64 原生二进制）。
+"""DroidSeal — Python 启动器（仅封装 Windows x64 / Linux x64 原生二进制）。
 
-业务实现位于编译后的 `_bin/droidseal.exe` 中；本模块只负责校验
+业务实现位于编译后的 `_bin/` 目录下的平台二进制中；本模块只负责校验
 SHA-256、设置 OpenTUI 资源目录并透传命令行参数，逻辑与
 `bin/droidseal.cjs` 一一对应。
 """
@@ -25,16 +25,21 @@ def _fail(message: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
 
-    if sys.platform != "win32" or sys.maxsize <= 2**32:
+    is_windows = sys.platform == "win32"
+    if sys.platform not in ("win32", "linux") or sys.maxsize <= 2**32:
         arch = "x86" if sys.maxsize <= 2**32 else "x64"
-        return _fail(f"当前 PyPI 二进制包仅支持 Windows x64，检测到 {sys.platform}-{arch}。")
+        return _fail(f"当前 PyPI 二进制包支持 Windows x64 / Linux x64，检测到 {sys.platform}-{arch}。")
+
+    executable_name = "droidseal.exe" if is_windows else "droidseal"
+    metadata_name = "droidseal-build.json" if is_windows else "droidseal-build.linux.json"
+    expected_target = "windows-x64" if is_windows else "linux-x64"
 
     bin_dir = Path(__file__).resolve().parent / "_bin"
-    executable = bin_dir / "droidseal.exe"
-    metadata_path = bin_dir / "droidseal-build.json"
+    executable = bin_dir / executable_name
+    metadata_path = bin_dir / metadata_name
 
     if not executable.is_file() or not metadata_path.is_file():
-        return _fail("安装不完整：缺少 droidseal.exe 或构建元数据，请重新安装 pip 包。")
+        return _fail(f"安装不完整：缺少 {executable_name} 或构建元数据，请重新安装 pip 包。")
 
     try:
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -45,8 +50,8 @@ def main(argv: list[str] | None = None) -> int:
     sha256 = artifact.get("sha256")
     if (
         metadata.get("schemaVersion") != 2
-        or artifact.get("path") != "droidseal.exe"
-        or artifact.get("target") != "windows-x64"
+        or artifact.get("path") != executable_name
+        or artifact.get("target") != expected_target
         or not isinstance(sha256, str)
         or not (len(sha256) == 64 and all(c in "0123456789abcdef" for c in sha256))
     ):

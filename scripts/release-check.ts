@@ -101,8 +101,11 @@ if (JSON.stringify(packageJson.files) !== JSON.stringify(expectedPackageFiles)) 
   findings.push("npm files 必须使用最小二进制发布白名单，禁止包含源码、脚本、路线图和内部文档")
 }
 if (packageJson.engines?.node !== ">=18") findings.push("npm 启动校验器要求 Node.js >=18")
-if (JSON.stringify(packageJson.os) !== JSON.stringify(["win32"]) || JSON.stringify(packageJson.cpu) !== JSON.stringify(["x64"])) {
-  findings.push("当前 npm 二进制包必须显式限制为 Windows x64")
+if (
+  JSON.stringify(packageJson.os) !== JSON.stringify(["win32", "linux"]) ||
+  JSON.stringify(packageJson.cpu) !== JSON.stringify(["x64"])
+) {
+  findings.push("当前 npm 二进制包必须显式限制为 Windows x64 / Linux x64")
 }
 if (packageJson.dependencies && Object.keys(packageJson.dependencies).length > 0) {
   findings.push("单文件二进制 npm 包不应安装运行时 npm 依赖")
@@ -162,9 +165,13 @@ else {
 }
 
 const distDirectory = path.join(root, "dist")
-const executablePath = path.join(distDirectory, "droidseal.exe")
-const buildMetadataPath = path.join(distDirectory, "droidseal-build.json")
-if (!(await exists(executablePath))) findings.push("缺少发布二进制：dist/droidseal.exe")
+const releaseIsWindows = process.platform === "win32"
+const releaseExecutableName = releaseIsWindows ? "droidseal.exe" : "droidseal"
+const releaseMetadataName = releaseIsWindows ? "droidseal-build.json" : "droidseal-build.linux.json"
+const releaseTarget = releaseIsWindows ? "windows-x64" : "linux-x64"
+const executablePath = path.join(distDirectory, releaseExecutableName)
+const buildMetadataPath = path.join(distDirectory, releaseMetadataName)
+if (!(await exists(executablePath))) findings.push(`缺少发布二进制：dist/${releaseExecutableName}`)
 const distFiles = await exists(distDirectory) ? await walk(distDirectory) : []
 const distRelativePaths = distFiles
   .map((file) => path.relative(distDirectory, file).replaceAll("\\", "/"))
@@ -205,11 +212,15 @@ if (!(await exists(buildMetadataPath))) {
     }
   }
   const actualHash = createHash("sha256").update(executable).digest("hex")
-  if (executable[0] !== 0x4d || executable[1] !== 0x5a) findings.push("dist/droidseal.exe 不是有效的 Windows PE 文件")
+  const isPE = executable[0] === 0x4d && executable[1] === 0x5a
+  const isELF = executable[0] === 0x7f && executable[1] === 0x45 && executable[2] === 0x4c && executable[3] === 0x46
+  if (!(releaseIsWindows ? isPE : isELF)) {
+    findings.push(`dist/${releaseExecutableName} 不是有效的${releaseIsWindows ? "Windows PE" : "Linux ELF"}文件`)
+  }
   if (
     metadata.schemaVersion !== 2 ||
-    metadata.artifact?.path !== "droidseal.exe" ||
-    metadata.artifact?.target !== "windows-x64" ||
+    metadata.artifact?.path !== releaseExecutableName ||
+    metadata.artifact?.target !== releaseTarget ||
     metadata.artifact?.format !== "bun-single-file-executable" ||
     metadata.artifact?.bytes !== executable.byteLength ||
     metadata.artifact?.sha256 !== actualHash
@@ -368,8 +379,10 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
         "licenses/SolidJS-MIT.txt",
         "licenses/Terser-BSD-2-Clause.txt",
         "bin/droidseal.cjs",
-        "dist/droidseal.exe",
-        "dist/droidseal-build.json",
+        ...distRelativePaths.filter((p) => p === "droidseal.exe" || p === "droidseal").map((p) => `dist/${p}`),
+        ...distRelativePaths
+          .filter((p) => p === "droidseal-build.json" || p === "droidseal-build.linux.json")
+          .map((p) => `dist/${p}`),
         ...expectedAssetPaths.map((asset) => `dist/${asset}`),
         ...expectedCompliancePaths.map((artifact) => `dist/${artifact}`),
       ])

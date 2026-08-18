@@ -40,3 +40,7 @@ droidseal/_bin/
 *.egg-info/
 build/
 .venv/
+
+# Python
+__pycache__/
+*.pyc

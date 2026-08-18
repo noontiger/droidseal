@@ -22,18 +22,24 @@ function sha256(file) {
 }
 
 async function main() {
-  if (process.platform !== "win32" || process.arch !== "x64") {
-    fail(`当前 npm 二进制包仅支持 Windows x64，检测到 ${process.platform}-${process.arch}。`)
+  const platform = process.platform
+  const arch = process.arch
+  if ((platform !== "win32" && platform !== "linux") || arch !== "x64") {
+    fail(`当前 npm 二进制包支持 Windows x64 / Linux x64，检测到 ${platform}-${arch}。`)
     return
   }
+  const isWindows = platform === "win32"
+  const executableName = isWindows ? "droidseal.exe" : "droidseal"
+  const metadataName = isWindows ? "droidseal-build.json" : "droidseal-build.linux.json"
+  const expectedTarget = isWindows ? "windows-x64" : "linux-x64"
 
   const packageRoot = path.resolve(__dirname, "..")
   const distDirectory = path.join(packageRoot, "dist")
-  const executable = path.join(distDirectory, "droidseal.exe")
-  const metadataPath = path.join(distDirectory, "droidseal-build.json")
+  const executable = path.join(distDirectory, executableName)
+  const metadataPath = path.join(distDirectory, metadataName)
 
   if (!existsSync(executable) || !existsSync(metadataPath)) {
-    fail("安装不完整：缺少 droidseal.exe 或构建元数据，请重新安装 npm 包。")
+    fail(`安装不完整：缺少 ${executableName} 或构建元数据，请重新安装 npm 包。`)
     return
   }
 
@@ -47,8 +53,8 @@ async function main() {
 
   if (
     metadata?.schemaVersion !== 2 ||
-    metadata?.artifact?.path !== "droidseal.exe" ||
-    metadata?.artifact?.target !== "windows-x64" ||
+    metadata?.artifact?.path !== executableName ||
+    metadata?.artifact?.target !== expectedTarget ||
     !/^[a-f0-9]{64}$/.test(metadata?.artifact?.sha256 ?? "")
   ) {
     fail("构建元数据格式无效，拒绝启动未经确认的二进制文件。")

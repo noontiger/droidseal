@@ -30,7 +30,7 @@ describe("release bundle hardening", () => {
     expect(packageJson.dependencies).toBeUndefined()
     expect(packageJson.devDependencies?.terser).toBe("5.49.0")
     expect(packageJson.engines?.node).toBe(">=18")
-    expect(packageJson.os).toEqual(["win32"])
+    expect(packageJson.os).toEqual(["win32", "linux"])
     expect(packageJson.cpu).toEqual(["x64"])
 
     expect(buildScript).toContain('sourcemap: "none"')
