@@ -43,7 +43,7 @@ DroidSeal（Android 发布封签）将 Android 发布产物的构建、审计、
 - **输入范围**：已有 APK，或能够通过 Gradle Wrapper 生成 APK 的 Android 应用项目；
 - **产物范围**：当前处理 APK，不支持 AAB，也不宣称支持 Play App Signing；
 - **交互方式**：完整处理流程使用交互式 TUI；非交互命令目前提供 `doctor`、`--help` 和 `--version`；
-- **平台状态**：当前主要在 Windows 完成实际流程验证；macOS 和 Linux 仍需持续验证终端、JDK 与 Android Build Tools 兼容性；
+- **平台状态**：Windows x64 与 Linux x64 均已支持（npm/PyPI 二进制与 GitHub Release 同时提供两平台产物，Linux 构建由 CI 持续验证）；macOS 暂不支持；
 - **终端要求**：启动 TUI 需要支持 ANSI/Unicode 的交互式等宽字体终端。
 
 ## 安全边界
@@ -61,7 +61,7 @@ DEX 加密、VMP、类抽取、自定义类加载器等不是通用 ZIP 后处�
 
 ## 快速开始
 
-通过 npm 全局安装（Windows x64）：
+通过 npm 全局安装（Windows x64 / Linux x64）：
 
 ```powershell
 npm install --global droidseal
@@ -87,9 +87,9 @@ bun src/index.tsx doctor
 bun src/index.tsx --help
 ```
 
-### npm 二进制发布（Windows x64）
+### npm 二进制发布（Windows x64 / Linux x64）
 
-发布构建不会修改 `src/`：它先用 Bun bundle 和锁定的 Terser 5.49.0 做保守压缩、顶层标识符 mangle，再用 `bun --compile` 生成 `dist/droidseal.exe`。中间 JavaScript 位于临时目录并在构建结束后删除；npm tarball 的白名单不包含 `src/`、`scripts/`、`tests/`、`docs/`、技术路线、锁文件或 source map。
+发布构建不会修改 `src/`：它先用 Bun bundle 和锁定的 Terser 5.49.0 做保守压缩、顶层标识符 mangle，再用 `bun --compile` 生成当前平台的二进制（Windows 为 `dist/droidseal.exe`，Linux 为 `dist/droidseal`）。中间 JavaScript 位于临时目录并在构建结束后删除；npm tarball 的白名单不包含 `src/`、`scripts/`、`tests/`、`docs/`、技术路线、锁文件或 source map。
 
 ```powershell
 bun run build
@@ -106,7 +106,7 @@ npm install --global droidseal
 droidseal
 ```
 
-`bin/droidseal.cjs` 只负责校验 `droidseal.exe` 的 SHA-256、设置 OpenTUI 资源目录并透传参数；业务实现位于编译后的 PE 可执行文件中。OpenTUI 的 Windows x64 原生 DLL 被嵌入 exe，worker/WASM/查询文件按哈希清单随包发布，普通安装不再下载运行时 npm 依赖。`package.json` 通过 `os`/`cpu` 明确拒绝非 Windows x64 平台。
+`bin/droidseal.cjs` 只负责按当前平台校验 `droidseal.exe`（Windows）/`droidseal`（Linux）的 SHA-256、设置 OpenTUI 资源目录并透传参数；业务实现位于编译后的平台可执行文件中。OpenTUI 的原生库（Windows DLL / Linux so）被嵌入二进制，worker/WASM/查询文件按哈希清单随包发布，普通安装不再下载运行时 npm 依赖。`package.json` 通过 `os`/`cpu` 限定为 Windows x64 与 Linux x64。
 
 这能阻止从 npm 包直接取得 DroidSeal 的 TypeScript/TSX 和 source map，并显著提高静态阅读门槛，但**不能承诺源码不可逆**：客户端二进制始终可能被专业逆向，而且公开 MIT 仓库本身仍提供源码。构建没有套 UPX 等通用压缩壳，以免明显增加杀毒软件启发式误报；秘密、授权决策和高价值规则仍不应只放在客户端。
 ### 本机完整依赖目录（Windows）
