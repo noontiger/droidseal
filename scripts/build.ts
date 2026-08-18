@@ -7,9 +7,16 @@ import { generateBundleCompliance } from "./bundle-compliance"
 
 const projectRoot = path.resolve(import.meta.dir, "..")
 const distDirectory = path.join(projectRoot, "dist")
-const executableName = "droidseal.exe"
+const platform = process.platform
+const arch = process.arch
+const isWindows = platform === "win32"
+const target = isWindows ? "windows-x64" : "linux-x64"
+const executableName = isWindows ? "droidseal.exe" : "droidseal"
 const executablePath = path.join(distDirectory, executableName)
-const metadataPath = path.join(distDirectory, "droidseal-build.json")
+const buildMetadataName = isWindows ? "droidseal-build.json" : "droidseal-build.linux.json"
+const metadataPath = path.join(distDirectory, buildMetadataName)
+const runtimePackage = isWindows ? "@opentui/core-win32-x64" : "@opentui/core-linux-x64"
+const nativeLibrary = isWindows ? "opentui.dll" : "libopentui.so"
 const temporaryDirectory = await mkdtemp(path.join(projectRoot, ".droidseal-build-"))
 const compiledEntryPath = path.join(temporaryDirectory, "droidseal-compiled-entry.js")
 const temporaryExecutablePath = path.join(temporaryDirectory, executableName)
@@ -30,8 +37,8 @@ function withRuntimeAssetRoot(code: string): string {
 }
 
 try {
-  if (process.platform !== "win32" || process.arch !== "x64") {
-    throw new Error(`The npm binary release currently requires a Windows x64 build host; received ${process.platform}-${process.arch}`)
+  if ((platform !== "win32" && platform !== "linux") || arch !== "x64") {
+    throw new Error(`The binary release supports Windows x64 and Linux x64 build hosts; received ${platform}-${arch}`)
   }
 
   const result = await Bun.build({
@@ -83,6 +90,8 @@ try {
       process.execPath,
       "build",
       "--compile",
+      "--target",
+      `bun-${platform}-${arch}`,
       "--no-compile-autoload-dotenv",
       "--no-compile-autoload-bunfig",
       "--no-compile-autoload-package-json",
@@ -107,8 +116,10 @@ try {
   }
 
   const executable = new Uint8Array(await readFile(temporaryExecutablePath))
-  if (executable.byteLength < 1_000_000 || executable[0] !== 0x4d || executable[1] !== 0x5a) {
-    throw new Error("Bun compilation did not produce a valid Windows PE executable")
+  const isPE = executable[0] === 0x4d && executable[1] === 0x5a
+  const isELF = executable[0] === 0x7f && executable[1] === 0x45 && executable[2] === 0x4c && executable[3] === 0x46
+  if (executable.byteLength < 1_000_000 || !(isWindows ? isPE : isELF)) {
+    throw new Error(`Bun compilation did not produce a valid ${target} executable`)
   }
 
   const assets: Array<{ relativePath: string; bytes: Uint8Array }> = []
@@ -151,7 +162,7 @@ try {
     distDirectory,
     metafile: result.metafile,
     bunVersion: Bun.version,
-    runtimePackages: ["@opentui/core-win32-x64"],
+    runtimePackages: [runtimePackage],
     runtimeAssets: assets.map((asset) => asset.relativePath),
   })
 
@@ -162,7 +173,7 @@ try {
     schemaVersion: 2,
     artifact: {
       path: executableName,
-      target: "windows-x64",
+      target,
       format: "bun-single-file-executable",
       bytes: executable.byteLength,
       sha256: createHash("sha256").update(executable).digest("hex"),
@@ -178,7 +189,7 @@ try {
       sourceBytes: new TextEncoder().encode(bundledSource).byteLength,
       minifiedBytes: new TextEncoder().encode(compiledEntry).byteLength,
     },
-    embeddedNative: ["@opentui/core-win32-x64/opentui.dll"],
+    embeddedNative: [`${runtimePackage}/${nativeLibrary}`],
     assets: assets.map((asset) => ({
       path: asset.relativePath,
       bytes: asset.bytes.byteLength,

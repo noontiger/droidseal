@@ -36,7 +36,16 @@ jobs:
         with:
           bun-version: 1.3.14
       - run: bun install --frozen-lockfile
-      - run: bun run verify
+      - name: Verify (capture errors)
+        shell: bash
+        run: |
+          set +e
+          bun run verify > /tmp/verify.log 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            tail -30 /tmp/verify.log | while IFS= read -r line; do echo "::error::$line"; done
+            exit $code
+          fi
       - name: Package Linux x64 tar.gz
         run: |
           version="$(echo '${{ github.ref_name }}' | sed 's/^v//')"
