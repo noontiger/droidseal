@@ -51,6 +51,13 @@ def main() -> int:
     for item in dist_dir.iterdir():
         if item.name in exclude:
             continue
+        if item.name == "@opentui":
+            # 合并 dist 同时包含两平台的原生库;wheel 只带当前平台的库,避免冗余
+            keep = "core-win32-x64" if is_win else "core-linux-x64"
+            for sub in item.iterdir():
+                if sub.name == keep:
+                    shutil.copytree(sub, bin_dir / "@opentui" / sub.name)
+            continue
         if item.is_dir():
             shutil.copytree(item, bin_dir / item.name)
         else:

@@ -42,6 +42,8 @@ packages = ["droidseal"]
 [tool.setuptools.package-data]
 droidseal = [
     "_bin/*",
+    "_bin/@opentui/*",
+    "_bin/@opentui/*/*",
     "_bin/third-party/*",
     "_bin/third-party/licenses/*",
     "_bin/third-party/licenses/*/*",
