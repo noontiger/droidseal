@@ -380,7 +380,9 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
       const allowedPaths = new Set([
         "package.json",
         "README.md",
+        "README.zh-CN.md",
         "LICENSE",
+        "LICENSE.zh-CN.md",
         "NOTICE",
         "CHANGELOG.md",
         "SECURITY.md",
