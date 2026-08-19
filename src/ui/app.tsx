@@ -225,6 +225,8 @@ export function App() {
 
   // 对话框上方操作行的按钮:方向键左右循环切换焦点,Enter 激活聚焦按钮。
   const [focusedButtonIndex, setFocusedButtonIndex] = createSignal(0)
+  // 当前有效产物名(反应式):由流水线事件驱动更新,避免直接读 context 可变属性不触发渲染
+  const [currentArtifactName, setCurrentArtifactName] = createSignal<string | undefined>()
   const activeButtons = createMemo<ActiveButton[]>(() => {
     if (screen() === "wizard") {
       const question = currentQuestion()
@@ -577,6 +579,7 @@ export function App() {
       } else if (event.type === "step-progress") {
         setThinking(`processing · ${event.message}`)
       } else {
+        setCurrentArtifactName(active.context.currentArtifact ? path.basename(active.context.currentArtifact) : undefined)
         setThinking("")
         const detail = [...event.result.detail]
         if (event.result.rollbackMessage) detail.push(event.result.rollbackMessage)
@@ -590,6 +593,7 @@ export function App() {
     setScreen("pipeline")
     setCurrentStepIndex(0)
     setPipelineDone(false)
+    setCurrentArtifactName(undefined)
     addMessage("system", "流水线已创建", [
       `运行编号：${active.context.runId}`,
       "所有工具都以参数数组直接启动，不经过 shell；签名密码通过子进程环境传递并在输出中脱敏。",
@@ -1126,7 +1130,7 @@ export function App() {
             </Show>
           </scrollbox>
 
-          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1}>
+          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1} justifyContent="center" alignItems="center">
             <Show when={toolRecovery()}>
               <Show when={toolRecovery()?.plan.canAutoInstall}>
                 <Button
@@ -1319,9 +1323,7 @@ export function App() {
               <text fg={theme.textMuted}>跳过不一定是失败；已计入“已处理”。</text>
               <box height={1} />
               <text fg={theme.textMuted} wrapMode="word">
-                {pipeline()?.context.currentArtifact
-                  ? path.basename(pipeline()!.context.currentArtifact!)
-                  : "尚未生成"}
+                {currentArtifactName() ?? "尚未生成"}
               </text>
               <text fg={theme.textMuted}>失败不覆盖 · 本地处理</text>
             </box>

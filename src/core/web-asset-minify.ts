@@ -278,6 +278,11 @@ export async function minifyHybridWebAssetsInApk(
     }
     const isModule = modules.has(entry.name)
     const source = decodeUtf8(sourceBytes, entry.name)
+    if (source.trim().length === 0) {
+      // 空白脚本:无需压缩,原样保留,避免 Terser 对空输入返回空输出被误判为失败
+      transformed.set(entry.name, sourceBytes)
+      continue
+    }
     let code: string | undefined
     try {
       code = (await minify(source, {
@@ -296,8 +301,8 @@ export async function minifyHybridWebAssetsInApk(
         `${entry.name} 无法由 Terser 解析：${reason}。全部修改已回退，未写出 APK。`,
       )
     }
-    if (!code) {
-      throw webAssetError("WEB_ASSET_MINIFY_FAILED", "Web JavaScript 压缩结果为空", `${entry.name} 没有生成可用代码，未写出 APK。`)
+    if (code === undefined) {
+      throw webAssetError("WEB_ASSET_MINIFY_FAILED", "Web JavaScript 压缩失败", `${entry.name} 的 Terser 没有返回输出，未写出 APK。`)
     }
     if (/\/\/[#@]\s*sourceMappingURL\s*=/.test(code)) {
       throw webAssetError("WEB_ASSET_SOURCE_MAP_RETAINED", "Web JavaScript 仍引用 source map", `${entry.name} 的处理结果仍包含 sourceMappingURL，已停止。`)
