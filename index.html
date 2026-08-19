@@ -208,6 +208,12 @@
   .copy-row code{padding:12px 16px;color:var(--cyan)}
   .copy-row button{border:none;border-left:1px solid var(--border);background:rgba(0,229,255,0.06);color:var(--text);padding:12px 16px;cursor:none;font-family:var(--mono);font-size:13px;transition:background .2s}
   .copy-row button:hover{background:rgba(0,229,255,0.18);transform:translateY(-2px);box-shadow:0 8px 20px -6px rgba(0,229,255,0.45)}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:40px}
+  .ts-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .ts-item h3{font-size:15px;margin-bottom:6px;color:var(--text)}
+  .ts-item p{color:var(--muted);font-size:13.5px;line-height:1.6}
+  .ts-item code{color:var(--cyan);font-family:var(--mono);font-size:12.5px}
+  .ts-item a{color:var(--cyan);text-decoration:underline}
   .cta-note{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0 0 22px}
   .cta-note code{color:var(--cyan);background:rgba(0,229,255,0.06);padding:2px 6px;border-radius:5px}
 
@@ -231,10 +237,23 @@
     .sec-grid{grid-template-columns:1fr}
     .nav-links{display:none}
     .nav-toggle{display:flex}
+    .copy-row{max-width:100%}
+    .copy-row code{overflow-x:auto;white-space:nowrap}
   }
   @media (max-width:600px){
     .modes-grid,.cap-grid{grid-template-columns:1fr}
     .hero{padding-top:120px;padding-bottom:60px}
+    .wrap{padding:0 20px}
+    .hero h1{font-size:clamp(28px,8vw,40px)}
+    .hero .sub{font-size:15px}
+    .hero-cta{flex-direction:column;align-items:stretch;width:100%}
+    .hero-cta .btn{width:100%;justify-content:center}
+    .copy-row{width:100%;font-size:12px}
+    .copy-row code{flex:1;overflow-x:auto;white-space:nowrap;padding:11px 12px}
+    .terminal{margin:34px auto 0}
+    .terminal .body{padding:14px;min-height:auto;font-size:12.5px}
+    .section-pad{padding:64px 0}
+    .title{font-size:clamp(22px,6vw,30px)}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;scroll-behavior:auto}
@@ -284,7 +303,7 @@
     <!-- HERO -->
     <section class="hero wrap">
       <span class="eyebrow" data-reveal><span class="dot"></span>安卓发布封签 · v0.1.1 Alpha</span>
-      <h1 data-reveal>像聊天一样，跑完 <span class="grad">Android 发布加固</span></h1>
+      <h1 data-reveal>像聊天一样，跑完 <span class="grad">安卓发布加固</span></h1>
       <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
@@ -435,6 +454,25 @@
           <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary magnetic">GitHub Releases · Windows zip / Linux tar.gz</a>
           <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">查看 GitHub</a>
           <a href="#pipeline" class="btn btn-ghost">查看管线</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSTALL TROUBLESHOOT -->
+    <section class="section-pad wrap" id="troubleshoot">
+      <h2 class="title" data-reveal>安装遇到问题？</h2>
+      <div class="ts-grid" data-reveal>
+        <div class="ts-item">
+          <h3>SmartScreen 拦截下载的 exe</h3>
+          <p>从 GitHub Releases 下载的 droidseal.exe 未做代码签名，双击时 Windows 可能提示“已保护你的电脑”。解决方法：右键 exe → 属性 → 勾选“解除锁定” → 确定；或点击“更多信息 → 仍要运行”；也可直接在 PowerShell 中运行。</p>
+        </div>
+        <div class="ts-item">
+          <h3>TUI 需要在终端中运行</h3>
+          <p>DroidSeal 是终端程序：直接双击 droidseal.exe 会提示“需要交互式终端”并退出。请打开 PowerShell 或 cmd，进入解压目录运行 <code>.\droidseal.exe</code>，或直接双击随包附带的 <code>droidseal-gui.cmd</code> 启动器。</p>
+        </div>
+        <div class="ts-item">
+          <h3>更多说明</h3>
+          <p>完整安装、平台支持与使用方法见 <a href="https://github.com/noontiger/droidseal#readme" target="_blank" rel="noopener">GitHub README</a> 的「快速开始」与「当前状态与支持范围」。</p>
         </div>
       </div>
     </section>
