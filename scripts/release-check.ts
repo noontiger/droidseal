@@ -187,13 +187,9 @@ for (const file of distRelativePaths.filter((entry) => entry.endsWith(".js"))) {
   if (!/^parser\.worker-[a-z0-9]+\.js$/.test(file)) findings.push(`dist 出现未授权 JavaScript：${file}`)
 }
 
-// 发布包(npm tarball / PyPI wheel)携带合并后的双平台 dist:
-// 两个平台的 OpenTUI 原生库必须同时存在,否则对应平台用户的 TUI 启动会报
-// Missing OpenTUI asset。
-for (const nativePath of ["@opentui/core-win32-x64/opentui.dll", "@opentui/core-linux-x64/libopentui.so"]) {
-  if (!distRelativePaths.includes(nativePath)) {
-    findings.push(`合并 dist 缺少 ${nativePath}(OpenTUI 原生库),对应平台 TUI 无法启动`)
-  }
+// 当前平台的原生库必须存在;合并 dist(双平台元数据齐全)时另一平台原生库也须存在。
+if (!distRelativePaths.includes(`${releaseRuntimePackage}/${releaseNativeLibrary}`)) {
+  findings.push(`dist 缺少 ${releaseRuntimePackage}/${releaseNativeLibrary}(OpenTUI 原生库),对应平台 TUI 无法启动`)
 }
 
 let expectedAssetPaths: string[] = []
@@ -297,8 +293,12 @@ if (!(await exists(buildMetadataPath))) {
       .map((artifact) => artifact.path)
       .filter((value): value is string => Boolean(value))
       .sort()
-  } else {
-    findings.push(`缺少另一平台构建元数据 dist/${otherMetadataName}(合并发布应同时携带双平台元数据)`)
+    // 合并 dist:另一平台的原生库也必须存在,否则对应平台用户 TUI 无法启动
+    const otherRuntimePackage = releaseIsWindows ? "@opentui/core-linux-x64" : "@opentui/core-win32-x64"
+    const otherNativeLibrary = releaseIsWindows ? "libopentui.so" : "opentui.dll"
+    if (!distRelativePaths.includes(`${otherRuntimePackage}/${otherNativeLibrary}`)) {
+      findings.push(`合并 dist 缺少 ${otherRuntimePackage}/${otherNativeLibrary}(OpenTUI 原生库),对应平台 TUI 无法启动`)
+    }
   }
   // 排除两个平台的二进制与构建元数据文件(合并发布时 dist 同时包含两平台产物)
   const actualAssetPaths = distRelativePaths.filter(
@@ -343,9 +343,14 @@ if (!(await exists(buildMetadataPath))) {
       findings.push(`Bundle compliance artifact hash mismatch: ${artifact.path}`)
     }
   }
-  // 另一平台构建资源同样校验存在与哈希(合并 dist 必须双平台齐全)
+  // 另一平台构建资源同样校验存在与哈希(合并 dist 必须双平台齐全)。
+  // 生成式清单/声明文件在合并 dist 中只有单份(取当前平台版本),其哈希只对当前平台校验。
+  const sharedGeneratedFiles = new Set([
+    "third-party/THIRD_PARTY_NOTICES.generated.md",
+    "third-party/bundle-components.json",
+  ])
   for (const otherAsset of otherMetadataAssets) {
-    if (!otherAsset.path) continue
+    if (!otherAsset.path || sharedGeneratedFiles.has(otherAsset.path)) continue
     const target = path.resolve(distDirectory, otherAsset.path)
     const relative = path.relative(distDirectory, target)
     if (relative.startsWith("..") || path.isAbsolute(relative) || !(await exists(target))) {

@@ -1,12 +1,12 @@
 import path from "node:path"
-import { mkdir, readdir, rename, rm } from "node:fs/promises"
+import { mkdir, readFile, readdir, rename, rm, stat } from "node:fs/promises"
 import { homedir } from "node:os"
 import { sha256File } from "./apk-audit.ts"
 import { runProcess } from "./process.ts"
 import { discoverToolchain } from "./toolchain.ts"
 import type { PipelineConfig, ToolLocation, Toolchain } from "./types.ts"
 
-export type ToolInstallGroup = "jdk" | "android-build-tools"
+export type ToolInstallGroup = "jdk" | "android-build-tools" | "gradle"
 
 export interface ToolRecoveryPlan {
   missing: ToolLocation[]
@@ -117,6 +117,7 @@ export function createToolRecoveryPlan(
   if (["aapt", "zipalign", "apksigner"].some((name) => names.has(name))) {
     autoGroups.push("android-build-tools")
   }
+  if (names.has("gradle wrapper")) autoGroups.push("gradle")
 
   const manualInstructions: string[] = []
   if (autoGroups.includes("jdk")) {
@@ -131,7 +132,7 @@ export function createToolRecoveryPlan(
   }
   if (names.has("gradle wrapper")) {
     manualInstructions.push(
-      "Gradle Wrapper：请从项目版本库恢复 gradlew、gradlew.bat 与 gradle/wrapper，或使用与项目 AGP/Gradle 版本匹配的 Gradle 执行 `gradle wrapper`；DroidSeal 不会猜测并生成不兼容的 Wrapper。",
+      "Gradle Wrapper：可自动下载 Gradle 并生成项目 Wrapper（优先使用 gradle-wrapper.properties 指定的版本）；也可从项目版本库恢复 gradlew、gradlew.bat 与 gradle/wrapper。",
     )
   }
   if (missing.length > 0) {
@@ -388,6 +389,89 @@ export async function installAndroidBuildTools(
   return version
 }
 
+async function pathExists(target: string): Promise<boolean> {
+  return stat(target).then(() => true).catch(() => false)
+}
+
+// ---------- Gradle Wrapper ----------
+// 项目输入缺少 gradlew/gradlew.bat 时,自动下载 Gradle 发行版(缓存到 managed tools
+// 目录)并在项目内生成 Wrapper。优先使用 gradle-wrapper.properties 中固定的版本,
+// 避免生成与项目 AGP 不兼容的 Wrapper。
+const DEFAULT_GRADLE_VERSION = "8.13"
+
+async function gradleVersionFromProperties(projectDir: string): Promise<string | undefined> {
+  const candidates = [
+    path.join(projectDir, "gradle", "wrapper", "gradle-wrapper.properties"),
+    path.join(projectDir, "android", "gradle", "wrapper", "gradle-wrapper.properties"),
+  ]
+  for (const candidate of candidates) {
+    const text = await readFile(candidate, "utf8").catch(() => undefined)
+    const match = text?.match(/distributionUrl=.*gradle-(\d+\.\d+(?:\.\d+)?)[-a-z]*\.zip/i)
+    if (match?.[1]) return match[1]
+  }
+  return undefined
+}
+
+async function gradleDistributionAsset(version: string): Promise<DownloadAsset> {
+  const fileName = `gradle-${version}-bin.zip`
+  const shaResponse = await fetch(`https://services.gradle.org/distributions/${fileName}.sha256`, {
+    redirect: "follow",
+  })
+  if (!shaResponse.ok) {
+    throw new Error(`无法获取 Gradle ${version} 校验和：HTTP ${shaResponse.status}`)
+  }
+  return {
+    url: `https://services.gradle.org/distributions/${fileName}`,
+    fileName,
+    sha256: (await shaResponse.text()).trim().toLowerCase(),
+  }
+}
+
+export async function installGradleWrapper(
+  projectDir: string,
+  onProgress?: (message: string) => void,
+  javaHome?: string,
+): Promise<string> {
+  const version = (await gradleVersionFromProperties(projectDir)) ?? DEFAULT_GRADLE_VERSION
+  const root = managedToolsRoot()
+  const downloadDirectory = path.join(root, "downloads")
+  await mkdir(downloadDirectory, { recursive: true })
+  const asset = await gradleDistributionAsset(version)
+  const archive = path.join(downloadDirectory, asset.fileName)
+  if (!(await pathExists(archive))) {
+    await downloadVerified(asset, archive, onProgress)
+  }
+  const extracted = path.join(root, `gradle-${version}`)
+  if (!(await pathExists(extracted))) {
+    await extractArchive(archive, root, onProgress)
+  }
+  const gradleBin = path.join(extracted, "bin", process.platform === "win32" ? "gradle.bat" : "gradle")
+  if (!(await pathExists(gradleBin))) {
+    throw new Error(`Gradle ${version} 解压后未找到可执行文件 ${gradleBin}`)
+  }
+  const androidDir = path.join(projectDir, "android")
+  const androidGradleFile =
+    (await readFile(path.join(androidDir, "settings.gradle"), "utf8").catch(() => undefined)) ??
+    (await readFile(path.join(androidDir, "settings.gradle.kts"), "utf8").catch(() => undefined))
+  const gradleCwd = androidGradleFile ? androidDir : projectDir
+  onProgress?.(`生成 Gradle Wrapper（版本 ${version}）`)
+  const result = await runProcess({
+    command: gradleBin,
+    args: ["wrapper", "--gradle-version", version, "--console=plain", "--no-daemon"],
+    cwd: gradleCwd,
+    timeoutMs: 10 * 60_000,
+    env: { ...process.env, ...(javaHome ? { JAVA_HOME: javaHome } : {}) },
+  })
+  if (result.exitCode !== 0) {
+    throw new Error(`生成 Gradle Wrapper 失败（exit ${result.exitCode}）：${result.stderr.trim() || result.stdout.trim()}`)
+  }
+  const wrapperName = process.platform === "win32" ? "gradlew.bat" : "gradlew"
+  if (!(await pathExists(path.join(gradleCwd, wrapperName)))) {
+    throw new Error("Gradle Wrapper 生成后未找到 gradlew 脚本")
+  }
+  return `Gradle ${version} Wrapper（生成于 ${gradleCwd}）`
+}
+
 export async function installMissingTools(
   config: PipelineConfig | undefined,
   initialToolchain: Toolchain,
@@ -426,6 +510,14 @@ export async function installMissingTools(
       options.onProgress,
     )
     installed.push(`Android Build Tools ${version}`)
+    current = await discoverToolchain(config)
+  }
+
+  if (plan.autoGroups.includes("gradle")) {
+    if (!config?.inputPath) throw new Error("缺少项目输入，无法生成 Gradle Wrapper")
+    if (!current.java.path) throw new Error("安装 Gradle 需要 Java，但 JDK 安装后仍未发现 java。")
+    const summary = await installGradleWrapper(config.inputPath, options.onProgress, current.java.path)
+    installed.push(summary)
     current = await discoverToolchain(config)
   }
 

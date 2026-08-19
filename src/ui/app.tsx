@@ -1116,6 +1116,10 @@ export function App() {
               <Button label="开始新任务" tone="accent" onPress={resetHome} />
               <Button label="退出" onPress={() => renderer.destroy()} />
             </Show>
+
+            <Show when={screen() !== "welcome"}>
+              <Button label="回到首页" detail="清空当前进度，返回首页" onPress={resetHome} />
+            </Show>
           </box>
 
           <box
