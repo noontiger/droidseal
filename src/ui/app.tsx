@@ -293,15 +293,6 @@ export function App() {
     onCleanup(() => clearInterval(timer))
   })
 
-  // 侧栏进度填充条:14 格,颜色随进度变化(未完成=强调色,全部完成=完成色)
-  const progressBarText = createMemo(() => {
-    const total = steps().length
-    const done = completedCount()
-    if (total === 0) return "██████████████"
-    const filledCells = Math.min(14, Math.round((done / total) * 14))
-    return "█".repeat(filledCells) + "░".repeat(14 - filledCells)
-  })
-
   // Show generated paths and other defaults as editable values before they are
   // accepted, rather than applying an invisible default after an empty Enter.
   createEffect(() => {
@@ -1270,13 +1261,6 @@ export function App() {
             paddingBottom={1}
             onMouseScroll={handleProgressMouseScroll}
           >
-            <text fg={theme.text}><b>处理进度 · 已处理 {completedCount()}/{steps().length}</b></text>
-            <text
-              fg={steps().length > 0 && completedCount() >= steps().length ? theme.complete : theme.accent}
-              selectable={false}
-            >
-              {progressBarText()}
-            </text>
             <text fg={theme.textMuted}>
               成功 {successCount()} · 跳过 {skippedCount()} · 失败 {failedCount()}
             </text>
