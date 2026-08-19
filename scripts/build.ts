@@ -151,6 +151,20 @@ try {
     await writeFile(target, asset.bytes)
   }
 
+  // OpenTUI 的原生库是运行时外置资产(OTUI_ASSET_ROOT 指向可执行文件所在目录),
+  // 但 bun 插件不会把它作为构建输出带到 dist。这里从 node_modules 显式复制到
+  // dist/@opentui/<平台包>/<原生库>,否则 TUI 启动时会报 Missing OpenTUI asset。
+  const nativeSource = path.join(projectRoot, "node_modules", runtimePackage, nativeLibrary)
+  const nativeBytes = await readFile(nativeSource).catch(() => undefined)
+  if (!nativeBytes) {
+    throw new Error(`Missing OpenTUI native library at ${nativeSource}`)
+  }
+  const nativeAssetRel = `${runtimePackage}/${nativeLibrary}`.replaceAll("\\", "/")
+  const nativeTarget = path.join(distDirectory, nativeAssetRel)
+  await mkdir(path.dirname(nativeTarget), { recursive: true })
+  await writeFile(nativeTarget, nativeBytes)
+  assets.push({ relativePath: nativeAssetRel, bytes: nativeBytes })
+
   if (!result.metafile) throw new Error("Bun build did not return the required metafile")
   const packageJson = JSON.parse(await readFile(path.join(projectRoot, "package.json"), "utf8")) as {
     packageManager?: string
