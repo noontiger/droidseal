@@ -293,6 +293,21 @@ export function App() {
     onCleanup(() => clearInterval(timer))
   })
 
+  // 侧栏自动滚动:处理中的步骤显示在列表顶部,方便查看当前进度
+  createEffect(() => {
+    const current = steps()
+    const processingIndex = current.findIndex((step) => step.status === "processing")
+    const box = progressScrollBox
+    if (processingIndex < 0 || !box) return
+    let offset = 0
+    for (let i = 0; i < processingIndex; i += 1) {
+      const step = current[i]!
+      const resultLines = step.result ? Math.max(1, Math.ceil((step.result.summary ?? "").length / 36)) : 0
+      offset += 1 + resultLines + 1 // 标题行 + 结果行 + paddingBottom
+    }
+    box.scrollTop = Math.max(0, offset)
+  })
+
   // Show generated paths and other defaults as editable values before they are
   // accepted, rather than applying an invisible default after an empty Enter.
   createEffect(() => {
@@ -1009,11 +1024,11 @@ export function App() {
       <box
         flexShrink={0}
         flexDirection="row"
-        alignItems="center"
+        alignItems="flex-start"
         paddingLeft={2}
         paddingRight={2}
-        paddingTop={1}
-        paddingBottom={1}
+        paddingTop={0}
+        paddingBottom={0}
         border={["bottom"]}
         borderColor={theme.border}
       >
@@ -1090,8 +1105,8 @@ export function App() {
             </For>
             <Show when={thinking()}>
               <box flexShrink={0} paddingLeft={2} paddingBottom={1}>
-                <text fg={theme.accent}>
-                  <span style={{ fg: theme.purple }}>{SPINNER[spinnerIndex()]}</span> {thinking()}
+                <text fg={theme.ice} wrapMode="word">
+                  <span style={{ fg: theme.ice }}>{SPINNER[spinnerIndex()]}</span> {thinking()}
                 </text>
               </box>
             </Show>
