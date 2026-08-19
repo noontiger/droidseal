@@ -1,4 +1,5 @@
 import path from "node:path"
+import { stat } from "node:fs/promises"
 import {
   For,
   Show,
@@ -12,6 +13,7 @@ import type { MouseEvent, ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@opentui/solid"
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
 import { Pipeline, STEP_DEFINITIONS, statusGlyph, stepGuidance } from "../core/pipeline.ts"
+import { sha256File } from "../core/apk-audit.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -68,6 +70,28 @@ interface ToolRecoveryState {
 }
 
 const SPINNER = ["✦", "✧", "·", "✧"] as const
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KiB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MiB`
+}
+
+// 读取系统剪贴板文本(右键粘贴用);失败时返回空字符串
+function readClipboard(): string {
+  try {
+    if (process.platform === "win32") {
+      const result = Bun.spawnSync(["powershell", "-NoProfile", "-Command", "Get-Clipboard"], { stdout: "pipe" })
+      return result.stdout?.toString().trim() ?? ""
+    }
+    for (const command of [["xclip", "-o", "-selection", "clipboard"], ["wl-paste"]]) {
+      const result = Bun.spawnSync(command, { stdout: "pipe" })
+      if (result.exitCode === 0) return result.stdout?.toString().trim() ?? ""
+    }
+  } catch {
+    // 剪贴板不可用时静默返回空
+  }
+  return ""
+}
 
 function roleColor(role: MessageRole): string {
   const colors: Record<MessageRole, string> = {
@@ -229,6 +253,30 @@ export function App() {
   const [currentArtifactName, setCurrentArtifactName] = createSignal<string | undefined>()
   // 界面语言:默认英文;右上角切换按钮在 en/zh 之间切换
   const [language, setLanguage] = createSignal<"en" | "zh">("en")
+  // 当前产物完整路径与信息(大小/SHA-256/所在目录)
+  const [artifactPath, setArtifactPath] = createSignal<string>()
+  const [artifactInfo, setArtifactInfo] = createSignal<{ size: number; sha256: string; dir: string }>()
+  createEffect(() => {
+    const artifact = artifactPath()
+    if (!artifact) {
+      setArtifactInfo(undefined)
+      return
+    }
+    void (async () => {
+      const info = await stat(artifact).catch(() => undefined)
+      const sha256 = await sha256File(artifact).catch(() => "")
+      setArtifactInfo({ size: info?.size ?? 0, sha256, dir: path.dirname(artifact) })
+    })()
+  })
+  const openArtifactFolder = () => {
+    const artifact = artifactPath()
+    if (!artifact) return
+    if (process.platform === "win32") {
+      void Bun.spawn(["explorer", `/select,${artifact}`])
+    } else {
+      void Bun.spawn(["xdg-open", path.dirname(artifact)])
+    }
+  }
   const activeButtons = createMemo<ActiveButton[]>(() => {
     if (screen() === "wizard") {
       const question = currentQuestion()
@@ -583,6 +631,7 @@ export function App() {
         setThinking(`processing · ${event.message}`)
       } else {
         setCurrentArtifactName(active.context.currentArtifact ? path.basename(active.context.currentArtifact) : undefined)
+        setArtifactPath(active.context.currentArtifact ?? undefined)
         setThinking("")
         const detail = [...event.result.detail]
         if (event.result.rollbackMessage) detail.push(event.result.rollbackMessage)
@@ -597,6 +646,7 @@ export function App() {
     setCurrentStepIndex(0)
     setPipelineDone(false)
     setCurrentArtifactName(undefined)
+    setArtifactPath(undefined)
     addMessage("system", "流水线已创建", [
       `运行编号：${active.context.runId}`,
       "所有工具都以参数数组直接启动，不经过 shell；签名密码通过子进程环境传递并在输出中脱敏。",
@@ -1236,6 +1286,15 @@ export function App() {
             paddingLeft={1}
             paddingRight={1}
             marginBottom={1}
+            onMouseUp={(event) => {
+              // 右键不退出:在对话框内右键 = 粘贴剪贴板文本(或文件路径)
+              if (event.button === 2) {
+                event.preventDefault?.()
+                event.stopPropagation?.()
+                const text = readClipboard()
+                if (text) setComposer((value) => (value ? `${value}${text}` : text))
+              }
+            }}
             title={
               needsWizardInput()
                 ? (isSecretQuestion() ? "需要安全输入 · " : "需要输入 · ") + (currentQuestion()?.title ?? "")
@@ -1344,6 +1403,18 @@ export function App() {
               <text fg={theme.textMuted} wrapMode="word">
                 {currentArtifactName() ?? "尚未生成"}
               </text>
+              <Show when={artifactInfo()}>
+                {(info) => (
+                  <>
+                    <text fg={theme.textMuted}>
+                      {formatBytes(info().size)} · SHA-256 {info().sha256.slice(0, 12)}…
+                    </text>
+                    <text fg={theme.accentStrong} selectable={false} onMouseUp={() => openArtifactFolder()}>
+                      ▸ 打开所在目录
+                    </text>
+                  </>
+                )}
+              </Show>
               <text fg={theme.textMuted}>失败不覆盖 · 本地处理</text>
             </box>
           </box>
