@@ -187,8 +187,21 @@ for (const file of distRelativePaths.filter((entry) => entry.endsWith(".js"))) {
   if (!/^parser\.worker-[a-z0-9]+\.js$/.test(file)) findings.push(`dist 出现未授权 JavaScript：${file}`)
 }
 
+// 发布包(npm tarball / PyPI wheel)携带合并后的双平台 dist:
+// 两个平台的 OpenTUI 原生库必须同时存在,否则对应平台用户的 TUI 启动会报
+// Missing OpenTUI asset。
+for (const nativePath of ["@opentui/core-win32-x64/opentui.dll", "@opentui/core-linux-x64/libopentui.so"]) {
+  if (!distRelativePaths.includes(nativePath)) {
+    findings.push(`合并 dist 缺少 ${nativePath}(OpenTUI 原生库),对应平台 TUI 无法启动`)
+  }
+}
+
 let expectedAssetPaths: string[] = []
 let expectedCompliancePaths: string[] = []
+// 合并 dist 同时携带双平台产物:另一平台元数据的资产也参与一致性与白名单校验
+let otherAssetPaths: string[] = []
+let otherCompliancePaths: string[] = []
+let otherMetadataAssets: Array<{ path?: string; bytes?: number; sha256?: string }> = []
 if (!(await exists(buildMetadataPath))) {
   findings.push("缺少 dist/droidseal-build.json 构建元数据")
 } else if (await exists(executablePath)) {
@@ -267,6 +280,26 @@ if (!(await exists(buildMetadataPath))) {
     .map((artifact) => artifact.path)
     .filter((value): value is string => Boolean(value))
     .sort()
+  // 读取另一平台的构建元数据:合并 dist 中它的资产也须存在且哈希一致
+  const otherMetadataName = releaseIsWindows ? "droidseal-build.linux.json" : "droidseal-build.json"
+  const otherMetadataRaw = await readFile(path.join(distDirectory, otherMetadataName), "utf8").catch(() => undefined)
+  if (otherMetadataRaw) {
+    const otherMetadata = JSON.parse(otherMetadataRaw) as {
+      assets?: Array<{ path?: string; bytes?: number; sha256?: string }>
+      compliance?: { artifacts?: Array<{ path?: string; bytes?: number; sha256?: string }> }
+    }
+    otherMetadataAssets = otherMetadata.assets ?? []
+    otherAssetPaths = otherMetadataAssets
+      .map((asset) => asset.path)
+      .filter((value): value is string => Boolean(value))
+      .sort()
+    otherCompliancePaths = (otherMetadata.compliance?.artifacts ?? [])
+      .map((artifact) => artifact.path)
+      .filter((value): value is string => Boolean(value))
+      .sort()
+  } else {
+    findings.push(`缺少另一平台构建元数据 dist/${otherMetadataName}(合并发布应同时携带双平台元数据)`)
+  }
   // 排除两个平台的二进制与构建元数据文件(合并发布时 dist 同时包含两平台产物)
   const actualAssetPaths = distRelativePaths.filter(
     (relative) =>
@@ -275,7 +308,13 @@ if (!(await exists(buildMetadataPath))) {
       relative !== "droidseal-build.json" &&
       relative !== "droidseal-build.linux.json",
   )
-  if (JSON.stringify([...expectedAssetPaths, ...expectedCompliancePaths].sort()) !== JSON.stringify(actualAssetPaths)) {
+  if (
+    JSON.stringify(
+      [...expectedAssetPaths, ...expectedCompliancePaths, ...otherAssetPaths, ...otherCompliancePaths]
+        .filter((value, index, array) => array.indexOf(value) === index)
+        .sort(),
+    ) !== JSON.stringify(actualAssetPaths)
+  ) {
     findings.push("dist 伴随资源与构建元数据清单不一致")
   }
   for (const asset of expectedAssets) {
@@ -302,6 +341,20 @@ if (!(await exists(buildMetadataPath))) {
     const bytes = await readFile(target)
     if (artifact.bytes !== bytes.byteLength || artifact.sha256 !== createHash("sha256").update(bytes).digest("hex")) {
       findings.push(`Bundle compliance artifact hash mismatch: ${artifact.path}`)
+    }
+  }
+  // 另一平台构建资源同样校验存在与哈希(合并 dist 必须双平台齐全)
+  for (const otherAsset of otherMetadataAssets) {
+    if (!otherAsset.path) continue
+    const target = path.resolve(distDirectory, otherAsset.path)
+    const relative = path.relative(distDirectory, target)
+    if (relative.startsWith("..") || path.isAbsolute(relative) || !(await exists(target))) {
+      findings.push(`另一平台 dist 构建资源路径无效：${otherAsset.path}`)
+      continue
+    }
+    const bytes = await readFile(target)
+    if (otherAsset.bytes !== bytes.byteLength || otherAsset.sha256 !== createHash("sha256").update(bytes).digest("hex")) {
+      findings.push(`另一平台 dist 构建资源哈希不一致：${otherAsset.path}`)
     }
   }
 
@@ -402,6 +455,8 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
           .map((p) => `dist/${p}`),
         ...expectedAssetPaths.map((asset) => `dist/${asset}`),
         ...expectedCompliancePaths.map((artifact) => `dist/${artifact}`),
+        ...otherAssetPaths.map((asset) => `dist/${asset}`),
+        ...otherCompliancePaths.map((artifact) => `dist/${artifact}`),
       ])
       for (const packed of packedPaths) {
         if (!allowedPaths.has(packed)) findings.push(`npm tarball 出现白名单外文件：${packed}`)
