@@ -507,7 +507,7 @@ export function App() {
     setToolRecovery(undefined)
     setSteps(STEP_DEFINITIONS.map((definition) => ({ ...definition, status: "pending" })))
     addMessage(
-      "system",
+      "assistant",
       mode === "one-click" ? t("msgOneClickSelected") : t("msgGuidedSelected"),
       [
         mode === "one-click"
