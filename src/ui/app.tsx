@@ -1045,7 +1045,7 @@ export function App() {
       <box
         flexShrink={0}
         flexDirection="row"
-        alignItems="center"
+        alignItems="flex-start"
         paddingLeft={2}
         paddingRight={2}
         paddingTop={1}
@@ -1149,7 +1149,7 @@ export function App() {
             </Show>
           </scrollbox>
 
-          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1} justifyContent="center" alignItems="center">
+          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1} paddingLeft={1} alignItems="center">
             <Show when={toolRecovery()}>
               <Show when={toolRecovery()?.plan.canAutoInstall}>
                 <Button
