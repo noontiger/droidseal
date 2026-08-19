@@ -62,14 +62,14 @@ describe("step guidance and skip explanations", () => {
     }
     // Unknown-APK runtime injection stays outside the safe default flow.
     expect(questionsFor(draft).some((question) => question.id === "protectionProfile")).toBe(false)
-    expect(summaryLines(draft).join(" ")).toContain("不对未知 APK 注入")
+    expect(summaryLines(draft).join(" ")).toContain("never injects startup code")
 
     const built = buildPipelineConfig(draft)
     expect(built.protection.mode).toBe("local-safe")
     expect(built.enableWebAssetMinification).toBe(false)
     const webQuestion = questionsFor(draft).find((question) => question.id === "enableWebAssetMinification")!
     expect(webQuestion.choices?.[0]?.value).toBe("yes")
-    expect(summaryLines(draft).join(" ")).toContain("Web JavaScript：不处理")
+    expect(summaryLines(draft).join(" ")).toContain("Web JavaScript: not processed")
   })
 
   test("protect step evaluates evidence without claiming absence as fact", async () => {

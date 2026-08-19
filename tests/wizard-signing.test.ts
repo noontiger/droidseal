@@ -98,7 +98,7 @@ describe("wizard signing flow", () => {
     const draft = { ...baseDraft(), inputPath: path.join("work", "app") }
     const question = questionsFor(draft).find((q) => q.id === "gradleTask")!
 
-    expect(() => applyAnswer(draft, question, "app-release")).toThrow("不是 Gradle 任务")
+    expect(() => applyAnswer(draft, question, "app-release")).toThrow("not a Gradle task")
     expect(applyAnswer(draft, question, "assembleRelease").draft.gradleTask).toBe("assembleRelease")
   })
 
@@ -106,7 +106,7 @@ describe("wizard signing flow", () => {
     const draft = baseDraft()
     const question = questionsFor(draft).find((q) => q.id === "explicitBuiltApkPath")!
 
-    expect(() => applyAnswer(draft, question, "C:\\work\\app")).toThrow("具体的 .apk 文件")
+    expect(() => applyAnswer(draft, question, "C:\\work\\app")).toThrow("a concrete .apk file")
     expect(applyAnswer(draft, question, "").draft.explicitBuiltApkPath).toBe("")
     expect(applyAnswer(draft, question, "app\\build\\outputs\\apk\\release\\app-release.apk").draft.explicitBuiltApkPath)
       .toBe("app\\build\\outputs\\apk\\release\\app-release.apk")
@@ -118,7 +118,7 @@ describe("wizard signing flow", () => {
     const projectDefault = path.join(path.resolve(projectDraft.inputPath), "droidseal-output")
 
     expect(projectQuestion.defaultValue).toBe(projectDefault)
-    expect(projectQuestion.title).toContain("默认地址")
+    expect(projectQuestion.title).toContain("default provided")
     expect(applyAnswer(projectDraft, projectQuestion, "").draft.outputDirectory).toBe(projectDefault)
 
     const apkDraft = {
@@ -139,11 +139,11 @@ describe("wizard signing flow", () => {
 
   test("summaryLines flags overwrite for existing+renewKey", () => {
     const plain = summaryLines({ ...baseDraft(), signingMode: "existing", keystorePath: "C:\\keys\\release.jks" })
-    expect(plain.join(" ")).toContain("使用现有签名库重新签名")
-    expect(plain.join(" ")).not.toContain("将覆盖原文件")
+    expect(plain.join(" ")).toContain("re-sign with the existing keystore")
+    expect(plain.join(" ")).not.toContain("will overwrite the original file")
 
     const renew = summaryLines({ ...baseDraft(), signingMode: "existing", renewKey: true, keystorePath: "C:\\keys\\release.jks" })
-    expect(renew.join(" ")).toContain("换新密钥")
-    expect(renew.join(" ")).toContain("将覆盖原文件")
+    expect(renew.join(" ")).toContain("renew key")
+    expect(renew.join(" ")).toContain("will overwrite the original file")
   })
 })
