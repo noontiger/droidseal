@@ -9,4 +9,4 @@ export const DROIDSEAL_LOGO = [
 export const DROIDSEAL_LOGO_WIDTH = Math.max(...DROIDSEAL_LOGO.map((line) => line.length))
 export const DROIDSEAL_LOGO_HEIGHT = DROIDSEAL_LOGO.length
 
-export const VERSION = "0.2.0"
+export const VERSION = "0.2.1"

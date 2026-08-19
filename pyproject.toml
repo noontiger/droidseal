@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "droidseal"
 # 版本号需与 package.json 保持一致
-version = "0.2.0"
+version = "0.2.1"
 description = "A simple, local-first Android release security pipeline (Windows x64 / Linux x64 binary)."
 readme = "README.md"
 license = "Apache-2.0"
