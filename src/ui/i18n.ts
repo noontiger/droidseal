@@ -977,3 +977,47 @@ export function translateSummary(summary: string): string {
   }
   return summary
 }
+
+// 步骤结果 detail 明细行翻译(中文 → 英文;未匹配时原样返回)
+const detailTranslations: Array<{ match: RegExp; to: (m: RegExpExecArray) => string }> = [
+  { match: /^原文件：(.+)$/, to: (m) => `Original file: ${m[1]}` },
+  { match: /^工作副本：(.+)$/, to: (m) => `Working copy: ${m[1]}` },
+  { match: /^项目：(.+)$/, to: (m) => `Project: ${m[1]}` },
+  { match: /^运行目录：(.+)$/, to: (m) => `Run directory: ${m[1]}` },
+  { match: /^输入：(.+)$/, to: (m) => `Input: ${m[1]}` },
+  { match: /^输出：(.+)$/, to: (m) => `Output: ${m[1]}` },
+  { match: /^路径：(.+)$/, to: (m) => `Path: ${m[1]}` },
+  { match: /^类型：(.+)$/, to: (m) => `Type: ${m[1]}` },
+  { match: /^别名：(.+)$/, to: (m) => `Alias: ${m[1]}` },
+  { match: /^签名库：(.+)$/, to: (m) => `Keystore: ${m[1]}` },
+  { match: /^目标脚本：(\d+) 个；source map：(\d+) 个$/, to: (m) => `Target scripts: ${m[1]}; source maps: ${m[2]}` },
+  { match: /^签名库步骤失败：(.+)$/, to: (m) => `Keystore step failed: ${m[1]}` },
+  { match: /^所有后续步骤只产生新文件，不原地覆盖。$/, to: () => "All later steps only create new files and never overwrite in place." },
+  { match: /^后续构建产物会复制后再处理。$/, to: () => "Build outputs are copied before processing." },
+  { match: /^这是正常跳过，不是失败。后续仍会执行 APK 结构、Manifest、DEX 和 SO 审计。$/, to: () => "This is a normal skip, not a failure. The APK structure, Manifest, DEX and SO audits still run." },
+  { match: /^这是正常跳过，不是失败。流程会继续处理准备步骤创建的 APK 副本。$/, to: () => "This is a normal skip, not a failure. The flow continues with the APK copy from the prepare step." },
+  { match: /^签名将在对齐之后执行。$/, to: () => "Signing runs after alignment." },
+  { match: /^密码未写入命令参数或报告。$/, to: () => "The password is never written to arguments or reports." },
+  { match: /^前面的准备或构建步骤没有产生 APK；请先修复对应失败，再重新运行。$/, to: () => "The prepare or build step produced no APK; fix the failure first, then re-run." },
+  { match: /^前面的准备或构建步骤没有产生 APK；本步骤没有修改任何文件。$/, to: () => "The prepare or build step produced no APK; this step changed nothing." },
+  { match: /^前面的准备、构建或保护步骤没有产生 APK；本步骤没有生成签名文件。$/, to: () => "The prepare, build or protect step produced no APK; no signature file was generated." },
+  { match: /^前面的准备或构建步骤没有产生 APK；本步骤没有生成输出。$/, to: () => "The prepare or build step produced no APK; no output was generated." },
+  { match: /^请先按签名库步骤给出的原因修复密码、别名或路径，再重新执行。$/, to: () => "Fix the password, alias or path per the keystore step's reason, then re-run." },
+  { match: /^用户未开启该可选步骤；assets\/public 与 assets\/www 中的脚本和 source map 均保持不变。$/, to: () => "This optional step is off; scripts and source maps under assets/public and assets/www stay unchanged." },
+  { match: /^严格路径白名单内没有 \.js 文件；非混合 APK 或其他资产目录不会被猜测和改写。$/, to: () => "No .js files under the strict whitelist; non-hybrid APKs or other asset dirs are never guessed or rewritten." },
+  { match: /^二进制 Manifest 未声明 debuggable 或已为 false，且无可剔除的残留条目。最终验证仍会再次确认。$/, to: () => "The binary Manifest has no debuggable (or it is false) and no removable residuals; final verification confirms again." },
+  { match: /^这是安全保护，不是失败。APK 未声明 debuggable，只存在可选的残留条目。$/, to: () => "This is safety protection, not a failure. The APK has no debuggable and only optional residuals remain." },
+  { match: /^APK 未被改写。$/, to: () => "The APK was not rewritten." },
+  { match: /^对齐和签名将基于归一化后的 APK 执行。$/, to: () => "Alignment and signing run on the normalized APK." },
+  { match: /^后续对齐步骤会检测并保护输入 APK 的现有签名，最终验证会再次核对签名方案与证书。$/, to: () => "The alignment step detects and protects the input APK's existing signature; final verification re-checks the scheme and certificate." },
+  { match: /^用户未开启有损资源名混淆；resources\.arsc 未被改写，后续照常对齐与签名。$/, to: () => "Lossy resource-name obfuscation is off; resources.arsc is untouched and alignment/signing proceed as usual." },
+  { match: /^已回退/, to: () => "Rolled back to the valid APK from before this step" },
+]
+
+export function translateDetail(line: string): string {
+  for (const entry of detailTranslations) {
+    const match = entry.match.exec(line)
+    if (match) return entry.to(match)
+  }
+  return line
+}

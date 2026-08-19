@@ -14,7 +14,7 @@ import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@open
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
 import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
-import { language, setLanguage, t, tGuidance, translateProgress, translateSummary, tStep, tStepDesc } from "./i18n.ts"
+import { language, setLanguage, t, tGuidance, translateDetail, translateProgress, translateSummary, tStep, tStepDesc } from "./i18n.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -657,8 +657,8 @@ export function App() {
         setCurrentArtifactName(active.context.currentArtifact ? path.basename(active.context.currentArtifact) : undefined)
         setArtifactPath(active.context.currentArtifact ?? undefined)
         setThinking("")
-        const detail = [...event.result.detail]
-        if (event.result.rollbackMessage) detail.push(event.result.rollbackMessage)
+        const detail = [...event.result.detail].map((line) => translateDetail(line))
+        if (event.result.rollbackMessage) detail.push(translateDetail(event.result.rollbackMessage))
         const title = event.result.status === "skipped"
           ? t("msgSkipped").replace("{kind}", skipKindLabel(event.result.skipKind)).replace("{summary}", translateSummary(event.result.summary))
           : translateSummary(event.result.summary)
