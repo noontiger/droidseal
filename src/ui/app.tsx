@@ -14,6 +14,7 @@ import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@open
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
 import { Pipeline, STEP_DEFINITIONS, statusGlyph, stepGuidance } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
+import { language, setLanguage, t, tStep, tStepDesc } from "./i18n.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -113,13 +114,13 @@ function resultRole(result: StepResult): MessageRole {
 
 export function skipKindLabel(kind: SkipKind | undefined): string {
   const labels: Record<SkipKind, string> = {
-    "not-applicable": "不适用",
-    "user-choice": "用户选择",
-    configuration: "按配置",
-    safety: "安全保护",
-    "missing-input": "缺少前置 APK",
+    "not-applicable": t("skipNotApplicable"),
+    "user-choice": t("skipUserChoice"),
+    configuration: t("skipConfiguration"),
+    safety: t("skipSafety"),
+    "missing-input": t("skipMissingInput"),
   }
-  return kind ? labels[kind] : "已说明原因"
+  return kind ? labels[kind] : t("skipReasonExplained")
 }
 
 function choiceFromText(question: WizardQuestion, raw: string): string {
@@ -165,13 +166,8 @@ export function App() {
     {
       id: 1,
       role: "assistant",
-      title: "欢迎使用 DroidSeal",
-      body: [
-        "DroidSeal 在本机完成 Release 构建、R8/Manifest/APK 审计、安全审计基线、zipalign、apksigner 签名与验证。",
-        "不熟悉流程可选择“分步处理”；每一步都会说明用途，专业术语保持原名。",
-        "“跳过”会标明是不适用、用户选择、按配置、安全保护或缺少前置 APK；跳过不一定是失败。",
-        "所有处理使用独立副本，失败时回退到上一个有效 APK。",
-      ],
+      title: t("welcomeTitle"),
+      body: [t("welcomeDesc1"), t("welcomeDesc2"), t("welcomeDesc3"), t("welcomeDesc4")],
     },
   ])
   const [messageId, setMessageId] = createSignal(2)
@@ -217,31 +213,31 @@ export function App() {
   const inputActionLabel = createMemo(() => {
     const question = currentQuestion()
     if (question?.defaultValue !== undefined && inputValue() === question.defaultValue) {
-      if (question.id === "keyPassword") return "沿用签名库密码"
-      return question.defaultValue ? "使用默认值" : "留空并继续"
+      if (question.id === "keyPassword") return t("reuseStorePassword")
+      return question.defaultValue ? t("btnUseDefault") : t("btnContinueEmpty")
     }
-    if (inputValue().trim()) return "确认输入"
-    if (currentQuestion()?.defaultValue !== undefined) return "使用默认值"
-    return "请先输入"
+    if (inputValue().trim()) return t("btnConfirmInput")
+    if (currentQuestion()?.defaultValue !== undefined) return t("btnUseDefault")
+    return t("btnPleaseInput")
   })
   const inputActionDetail = createMemo(() => {
     const defaultValue = currentQuestion()?.defaultValue
-    if (defaultValue === undefined) return "填写当前项后继续"
-    return defaultValue ? "已预填默认值，可直接确认或修改" : "此项允许留空，可直接继续"
+    if (defaultValue === undefined) return t("btnFillAndContinue")
+    return defaultValue ? t("inputPrefillNote") : t("inputEmptyOk")
   })
   const passiveInteractionText = createMemo(() => {
-    if (toolRecovery()) return "无需输入文字 · 请点击上方恢复方式，或按 D / H / R"
+    if (toolRecovery()) return t("passiveRecovery")
     if (screen() === "wizard") {
       return currentQuestion()?.kind === "choice"
-        ? "无需输入文字 · 请点击上方选项，或直接按对应数字键"
-        : "配置已就绪 · 点击“开始处理”，或按 Enter"
+        ? t("passiveChoice")
+        : t("passiveReady")
     }
     if (screen() === "pipeline") {
-      if (busy()) return "正在处理 · 当前不需要输入"
-      if (pipelineDone()) return "流程已结束 · 请使用上方按钮开始新任务或退出"
-      if (needsFailureAdvance()) return "无需输入文字 · 点击回退按钮，或按 Enter 进入下一步"
-      if (pipeline()?.config.runMode === "guided") return "无需输入文字 · 点击“执行此步”/“跳过”，或按 Enter / S"
-      return "正在连续处理 · 当前不需要输入"
+      if (busy()) return t("passiveBusy")
+      if (pipelineDone()) return t("passiveDone")
+      if (needsFailureAdvance()) return t("passiveFailureAdvance")
+      if (pipeline()?.config.runMode === "guided") return t("passiveGuided")
+      return t("passiveOneClick")
     }
     return ""
   })
@@ -251,8 +247,6 @@ export function App() {
   const [focusedButtonIndex, setFocusedButtonIndex] = createSignal(0)
   // 当前有效产物名(反应式):由流水线事件驱动更新,避免直接读 context 可变属性不触发渲染
   const [currentArtifactName, setCurrentArtifactName] = createSignal<string | undefined>()
-  // 界面语言:默认英文;右上角切换按钮在 en/zh 之间切换
-  const [language, setLanguage] = createSignal<"en" | "zh">("en")
   // 当前产物完整路径与信息(大小/SHA-256/所在目录)
   const [artifactPath, setArtifactPath] = createSignal<string>()
   const [artifactInfo, setArtifactInfo] = createSignal<{ size: number; sha256: string; dir: string }>()
@@ -293,8 +287,8 @@ export function App() {
       }
       if (!question) {
         return [
-          { label: "开始处理", shortcut: "Enter", tone: "accent" as const, detail: "按上方摘要创建流水线", onPress: startConfiguredPipeline },
-          { label: "重新填写", detail: "清空本次内存配置", onPress: () => startWizard(draft().runMode) },
+          { label: t("btnStart"), shortcut: "Enter", tone: "accent" as const, detail: t("btnStartDetail"), onPress: startConfiguredPipeline },
+          { label: t("btnRefill"), detail: t("btnRefillDetail"), onPress: () => startWizard(draft().runMode) },
         ]
       }
       return []
@@ -302,18 +296,18 @@ export function App() {
     if (screen() === "pipeline") {
       if (pipelineDone()) {
         return [
-          { label: "开始新任务", tone: "accent" as const, onPress: resetHome },
-          { label: "退出", onPress: () => renderer.destroy() },
+          { label: t("btnNewTask"), tone: "accent" as const, onPress: resetHome },
+          { label: t("btnExit"), onPress: () => renderer.destroy() },
         ]
       }
       if (!busy() && pipeline()?.config.runMode === "guided" && !toolRecovery()) {
         if (needsFailureAdvance()) {
           return [
             {
-              label: "跳过并回退，进入下一步",
+              label: t("btnRollbackAdvance"),
               shortcut: "Enter",
               tone: "danger" as const,
-              detail: "当前 APK 已恢复为步骤开始前版本",
+              detail: t("btnRollbackAdvanceDetail"),
               onPress: () => {
                 setNeedsFailureAdvance(false)
                 advanceGuided()
@@ -322,10 +316,10 @@ export function App() {
           ]
         }
         const buttons: ActiveButton[] = [
-          { label: "执行此步", shortcut: "Enter", tone: "accent" as const, detail: currentStep()?.title ?? "", disabled: busy(), onPress: () => void executeGuidedStep() },
+          { label: t("btnExecute"), shortcut: "Enter", tone: "accent" as const, detail: currentStep()?.title ?? "", disabled: busy(), onPress: () => void executeGuidedStep() },
         ]
         if (currentStep()?.skippable) {
-          buttons.push({ label: "跳过", shortcut: "S", detail: "标记为用户选择 · 保留当前有效 APK", disabled: busy(), onPress: () => void skipGuidedStep() })
+          buttons.push({ label: t("btnSkip"), shortcut: "S", detail: t("btnSkipDetail"), disabled: busy(), onPress: () => void skipGuidedStep() })
         }
         return buttons
       }
@@ -579,12 +573,12 @@ export function App() {
     })
     setBusy(false)
     setThinking("")
-    addMessage("warning", "所选流程需要补齐工具", [
-      `缺少：${plan.missing.map((tool) => tool.name).join("、")}`,
+    addMessage("warning", t("msgToolsNeeded"), [
+      t("msgMissingTools").replace("{names}", plan.missing.map((tool) => tool.name).join("、")),
       plan.canAutoInstall
-        ? "可以点击“下载并继续”；点击表示同意对应官方组件许可，DroidSeal 会下载、校验、安装并自动续跑。"
-        : "当前缺失项需要按安装说明手动修复。",
-      "也可以手动安装后点击“已安装，重新检测”，当前签名配置和步骤进度会保留。",
+        ? t("recoveryDownloadHint")
+        : t("recoveryManualHint"),
+      t("recoveryRecheckHint"),
     ])
     return true
   }
@@ -619,16 +613,16 @@ export function App() {
       // 生成新的 step 对象引用,确保 Solid <For> 在每次事件时重渲染侧栏(原地修改同一对象不触发)
       setSteps(active.getSteps().map((step) => ({ ...step })))
       if (event.type === "step-started") {
-        setThinking(`processing · ${event.step.title}`)
+        setThinking(`${t("headerProcessing")} ${event.step.title}`)
         if (config.runMode === "one-click") {
           const index = STEP_DEFINITIONS.findIndex((step) => step.id === event.step.id)
-          addMessage("assistant", `第 ${index + 1}/${STEP_DEFINITIONS.length} 步：${event.step.title}`, [
-            event.step.description,
+          addMessage("assistant", `${t("msgStepN").replace("{current}", String(index + 1)).replace("{total}", String(STEP_DEFINITIONS.length))}：${tStep(event.step.id)}`, [
+            tStepDesc(event.step.id),
             ...stepGuidance(event.step.id, config),
           ])
         }
       } else if (event.type === "step-progress") {
-        setThinking(`processing · ${event.message}`)
+        setThinking(`${t("headerProcessing")} ${event.message}`)
       } else {
         setCurrentArtifactName(active.context.currentArtifact ? path.basename(active.context.currentArtifact) : undefined)
         setArtifactPath(active.context.currentArtifact ?? undefined)
@@ -636,7 +630,7 @@ export function App() {
         const detail = [...event.result.detail]
         if (event.result.rollbackMessage) detail.push(event.result.rollbackMessage)
         const title = event.result.status === "skipped"
-          ? `已跳过 · ${skipKindLabel(event.result.skipKind)}：${event.result.summary}`
+          ? t("msgSkipped").replace("{kind}", skipKindLabel(event.result.skipKind)).replace("{summary}", event.result.summary)
           : event.result.summary
         addMessage(resultRole(event.result), title, detail)
       }
@@ -647,9 +641,9 @@ export function App() {
     setPipelineDone(false)
     setCurrentArtifactName(undefined)
     setArtifactPath(undefined)
-    addMessage("system", "流水线已创建", [
-      `运行编号：${active.context.runId}`,
-      "所有工具都以参数数组直接启动，不经过 shell；签名密码通过子进程环境传递并在输出中脱敏。",
+    addMessage("system", t("msgPipelineCreated"), [
+      t("msgRunId").replace("{id}", active.context.runId),
+      t("msgToolSafety"),
     ])
     if (config.runMode === "one-click") void runAll(active)
     else announceGuidedStep(0)
@@ -696,26 +690,26 @@ export function App() {
       advanceGuided()
     } catch (error) {
       setBusy(false)
-      addMessage("error", "无法跳过该步骤", [error instanceof Error ? error.message : String(error)])
+      addMessage("error", t("msgCannotSkipStep"), [error instanceof Error ? error.message : String(error)])
     }
   }
 
   const showHelp = () => {
-    addMessage("assistant", "帮助与安全边界", [
-      "/guided 分步处理 · /oneclick 一键处理 · /doctor 环境诊断 · /restart 返回首页 · /quit 退出",
-      "左下交互区：Ctrl+加号放大、Ctrl+减号缩小、Ctrl+0 复位。",
-      "所选流程缺少必需工具时会暂停，可下载并继续，或手动安装后重新检测。",
-      "聊天解析完全在本机执行，不连接模型服务，也不会上传路径、APK 或签名信息。",
-      "内置能力面向合法应用防护：严格证据审计、R8、Release 归一化、对齐、签名与验证默认执行；资源名混淆是经兼容性预检的有损可选项。",
-      "如需主动加固（DEX 加壳/VMP/反调试），请在源码接入有授权的方案；DroidSeal 另提供自研、opt-in 的构建期反调试 stub 供源码集成。",
-      "不提供脱壳、绕过证书校验、规避检测、内存篡改或未授权逆向自动化。",
+    addMessage("assistant", t("helpTitle"), [
+      t("helpBody1"),
+      t("helpBody2"),
+      t("helpBody3"),
+      t("helpBody4"),
+      t("helpBody5"),
+      t("helpBody6"),
+      t("helpBody7"),
     ])
   }
 
   const runDoctor = async () => {
     if (busy()) return
     setBusy(true)
-    setThinking("processing · 搜索 JDK 与 Android SDK")
+    setThinking(`${t("headerProcessing")} ${t("msgSearchTools")}`)
     try {
       const tools = await discoverToolchain()
       const plan = createToolRecoveryPlan(undefined, tools)
@@ -739,12 +733,12 @@ export function App() {
           resume: "standalone",
           stepIndex: 0,
         })
-        addMessage("warning", "环境诊断发现可补齐的工具", [
+        addMessage("warning", t("msgDoctorToolsFound"), [
           ...detail,
-          `缺少：${plan.missing.map((tool) => tool.name).join("、")}`,
+          t("msgMissingTools").replace("{names}", plan.missing.map((tool) => tool.name).join("、")),
           plan.canAutoInstall
-            ? "点击“下载并继续”表示同意对应官方组件许可；也可以查看说明后手动安装。"
-            : "请查看安装说明并手动修复。",
+            ? t("recoveryAuto")
+            : t("recoveryManual"),
         ])
       }
     } catch (error) {
@@ -964,10 +958,10 @@ export function App() {
     else if (normalized.includes("诊断") || normalized.includes("doctor")) void runDoctor()
     else if (/\.apk["']?$/.test(raw)) {
       startWizard("guided")
-      addMessage("assistant", "已识别到 APK 路径", ["请先选择“已有 APK”，然后粘贴这一路径。"])
+      addMessage("assistant", t("msgRecognizedApk"), [t("msgRecognizedApkBody")])
     } else {
-      addMessage("assistant", "我可以从这里开始", [
-        "输入“一键处理”“分步处理”或“环境诊断”，也可以点击下方按钮。",
+      addMessage("assistant", t("msgWelcomeStart"), [
+        t("msgWelcomeStartBody"),
       ])
     }
   }
@@ -1120,13 +1114,13 @@ export function App() {
         <Show when={dimensions().width >= DROIDSEAL_LOGO_WIDTH + 32}>
           <box flexDirection="column" alignItems="flex-end" flexGrow={1} flexShrink={1}>
             <text fg={theme.text}>
-              <b>{language() === "en" ? "Android release pipeline" : "Android 发布流水线"}</b>
+              <b>{t("headerTitle")}</b>
             </text>
-            <text fg={theme.textMuted}>{language() === "en" ? "local only" : "仅本机"} · v{VERSION}</text>
+            <text fg={theme.textMuted}>{t("headerLocalOnly")} · v{VERSION}</text>
             <text fg={busy() ? theme.ice : theme.success}>
               {busy()
-                ? `${SPINNER[spinnerIndex()]} ${language() === "en" ? "processing" : "处理中"}`
-                : `● ${language() === "en" ? "ready" : "就绪"}`}
+                ? `${SPINNER[spinnerIndex()]} ${t("headerProcessing")}`
+                : `● ${t("headerReady")}`}
             </text>
             <box
               border
@@ -1297,8 +1291,8 @@ export function App() {
             }}
             title={
               needsWizardInput()
-                ? (isSecretQuestion() ? "需要安全输入 · " : "需要输入 · ") + (currentQuestion()?.title ?? "")
-                : showComposer() ? "可输入指令 · 和 DroidSeal 对话" : "无需输入 · 使用上方操作"
+                ? `${isSecretQuestion() ? t("inputTitleSecret") : t("inputTitleNeed")} · ${currentQuestion()?.title ?? ""}`
+                : showComposer() ? t("inputTitleComposer") : t("inputTitlePassive")
             }
             titleColor={
               needsWizardInput()
@@ -1320,7 +1314,7 @@ export function App() {
                   <input
                     value={composer()}
                     focused
-                    placeholder="输入消息或 /help · 或拖动文件到此处"
+                    placeholder={t("composerPlaceholder")}
                     textColor={theme.text}
                     focusedTextColor={theme.text}
                     backgroundColor={theme.panel}
@@ -1338,7 +1332,7 @@ export function App() {
                   <input
                     value={composer()}
                     focused
-                    placeholder={currentQuestion()?.placeholder ?? "请输入后确认"}
+                    placeholder={currentQuestion()?.placeholder ?? t("secretPlaceholder")}
                     textColor={theme.text}
                     focusedTextColor={theme.text}
                     backgroundColor={theme.panelInput}
@@ -1373,7 +1367,7 @@ export function App() {
             onMouseScroll={handleProgressMouseScroll}
           >
             <text fg={theme.textMuted}>
-              成功 {successCount()} · 跳过 {skippedCount()} · 失败 {failedCount()}
+              {t("sidebarSuccess")} {successCount()} · {t("sidebarSkipped")} {skippedCount()} · {t("sidebarFailed")} {failedCount()}
             </text>
             <box height={1} />
             <scrollbox ref={(el: ScrollBoxRenderable) => { progressScrollBox = el }} flexGrow={1} minHeight={0}>
@@ -1381,7 +1375,7 @@ export function App() {
                 {(step, index) => (
                   <box flexDirection="column" flexShrink={0} paddingBottom={1}>
                     <text fg={stepColor(step.status)} selectable={false}>
-                      {statusGlyph(step.status)} {String(index() + 1).padStart(2, "0")} · <b>{step.title}</b>
+                      {statusGlyph(step.status)} {String(index() + 1).padStart(2, "0")} · <b>{tStep(step.id)}</b>
                     </text>
                     <Show when={step.status === "processing"}>
                       <text fg={theme.ice}>
@@ -1396,12 +1390,12 @@ export function App() {
               </For>
             </scrollbox>
             <box flexShrink={0} border={["top"]} borderColor={theme.border} paddingTop={1}>
-              <text fg={theme.text}><b>当前有效产物</b></text>
-              <text fg={theme.textMuted}>● 成功  − 跳过（见原因）  × 失败</text>
-              <text fg={theme.textMuted}>跳过不一定是失败；已计入“已处理”。</text>
+              <text fg={theme.text}><b>{t("sidebarCurrentArtifact")}</b></text>
+              <text fg={theme.textMuted}>{t("sidebarLegend")}</text>
+              <text fg={theme.textMuted}>{t("sidebarSkipNote")}</text>
               <box height={1} />
               <text fg={theme.textMuted} wrapMode="word">
-                {currentArtifactName() ?? "尚未生成"}
+                {currentArtifactName() ?? t("sidebarNotGenerated")}
               </text>
               <Show when={artifactInfo()}>
                 {(info) => (
@@ -1410,12 +1404,12 @@ export function App() {
                       {formatBytes(info().size)} · SHA-256 {info().sha256.slice(0, 12)}…
                     </text>
                     <text fg={theme.accentStrong} selectable={false} onMouseUp={() => openArtifactFolder()}>
-                      ▸ 打开所在目录
+                      {t("sidebarOpenFolder")}
                     </text>
                   </>
                 )}
               </Show>
-              <text fg={theme.textMuted}>失败不覆盖 · 本地处理</text>
+              <text fg={theme.textMuted}>{t("sidebarNoOverwrite")}</text>
             </box>
           </box>
         </Show>
@@ -1431,7 +1425,7 @@ export function App() {
       >
         <text fg={theme.textMuted}>DroidSeal</text>
         <box flexGrow={1} />
-        <text fg={theme.textMuted}>交互区 {interactionZoom()}% · Ctrl± · secrets redacted</text>
+        <text fg={theme.textMuted}>{t("bottomBar").replace("{zoom}", String(interactionZoom()))}</text>
       </box>
     </box>
   )
