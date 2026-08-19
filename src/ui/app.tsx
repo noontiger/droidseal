@@ -369,6 +369,12 @@ export function App() {
     renderer.setTerminalTitle("DroidSeal · Android release security pipeline")
     const timer = setInterval(() => setSpinnerIndex((value) => (value + 1) % SPINNER.length), 120)
     onCleanup(() => clearInterval(timer))
+    // Ctrl+C 永不退出:拦截 SIGINT 并复制当前输入(终端 ISIG 未清除时 Ctrl+C 会先发信号)
+    const interruptHandler = () => {
+      copyToClipboard(isSecretQuestion() ? secretBuffer() : composer())
+    }
+    process.on("SIGINT", interruptHandler)
+    onCleanup(() => process.off("SIGINT", interruptHandler))
   })
 
   // 处理中强制消息区贴底:新步骤消息出现时保持在底部可见,避免停留在旧位置
@@ -999,14 +1005,14 @@ export function App() {
   useKeyboard((event) => {
     if (event.ctrl) {
       const ctrlKey = (event.sequence || event.name).toLowerCase()
-      // Ctrl+C 复制当前输入、Ctrl+V 粘贴剪贴板;不再触发退出
-      if (ctrlKey === "c") {
+      // Ctrl+C 复制当前输入、Ctrl+V 粘贴剪贴板;不再触发退出(含原始字节 \x03 / \x16)
+      if (ctrlKey === "c" || ctrlKey === "\u0003") {
         event.preventDefault()
         event.stopPropagation()
         copyToClipboard(isSecretQuestion() ? secretBuffer() : composer())
         return
       }
-      if (ctrlKey === "v") {
+      if (ctrlKey === "v" || ctrlKey === "\u0016") {
         event.preventDefault()
         event.stopPropagation()
         const pasted = readClipboard()
