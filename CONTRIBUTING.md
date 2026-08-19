@@ -1,97 +1,99 @@
-# 为 DroidSeal 贡献
+# Contributing to DroidSeal
 
-感谢你帮助改进 DroidSeal。项目接受缺陷修复、文案与可访问性改进、测试、平台兼容修复，以及面向合法 Android 应用安全发布的功能。
+[中文](CONTRIBUTING.zh-CN.md) | [English](CONTRIBUTING.md)
 
-参与社区即表示同意遵守 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。安全漏洞不要提交公开 Issue，请遵循 [SECURITY.md](SECURITY.md)。
+Thank you for helping improve DroidSeal. The project accepts bug fixes, copy and accessibility improvements, tests, platform compatibility fixes, and features for the secure release of legitimate Android applications.
 
-## 项目治理
+By participating in the community you agree to abide by the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Do not file security vulnerabilities as public issues; follow [SECURITY.md](SECURITY.md) instead.
 
-DroidSeal 采用 Maintainer-led 治理。维护者负责项目方向、安全边界、兼容性承诺、发布质量和最终合并决定，具体参见 [GOVERNANCE.md](GOVERNANCE.md)。大型架构变化、新下载源或新安全控制应先讨论再实现。
+## Project governance
+
+DroidSeal uses Maintainer-led governance. Maintainers are responsible for project direction, security boundaries, compatibility commitments, release quality, and final merge decisions; see [GOVERNANCE.md](GOVERNANCE.md). Large architectural changes, new download sources, or new security controls should be discussed before being implemented.
 
 ## Developer Certificate of Origin
 
-DroidSeal 使用 Developer Certificate of Origin 1.1（DCO）接受外部贡献。每个提交都必须包含有效的 `Signed-off-by` 行，以确认提交者有权按照项目许可证提供该贡献。
+DroidSeal accepts external contributions under the Developer Certificate of Origin 1.1 (DCO). Every commit must carry a valid `Signed-off-by` line confirming the committer has the right to contribute under the project license.
 
-创建已签署提交：
+Create a signed commit:
 
 ```bash
 git commit -s
 ```
 
-生成的提交信息应包含：
+The resulting commit message should contain:
 
 ```text
 Signed-off-by: Your Name <your.email@example.com>
 ```
 
-请使用真实姓名或你依法可以使用的身份，不要代替他人签署。DCO 1.1 全文见 <https://developercertificate.org/>。
+Use your real name or an identity you may lawfully use; do not sign on behalf of others. The full DCO 1.1 text is at <https://developercertificate.org/>.
 
-## 开发环境
+## Development environment
 
-要求：
+Requirements:
 
-- Bun 1.3 或更高版本；
-- 受支持的交互式终端；
-- 与所测试流程对应的 JDK、Android SDK 和 Build Tools。
+- Bun 1.3 or newer;
+- a supported interactive terminal;
+- JDK, Android SDK and Build Tools matching the flows under test.
 
 ```bash
 bun install --frozen-lockfile
 bun run dev
 ```
 
-提交前运行：
+Run before committing:
 
 ```bash
 bun run verify
 ```
 
-`verify` 会依次执行 TypeScript 严格检查、测试、构建和开源发布检查。
+`verify` runs strict TypeScript checks, tests, the build, and the open-source release check in sequence.
 
-## 贡献范围
+## Contribution scope
 
-欢迎：
+Welcome:
 
-- APK、Manifest、ZIP、DEX 和 SO 的防御性审计；
-- Gradle、R8、zipalign、keytool 和 apksigner 工作流；
-- 自研 opt-in 构建期反调试 stub 与安全审计基线的改进；
-- 事务回退、脱敏、错误解释和 TUI 可访问性；
-- Windows、macOS 和 Linux 兼容性；
-- 文档、测试、报告格式和发布工程改进。
+- defensive audits of APK, Manifest, ZIP, DEX and SO;
+- Gradle, R8, zipalign, keytool and apksigner workflows;
+- improvements to the opt-in build-time anti-debug stub and security audit baselines;
+- transactional rollback, redaction, error explanations and TUI accessibility;
+- Windows, macOS and Linux compatibility;
+- documentation, tests, report formats and release engineering improvements.
 
-不接受：
+Not accepted:
 
-- 未授权脱壳、Hook、证书校验绕过或安全检测规避；
-- 窃取签名密钥、凭据或受保护代码；
-- 将真实 APK、AAB、JKS、PKCS12、私钥或密码提交到仓库；
-- 静默下载、执行或上传用户文件的行为。
+- unauthorized unpacking, hooks, certificate verification bypasses, or security detection evasion;
+- stealing signing keys, credentials, or protected code;
+- committing real APKs, AABs, JKS, PKCS12, private keys, or passwords to the repository;
+- behavior that silently downloads, executes, or uploads user files.
 
-## Pull Request 要求
+## Pull Request requirements
 
-1. 每个 PR 只处理一个清晰问题。
-2. 每个提交包含有效的 DCO `Signed-off-by` 行。
-3. 行为变化必须包含测试；文案变化应覆盖关键分支。
-4. 不要提交 `node_modules`、`dist`、`.droidseal`、APK 或签名材料。
-5. 新依赖必须说明用途、许可证、维护状态和无法使用现有依赖实现的原因。
-6. 外部命令必须用参数数组启动，不能拼接 shell 字符串。
-7. 所有密码必须通过子进程环境传递，并加入输出脱敏列表。
-8. 失败分支必须保留或恢复上一个有效 APK。
-9. 用户可见变化应更新 README 和 CHANGELOG。
-10. 提交前运行 `bun run verify`。
+1. One clear issue per PR.
+2. Every commit carries a valid DCO `Signed-off-by` line.
+3. Behavior changes must include tests; copy changes should cover key branches.
+4. Do not commit `node_modules`, `dist`, `.droidseal`, APKs, or signing material.
+5. New dependencies must explain purpose, license, maintenance status, and why existing dependencies cannot be used.
+6. External commands must be launched as argument arrays, not concatenated shell strings.
+7. All passwords must be passed through the child process environment and added to the output redaction list.
+8. Failure paths must preserve or restore the previous valid APK.
+9. User-visible changes should update README and CHANGELOG.
+10. Run `bun run verify` before committing.
 
-## 安全敏感改动
+## Security-sensitive changes
 
-涉及进程执行、参数解析、路径规范化、归档处理、自动下载、校验和、签名凭据、密钥库、输出脱敏、网络访问或权限变化时，PR 必须说明安全影响、威胁边界和验证方式，并由 CODEOWNERS 审核。
+When a change touches process execution, argument parsing, path normalization, archive handling, automatic downloads, checksums, signing credentials, keystores, output redaction, network access, or permission changes, the PR must state the security impact, threat boundary, and verification approach, and be reviewed by CODEOWNERS.
 
-## 报告普通缺陷
+## Reporting ordinary bugs
 
-使用 Bug Report 模板，并提供：
+Use the Bug Report template and provide:
 
-- DroidSeal 版本；
-- 操作系统、终端、Bun、JDK 和 Android Build Tools 版本；
-- 输入类型（APK 或项目），不要上传真实应用；
-- 步骤名称、错误码和已脱敏输出；
-- 最小复现方式。
+- the DroidSeal version;
+- OS, terminal, Bun, JDK and Android Build Tools versions;
+- the input type (APK or project); do not upload real applications;
+- step name, error code, and redacted output;
+- a minimal reproduction.
 
-## 贡献许可
+## Contribution licensing
 
-除非另有明确约定，源代码、测试、文档和示例贡献按照 MIT License 分发。DCO 签署证明你有权提交贡献，不会把贡献的版权转让给维护者。
+Unless explicitly agreed otherwise, source code, tests, documentation, and example contributions are distributed under the Apache License 2.0. The DCO signature proves you have the right to submit the contribution; it does not transfer copyright to the maintainers.

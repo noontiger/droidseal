@@ -1,77 +1,79 @@
-# DroidSeal 安全政策
+# DroidSeal Security Policy
 
-DroidSeal 会处理 Android 应用产物、调用外部工具并接触签名凭据，因此安全报告按高优先级处理。
+[中文](SECURITY.zh-CN.md) | [English](SECURITY.md)
 
-## 支持范围
+DroidSeal processes Android application artifacts, invokes external tools, and handles signing credentials, so security reports are handled with high priority.
 
-| 版本 | 支持状态 |
+## Supported versions
+
+| Version | Support status |
 | --- | --- |
-| 最新发布版 | 支持 |
-| 上一个发布版 | 尽力支持 |
-| 更早版本 | 不支持 |
-| 开发快照 | 不承诺兼容性 |
+| Latest release | Supported |
+| Previous release | Best effort |
+| Older versions | Not supported |
+| Development snapshots | No compatibility commitment |
 
-项目当前处于 `0.x` Alpha 阶段。安全修复优先应用到最新版本，支持范围会随项目成熟度调整。
+The project is currently in `0.x` Alpha. Security fixes are applied to the latest version first; the support scope will adjust as the project matures.
 
-## 私下报告漏洞
+## Reporting vulnerabilities privately
 
-不要通过公开 Issue、Discussion、Pull Request 或社交媒体报告安全漏洞。
+Do not report security vulnerabilities through public Issues, Discussions, Pull Requests, or social media.
 
-官方仓库公开并启用 Private Vulnerability Reporting 后，请使用：
+Once the official repository enables Private Vulnerability Reporting, please use:
 
 <https://github.com/noontiger/droidseal/security/advisories/new>
 
-在该私密通道启用前，请先通过维护者经过验证的 GitHub 账号请求一个私密联系方式；在安全通道得到确认前，不要发送漏洞细节、附件或凭据。项目目前没有公布安全邮箱，因此不要猜测或使用未经确认的邮箱地址。
+Until that private channel is enabled, first request a private contact through a verified GitHub account of a maintainer; do not send vulnerability details, attachments, or credentials until a secure channel is confirmed. The project currently publishes no security email address, so do not guess or use unconfirmed addresses.
 
-报告尽量包含：
+Reports should include where possible:
 
-- 受影响的 DroidSeal 版本或 commit；
-- 操作系统、架构、终端和 shell；
-- Bun、JDK、Android SDK 和 Build Tools 版本；
-- 最小复现步骤、预期与实际行为；
-- 安全影响和是否已发现实际利用；
-- 已移除 secret 和私有数据的概念验证文件。
+- the affected DroidSeal version or commit;
+- OS, architecture, terminal, and shell;
+- Bun, JDK, Android SDK, and Build Tools versions;
+- minimal reproduction steps, expected and actual behavior;
+- the security impact and whether real exploitation was observed;
+- proof-of-concept files with secrets and private data removed.
 
-不要发送生产签名密钥、真实密钥库密码、私有客户 APK、访问令牌、无权披露的专有源码或无关个人数据。
+Do not send production signing keys, real keystore passwords, private customer APKs, access tokens, proprietary source code you are not authorized to disclose, or unrelated personal data.
 
-## 安全问题范围
+## Security issue scope
 
-包括但不限于：
+Including but not limited to:
 
-- shell、参数、命令或环境变量注入；
-- 路径穿越、不安全路径规范化或任意文件覆盖；
-- ZIP 路径、重复条目、归档混淆或解压问题；
-- 签名验证绕过或错误制品选择；
-- 凭据、密码、证书主体或本机路径泄露；
-- 报告和日志脱敏失败；
-- 未预期的网络通信；
-- 不安全工具下载或校验和验证；
-- 临时文件泄露、竞争条件或权限提升；
-- 恶意项目或 APK 输入导致未授权代码执行；
-- 官方发布物的供应链风险。
+- shell, argument, command, or environment variable injection;
+- path traversal, unsafe path normalization, or arbitrary file overwrite;
+- ZIP path, duplicate entry, archive confusion, or extraction issues;
+- signature verification bypasses or wrong artifact selection;
+- leakage of credentials, passwords, certificate subjects, or local paths;
+- report and log redaction failures;
+- unexpected network communication;
+- insecure tool downloads or checksum verification;
+- temporary file disclosure, race conditions, or privilege escalation;
+- unauthorized code execution from malicious project or APK input;
+- supply chain risks of official releases.
 
-## 处理目标
+## Handling goals
 
-维护者计划：
+Maintainers plan to:
 
-1. 在 7 天内确认收到有效报告；
-2. 确认受影响版本并完成影响评估；
-3. 准备修复和回归测试；
-4. 协调发布与披露时间；
-5. 必要时发布安全公告并建议轮换凭据；
-6. 除非报告者要求匿名，在发布后致谢。
+1. acknowledge receipt of a valid report within 7 days;
+2. confirm affected versions and complete an impact assessment;
+3. prepare fixes and regression tests;
+4. coordinate release and disclosure timing;
+5. publish a security advisory and recommend credential rotation when necessary;
+6. thank reporters after release unless they request anonymity.
 
-这些是项目目标，不构成服务级别协议。
+These are project goals and do not constitute a service level agreement.
 
-## 协调披露与安全研究
+## Coordinated disclosure and security research
 
-请给维护者合理时间完成调查和修复。善意研究应只针对研究者有权测试的应用和系统，避免访问他人数据、破坏文件或设备、干扰服务以及使用被盗或未授权签名凭据。
+Please give maintainers reasonable time to investigate and fix. Good-faith research should target only applications and systems the researcher is authorized to test, avoid accessing others' data, damaging files or devices, disrupting services, and using stolen or unauthorized signing credentials.
 
-符合本政策、避免隐私侵犯和破坏性活动的善意研究会得到建设性处理。本声明不构成合同义务，也不替代适用法律。
+Good-faith research that complies with this policy, avoids privacy violations, and avoids destructive activity will be handled constructively. This statement does not create contractual obligations and does not supersede applicable law.
 
-## 用户安全提醒
+## User security reminders
 
-- 只处理自己拥有或获授权处理的 APK 或项目。
-- 发布密钥应离线备份，不要放在项目或输出目录中。
-- 分享报告前检查其中的本机输入和输出路径。
-- 自动下载 Android/JDK 工具前阅读并接受其各自许可条款。
+- Only process APKs or projects you own or are authorized to handle.
+- Back up release keys offline; do not keep them in project or output directories.
+- Review local input and output paths in reports before sharing them.
+- Read and accept the license terms of Android/JDK tools before auto-downloading them.
