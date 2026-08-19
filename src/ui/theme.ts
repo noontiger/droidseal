@@ -14,12 +14,12 @@ export const theme = {
   accentStrong: "#79c9e7",
   ice: "#00a8cc",
   input: "#66c8e8",
-  complete: "#ffdf4d",
-  purple: "#c6a0f6",
+  complete: "#63d6aa",
+  purple: "#00a8cc",
   success: "#63d6aa",
   warning: "#f0bd68",
   error: "#ed8796",
-  info: "#8aadf4",
+  info: "#00a8cc",
 } as const
 
 export function stepColor(status: StepStatus): string {
