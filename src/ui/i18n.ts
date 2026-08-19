@@ -340,6 +340,9 @@ const en = {
     "The input is an APK, so this step is marked “Skipped · not applicable”; the APK security audit still runs.",
   guidanceApplicabilityBuild:
     "The input is already an APK, so this step is marked “Skipped · not applicable” and is not rebuilt.",
+  guidStepSkippable:
+    "You may execute this step or skip it manually; skipping never changes the current valid APK and is marked “User choice” in the report.",
+  guidStepRequired: "This is a base step needed to build a valid artifact; it cannot be skipped manually.",
 
   // 流水线消息
   msgStepN: "Step {current}/{total}",
@@ -696,6 +699,8 @@ const zh: Record<keyof typeof en, string> = {
     "保存最终 APK、JSON/Markdown、发布证据、CycloneDX SBOM、许可证待核验清单及置信度感知发布门禁；外部控制不会被静态信号误标为已完成，密码与 keystore 不会进入制品。",
   guidanceApplicabilitySourceAudit: "输入是 APK，本步骤会标记为“跳过·不适用”；后续 APK 安全审计仍会执行。",
   guidanceApplicabilityBuild: "输入已经是 APK，本步骤会标记为“跳过·不适用”，不会重复构建。",
+  guidStepSkippable: "可执行此步，也可手动跳过；手动跳过不会改动当前有效 APK，并会在报告中标记“用户选择”。",
+  guidStepRequired: "这是建立有效产物所需的基础步骤，不能手动跳过。",
 
   msgStepN: "第 {current}/{total} 步",
   msgSkipped: "已跳过 · {kind}：{summary}",

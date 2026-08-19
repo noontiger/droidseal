@@ -527,12 +527,10 @@ export function App() {
     }
     setCurrentStepIndex(index)
     setNeedsFailureAdvance(false)
-    addMessage("assistant", `第 ${index + 1}/${STEP_DEFINITIONS.length} 步：${state.title}`, [
-      state.description,
-      ...stepGuidance(state.id, pipeline()!.config),
-      state.skippable
-        ? "可执行此步，也可手动跳过；手动跳过不会改动当前有效 APK，并会在报告中标记“用户选择”。"
-        : "这是建立有效产物所需的基础步骤，不能手动跳过。",
+    addMessage("assistant", `${t("msgStepN").replace("{current}", String(index + 1)).replace("{total}", String(STEP_DEFINITIONS.length))}：${tStep(state.id)}`, [
+      tStepDesc(state.id),
+      ...tGuidance(state.id, pipeline()!.config),
+      state.skippable ? t("guidStepSkippable") : t("guidStepRequired"),
     ])
   }
 
