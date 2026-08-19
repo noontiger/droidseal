@@ -1,5 +1,6 @@
 // TUI 全量中英文文案(默认英文;右上角切换按钮在 en/zh 之间切换)
 import { createSignal } from "solid-js"
+import type { PipelineConfig } from "../core/types.ts"
 
 export const [language, setLanguage] = createSignal<"en" | "zh">("en")
 
@@ -304,6 +305,41 @@ const en = {
   sumOverwriteNote: "（will overwrite the original file）",
   sumAlias: "Alias: {alias}",
   sumPassword: "Password: ••••••（memory only）",
+
+  // 步骤指引(stepGuidance)
+  guidanceDoctor: "Only checks tool locations and versions; never modifies the APK or the system PATH.",
+  guidancePrepare: "APK input is copied to this run's directory first; later steps never overwrite the original file.",
+  guidanceSourceAudit:
+    "Reads Gradle and Manifest configuration (permission model, exported/deep-link components, meta-data secrets, network security config and backup rules); never auto-modifies source.",
+  guidanceBuild: "Runs {task}, then copies the generated APK into the workspace.",
+  guidanceApkAudit:
+    "Reads the APK's ZIP, Manifest (permissions, exported/deep-link components, compliance, meta-data secrets), DEX strings and SO hardening info; never modifies the APK.",
+  guidanceProtect:
+    "Runs the local safety baseline: verifies protection coverage from source/APK evidence; R8, Release normalization, optional resource obfuscation, alignment, signing and verification are implemented by their steps. Insufficient evidence only yields low-confidence hints; never injects startup code into unknown APKs.",
+  guidanceHardenSkip:
+    "Before alignment, forces android:debuggable=false in the binary Manifest; final verification confirms again. Because this run does not re-sign, residual entries are not stripped when a valid existing signature is detected, avoiding uninstallable APKs.",
+  guidanceHarden:
+    "Before alignment and signing, forces android:debuggable=false in the binary Manifest; final verification confirms again.",
+  guidanceWebAssetsOn:
+    "Explicit optional step: only processes JavaScript under assets/public and assets/www; ES modules get top-level mangling, plain scripts keep global names that may be called by other scripts or HTML. Output is atomically written only after all scripts succeed, and source maps are removed. Minification only raises the reading barrier, not secrecy.",
+  guidanceWebAssetsOff:
+    "Web JavaScript release processing is not enabled; this step is skipped per config without rewriting front-end assets in the APK.",
+  guidanceArscOn:
+    "Lossy optional step: parses resources.arsc and runs a strict compatibility precheck; when getIdentifier is present every entry name is kept, res/ paths referenced directly by DEX are kept, and only the rest are renamed. The new package is realigned and re-signed afterwards.",
+  guidanceArscOff: "Resource-name obfuscation is not enabled; this step is skipped per config without rewriting any resources.",
+  guidanceAlign: "zipalign must run before signing; when not re-signing, the existing v2/v3 signature is protected first.",
+  guidanceKeystoreSkip: "This run chooses not to re-sign, so no keystore is read.",
+  guidanceKeystore: "Only verifies the keystore, password and PrivateKeyEntry alias; never modifies the keystore.",
+  guidanceSignSkip: "This run chooses not to re-sign; the next step still verifies the APK's existing signature.",
+  guidanceSign: "apksigner generates a new signed copy without overwriting the input APK.",
+  guidanceVerify:
+    "Independently verifies zipalign, the APK signing scheme and the certificate (scheme coverage, validity, debug certificates and weak-key detection), and computes SHA-256.",
+  guidanceReport:
+    "Saves the final APK, JSON/Markdown, release evidence, CycloneDX SBOM, license verification list and a confidence-aware release gate; external controls are not falsely marked as done by static signals, and passwords/keystores never enter artifacts.",
+  guidanceApplicabilitySourceAudit:
+    "The input is an APK, so this step is marked “Skipped · not applicable”; the APK security audit still runs.",
+  guidanceApplicabilityBuild:
+    "The input is already an APK, so this step is marked “Skipped · not applicable” and is not rebuilt.",
 
   // 流水线消息
   msgStepN: "Step {current}/{total}",
@@ -631,6 +667,36 @@ const zh: Record<keyof typeof en, string> = {
   sumAlias: "别名：{alias}",
   sumPassword: "密码：••••••（仅内存）",
 
+  guidanceDoctor: "只检查工具位置和版本，不修改 APK 或系统 PATH。",
+  guidancePrepare: "APK 输入会先复制到本次运行目录；后续步骤不会覆盖原文件。",
+  guidanceSourceAudit:
+    "读取 Gradle 与 Manifest 配置（含权限模型、导出/深链组件、meta-data 密钥、网络安全配置与备份规则），不自动修改源码。",
+  guidanceBuild: "执行 {task}，再把生成的 APK 复制到工作区。",
+  guidanceApkAudit:
+    "读取 APK 的 ZIP、Manifest（权限、导出/深链组件、合规、meta-data 密钥）、DEX 字符串与 SO 加固信息，不修改 APK。",
+  guidanceProtect:
+    "执行本地安全档：结合源码/APK 证据核验保护覆盖；R8、Release 归一化、可选资源混淆、对齐、签名和验证由对应步骤落实。证据不足只作低置信度提示，不对未知 APK 注入启动代码。",
+  guidanceHardenSkip:
+    "在对齐前，把二进制 Manifest 的 android:debuggable 强制改为 false；最终验证会再次确认。当前不重新签名，因此检测到有效现有签名时不会剔除残留条目，避免产出无法安装的 APK。",
+  guidanceHarden: "在对齐和签名前，把二进制 Manifest 的 android:debuggable 强制改为 false；最终验证会再次确认。",
+  guidanceWebAssetsOn:
+    "显式可选步骤：仅处理 assets/public 与 assets/www 下的 JavaScript；ES module 才启用顶层 mangle，普通脚本保留可能被 HTML/其他脚本调用的全局名。全部脚本成功后才原子写出，并移除 source map。压缩混淆只提高阅读门槛，不等于保密。",
+  guidanceWebAssetsOff: "当前未开启 Web JavaScript 发布处理；本步骤按配置跳过，不改写 APK 内前端资产。",
+  guidanceArscOn:
+    "有损可选步骤：解析 resources.arsc 并做严格兼容性预检；出现 getIdentifier 时保留全部条目名，DEX 直接引用的资源路径也保留，其余项才重命名。生成新包后仍会重新对齐与签名。",
+  guidanceArscOff: "当前未开启资源名混淆，本步骤会按配置跳过，不改写任何资源。",
+  guidanceAlign: "zipalign 必须在签名前执行；未重签时会优先保护已有 v2/v3 签名。",
+  guidanceKeystoreSkip: "当前选择“不重新签名”，因此无需读取签名库。",
+  guidanceKeystore: "只验证签名库、密码和 PrivateKeyEntry 别名，不修改签名库。",
+  guidanceSignSkip: "当前选择“不重新签名”；下一步仍会验证 APK 的现有签名。",
+  guidanceSign: "apksigner 会生成新的已签名副本，不覆盖输入 APK。",
+  guidanceVerify:
+    "独立验证 zipalign、APK 签名方案与证书（含签名方案覆盖、证书有效期、调试证书与弱密钥检测），并计算 SHA-256。",
+  guidanceReport:
+    "保存最终 APK、JSON/Markdown、发布证据、CycloneDX SBOM、许可证待核验清单及置信度感知发布门禁；外部控制不会被静态信号误标为已完成，密码与 keystore 不会进入制品。",
+  guidanceApplicabilitySourceAudit: "输入是 APK，本步骤会标记为“跳过·不适用”；后续 APK 安全审计仍会执行。",
+  guidanceApplicabilityBuild: "输入已经是 APK，本步骤会标记为“跳过·不适用”，不会重复构建。",
+
   msgStepN: "第 {current}/{total} 步",
   msgSkipped: "已跳过 · {kind}：{summary}",
   msgPipelineCreated: "流水线已创建",
@@ -722,4 +788,31 @@ const stepDescKeys: Record<string, I18nKey> = {
 export function tStepDesc(stepId: string): string {
   const key = stepDescKeys[stepId]
   return key ? t(key) : stepId
+}
+
+// 步骤指引按 id + 配置查翻译(第 X 步消息体)
+export function tGuidance(stepId: string, config: PipelineConfig): string[] {
+  const common: Record<string, string> = {
+    doctor: t("guidanceDoctor"),
+    prepare: t("guidancePrepare"),
+    "source-audit": t("guidanceSourceAudit"),
+    build: t("guidanceBuild").replace("{task}", config.gradleTask),
+    "apk-audit": t("guidanceApkAudit"),
+    protect: t("guidanceProtect"),
+    harden: config.signing.mode === "skip" ? t("guidanceHardenSkip") : t("guidanceHarden"),
+    "web-assets": config.enableWebAssetMinification ? t("guidanceWebAssetsOn") : t("guidanceWebAssetsOff"),
+    "arsc-obfuscate": config.enableArscObfuscation ? t("guidanceArscOn") : t("guidanceArscOff"),
+    align: t("guidanceAlign"),
+    keystore: config.signing.mode === "skip" ? t("guidanceKeystoreSkip") : t("guidanceKeystore"),
+    sign: config.signing.mode === "skip" ? t("guidanceSignSkip") : t("guidanceSign"),
+    verify: t("guidanceVerify"),
+    report: t("guidanceReport"),
+  }
+  const applicability =
+    stepId === "source-audit" && config.inputKind === "apk"
+      ? t("guidanceApplicabilitySourceAudit")
+      : stepId === "build" && config.inputKind === "apk"
+        ? t("guidanceApplicabilityBuild")
+        : undefined
+  return applicability ? [common[stepId] ?? stepId, applicability] : [common[stepId] ?? stepId]
 }

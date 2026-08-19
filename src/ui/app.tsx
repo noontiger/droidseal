@@ -12,9 +12,9 @@ import {
 import type { MouseEvent, ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@opentui/solid"
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
-import { Pipeline, STEP_DEFINITIONS, statusGlyph, stepGuidance } from "../core/pipeline.ts"
+import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
-import { language, setLanguage, t, tStep, tStepDesc } from "./i18n.ts"
+import { language, setLanguage, t, tGuidance, tStep, tStepDesc } from "./i18n.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -618,7 +618,7 @@ export function App() {
           const index = STEP_DEFINITIONS.findIndex((step) => step.id === event.step.id)
           addMessage("assistant", `${t("msgStepN").replace("{current}", String(index + 1)).replace("{total}", String(STEP_DEFINITIONS.length))}：${tStep(event.step.id)}`, [
             tStepDesc(event.step.id),
-            ...stepGuidance(event.step.id, config),
+            ...tGuidance(event.step.id, config),
           ])
         }
       } else if (event.type === "step-progress") {
