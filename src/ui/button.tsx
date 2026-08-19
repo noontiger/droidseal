@@ -8,6 +8,7 @@ export function Button(props: {
   tone?: "accent" | "neutral" | "danger" | "input"
   disabled?: boolean
   focused?: boolean
+  centered?: boolean
   onPress: () => void
 }) {
   const [hovered, setHovered] = createSignal(false)
@@ -48,6 +49,7 @@ export function Button(props: {
   return (
     <box
       flexDirection="column"
+      alignItems={props.centered ? "center" : "flex-start"}
       border
       borderColor={border()}
       backgroundColor={background()}

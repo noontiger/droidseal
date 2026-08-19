@@ -14,7 +14,7 @@ import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@open
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
 import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
-import { language, setLanguage, t, tGuidance, translateProgress, tStep, tStepDesc } from "./i18n.ts"
+import { language, setLanguage, t, tGuidance, translateProgress, translateSummary, tStep, tStepDesc } from "./i18n.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -51,6 +51,7 @@ interface ActiveButton {
   shortcut?: string
   tone?: "accent" | "neutral" | "danger" | "input"
   disabled?: boolean
+  centered?: boolean
   onPress: () => void
 }
 type MessageRole = "assistant" | "user" | "success" | "error" | "system" | "warning"
@@ -92,6 +93,26 @@ function readClipboard(): string {
     // 剪贴板不可用时静默返回空
   }
   return ""
+}
+
+// 复制文本到系统剪贴板(Ctrl+C 用);失败时静默返回
+function copyToClipboard(text: string): void {
+  if (!text) return
+  try {
+    if (process.platform === "win32") {
+      const safe = text.replace(/'/g, "''")
+      Bun.spawnSync(["powershell", "-NoProfile", "-Command", `Set-Clipboard -Value '${safe}'`])
+    } else {
+      for (const command of [["xclip", "-selection", "clipboard"], ["wl-copy"]]) {
+        const proc = Bun.spawn(command, { stdin: "pipe" })
+        proc.stdin?.write(text)
+        proc.stdin?.end()
+        return
+      }
+    }
+  } catch {
+    // 剪贴板不可用时静默返回
+  }
 }
 
 function roleColor(role: MessageRole): string {
@@ -307,8 +328,8 @@ export function App() {
     if (screen() === "pipeline") {
       if (pipelineDone()) {
         return [
-          { label: t("btnNewTask"), tone: "accent" as const, onPress: resetHome },
-          { label: t("btnExit"), onPress: () => renderer.destroy() },
+          { label: t("btnNewTask"), detail: t("btnNewTaskDetail"), tone: "accent" as const, centered: true, onPress: resetHome },
+          { label: t("btnExit"), detail: t("btnExitDetail"), centered: true, onPress: () => renderer.destroy() },
         ]
       }
       if (!busy() && pipeline()?.config.runMode === "guided" && !toolRecovery()) {
@@ -639,8 +660,8 @@ export function App() {
         const detail = [...event.result.detail]
         if (event.result.rollbackMessage) detail.push(event.result.rollbackMessage)
         const title = event.result.status === "skipped"
-          ? t("msgSkipped").replace("{kind}", skipKindLabel(event.result.skipKind)).replace("{summary}", event.result.summary)
-          : event.result.summary
+          ? t("msgSkipped").replace("{kind}", skipKindLabel(event.result.skipKind)).replace("{summary}", translateSummary(event.result.summary))
+          : translateSummary(event.result.summary)
         addMessage(resultRole(event.result), title, detail)
       }
     })
@@ -977,6 +998,23 @@ export function App() {
 
   useKeyboard((event) => {
     if (event.ctrl) {
+      const ctrlKey = (event.sequence || event.name).toLowerCase()
+      // Ctrl+C 复制当前输入、Ctrl+V 粘贴剪贴板;不再触发退出
+      if (ctrlKey === "c") {
+        event.preventDefault()
+        event.stopPropagation()
+        copyToClipboard(isSecretQuestion() ? secretBuffer() : composer())
+        return
+      }
+      if (ctrlKey === "v") {
+        event.preventDefault()
+        event.stopPropagation()
+        const pasted = readClipboard()
+        if (!pasted) return
+        if (isSecretQuestion()) setSecretBuffer((value) => value + pasted)
+        else setComposer((value) => (value ? `${value}${pasted}` : pasted))
+        return
+      }
       const direction = zoomDirectionFromKey(event.name, event.sequence)
       if (direction) {
         event.preventDefault()
@@ -1102,7 +1140,7 @@ export function App() {
         paddingLeft={2}
         paddingRight={2}
         paddingTop={1}
-        paddingBottom={1}
+        paddingBottom={0}
         border={["bottom"]}
         borderColor={theme.border}
       >
@@ -1136,7 +1174,7 @@ export function App() {
               borderColor={theme.borderActive}
               paddingLeft={1}
               paddingRight={1}
-              marginTop={1}
+              marginTop={0}
               onMouseUp={() => setLanguage((current) => (current === "en" ? "zh" : "en"))}
             >
               <text fg={theme.accentStrong} selectable={false}>
@@ -1261,6 +1299,7 @@ export function App() {
                   {...(button.shortcut !== undefined ? { shortcut: button.shortcut } : {})}
                   {...(button.tone !== undefined ? { tone: button.tone } : {})}
                   {...(button.disabled !== undefined ? { disabled: button.disabled } : {})}
+                  {...(button.centered !== undefined ? { centered: button.centered } : {})}
                   focused={index() === focusedButtonIndex()}
                   onPress={button.onPress}
                 />
@@ -1268,7 +1307,7 @@ export function App() {
             </For>
 
             <Show when={screen() !== "welcome"}>
-              <Button label="回到首页" detail="清空当前进度，返回首页" onPress={resetHome} />
+              <Button label={t("btnHome")} detail={t("btnHomeDetail")} disabled={busy()} onPress={resetHome} />
             </Show>
           </box>
 
@@ -1392,7 +1431,7 @@ export function App() {
                       </text>
                     </Show>
                     <Show when={step.result}>
-                      {(result) => <text fg={theme.textMuted} wrapMode="word">  {result().summary}</text>}
+                      {(result) => <text fg={theme.textMuted} wrapMode="word">  {translateSummary(result().summary)}</text>}
                     </Show>
                   </box>
                 )}

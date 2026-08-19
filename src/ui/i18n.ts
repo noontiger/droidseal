@@ -75,7 +75,9 @@ const en = {
   btnRefill: "Refill",
   btnRefillDetail: "Clear this in-memory configuration",
   btnNewTask: "New task",
+  btnNewTaskDetail: "Start a new pipeline run",
   btnExit: "Exit",
+  btnExitDetail: "Close DroidSeal",
   btnRollbackAdvance: "Skip and roll back, continue",
   btnRollbackAdvanceDetail: "The APK is restored to the state before the step",
   btnExecute: "Execute step",
@@ -462,7 +464,9 @@ const zh: Record<keyof typeof en, string> = {
   btnRefill: "重新填写",
   btnRefillDetail: "清空本次内存配置",
   btnNewTask: "开始新任务",
+  btnNewTaskDetail: "开始新的流水线运行",
   btnExit: "退出",
+  btnExitDetail: "关闭并退出 DroidSeal",
   btnRollbackAdvance: "跳过并回退，进入下一步",
   btnRollbackAdvanceDetail: "当前 APK 已恢复为步骤开始前版本",
   btnExecute: "执行此步",
@@ -925,4 +929,51 @@ export function translateProgress(message: string): string {
     if (match) return entry.to(match)
   }
   return message
+}
+
+// 步骤结果摘要翻译(中文 → 英文;未匹配时原样返回)
+const summaryTranslations: Array<{ match: RegExp; to: (m: RegExpExecArray) => string }> = [
+  { match: /^所选流程的必需工具均可用$/, to: () => "Required tools for the selected flow are available" },
+  { match: /^项目路径与事务工作区已准备$/, to: () => "Project path and transactional workspace prepared" },
+  { match: /^输入 APK 已复制到隔离工作区$/, to: () => "Input APK copied to an isolated workspace" },
+  { match: /^输入为 APK，源码安全审计不适用$/, to: () => "Input is an APK; source security audit not applicable" },
+  { match: /^源码审计完成:(\d+) 项发现$/, to: (m) => `Source audit complete: ${m[1]} findings` },
+  { match: /^输入已经是 APK，无需执行 Gradle 构建$/, to: () => "Input is already an APK; no Gradle build needed" },
+  { match: /^Release APK 构建完成/, to: () => "Release APK built and copied to an isolated workspace" },
+  { match: /^没有有效 APK，无法执行 APK 安全审计$/, to: () => "No valid APK; cannot run the APK security audit" },
+  { match: /^APK 审计完成:(\d+) 项发现$/, to: (m) => `APK audit complete: ${m[1]} findings` },
+  { match: /^没有有效 APK，无法执行应用保护$/, to: () => "No valid APK; cannot run app protection" },
+  { match: /^本地安全防护边界核验完成:(\d+) 项残留能力提示$/, to: (m) => `Local safety baseline verified: ${m[1]} residual-capability hints` },
+  { match: /^没有有效 APK，无法执行 Release 归一化$/, to: () => "No valid APK; cannot run Release normalization" },
+  { match: /^APK 已是安全 Release 状态，无需归一化$/, to: () => "APK is already a secure Release state; no normalization needed" },
+  { match: /^检测到需保护的现有签名，已跳过残留条目剔除$/, to: () => "Existing signature to protect detected; residual stripping skipped" },
+  { match: /^未改写 APK：无需归一化或剔除被安全放弃$/, to: () => "APK untouched: normalization not needed or stripping safely abandoned" },
+  { match: /^Release 归一化完成$/, to: () => "Release normalization complete" },
+  { match: /^按配置跳过 Web JavaScript 发布处理$/, to: () => "Web JavaScript release processing skipped per config" },
+  { match: /^没有有效 APK，无法执行 Web JavaScript 发布处理$/, to: () => "No valid APK; cannot run Web JavaScript release processing" },
+  { match: /^未发现可处理的混合应用 Web JavaScript$/, to: () => "No processable hybrid-app Web JavaScript found" },
+  { match: /^检测到需要保护或无法确认的现有签名，已保守跳过 Web JavaScript 发布处理$/, to: () => "Existing signature to protect or unverifiable; Web JavaScript processing conservatively skipped" },
+  { match: /^Web JavaScript 发布处理完成:(\d+) 个脚本，移除 (\d+) 个 source map$/, to: (m) => `Web JavaScript processing complete: ${m[1]} scripts, ${m[2]} source maps removed` },
+  { match: /^按配置跳过资源名混淆$/, to: () => "Resource-name obfuscation skipped per config" },
+  { match: /^没有有效 APK，无法执行资源名混淆$/, to: () => "No valid APK; cannot run resource-name obfuscation" },
+  { match: /^资源名混淆完成/, to: () => "Resource-name obfuscation complete" },
+  { match: /^用户选择不重新签名，无需签名库$/, to: () => "No re-signing chosen; no keystore needed" },
+  { match: /^签名库与别名验证通过$/, to: () => "Keystore and alias verified" },
+  { match: /^新发布签名库已创建$/, to: () => "New release keystore created" },
+  { match: /^签名库校验未通过，已跳过签名$/, to: () => "Keystore verification failed; signing skipped" },
+  { match: /^没有有效 APK，无法执行 apksigner$/, to: () => "No valid APK; cannot run apksigner" },
+  { match: /^APK 签名完成$/, to: () => "APK signed" },
+  { match: /^zipalign 对齐完成$/, to: () => "zipalign alignment complete" },
+  { match: /^未重新签名/, to: () => "Not re-signing" },
+  { match: /^最终验证通过/, to: () => "Final verification passed" },
+  { match: /^最终验证失败/, to: () => "Final verification failed" },
+  { match: /^报告已生成/, to: () => "Report generated" },
+]
+
+export function translateSummary(summary: string): string {
+  for (const entry of summaryTranslations) {
+    const match = entry.match.exec(summary)
+    if (match) return entry.to(match)
+  }
+  return summary
 }
