@@ -227,6 +227,8 @@ export function App() {
   const [focusedButtonIndex, setFocusedButtonIndex] = createSignal(0)
   // 当前有效产物名(反应式):由流水线事件驱动更新,避免直接读 context 可变属性不触发渲染
   const [currentArtifactName, setCurrentArtifactName] = createSignal<string | undefined>()
+  // 界面语言:默认英文;右上角切换按钮在 en/zh 之间切换
+  const [language, setLanguage] = createSignal<"en" | "zh">("en")
   const activeButtons = createMemo<ActiveButton[]>(() => {
     if (screen() === "wizard") {
       const question = currentQuestion()
@@ -566,7 +568,8 @@ export function App() {
     }
     const active = new Pipeline(config)
     active.onEvent((event) => {
-      setSteps([...active.getSteps()])
+      // 生成新的 step 对象引用,确保 Solid <For> 在每次事件时重渲染侧栏(原地修改同一对象不触发)
+      setSteps(active.getSteps().map((step) => ({ ...step })))
       if (event.type === "step-started") {
         setThinking(`processing · ${event.step.title}`)
         if (config.runMode === "one-click") {
@@ -1042,11 +1045,11 @@ export function App() {
       <box
         flexShrink={0}
         flexDirection="row"
-        alignItems="flex-start"
+        alignItems="center"
         paddingLeft={2}
         paddingRight={2}
-        paddingTop={0}
-        paddingBottom={0}
+        paddingTop={1}
+        paddingBottom={1}
         border={["bottom"]}
         borderColor={theme.border}
       >
@@ -1066,11 +1069,27 @@ export function App() {
         </box>
         <Show when={dimensions().width >= DROIDSEAL_LOGO_WIDTH + 32}>
           <box flexDirection="column" alignItems="flex-end" flexGrow={1} flexShrink={1}>
-            <text fg={theme.text}><b>Android release pipeline</b></text>
-            <text fg={theme.textMuted}>local only · v{VERSION}</text>
-            <text fg={busy() ? theme.ice : theme.success}>
-              {busy() ? `${SPINNER[spinnerIndex()]} processing` : "● ready"}
+            <text fg={theme.text}>
+              <b>{language() === "en" ? "Android release pipeline" : "Android 发布流水线"}</b>
             </text>
+            <text fg={theme.textMuted}>{language() === "en" ? "local only" : "仅本机"} · v{VERSION}</text>
+            <text fg={busy() ? theme.ice : theme.success}>
+              {busy()
+                ? `${SPINNER[spinnerIndex()]} ${language() === "en" ? "processing" : "处理中"}`
+                : `● ${language() === "en" ? "ready" : "就绪"}`}
+            </text>
+            <box
+              border
+              borderColor={theme.borderActive}
+              paddingLeft={1}
+              paddingRight={1}
+              marginTop={1}
+              onMouseUp={() => setLanguage((current) => (current === "en" ? "zh" : "en"))}
+            >
+              <text fg={theme.accentStrong} selectable={false}>
+                {language() === "en" ? "中文" : "English"}
+              </text>
+            </box>
           </box>
         </Show>
       </box>
