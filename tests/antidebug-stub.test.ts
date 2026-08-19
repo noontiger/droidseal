@@ -22,7 +22,7 @@ describe("anti-debug stub installer", () => {
     expect(kotlin).toContain("DEFAULT_RESUME_RECHECK_INTERVAL_MS")
   })
 
-  test("documents a throttled resumed-Activity recheck without adding a kill path", async () => {
+  test("documents a throttled resumed-Activity recheck with an opt-in exit policy", async () => {
     const dir = await mkdtemp(path.join(tmpdir(), "ds-antidebug-"))
     await installAntiDebugStub(dir)
     const kotlin = await readFile(
@@ -35,7 +35,9 @@ describe("anti-debug stub installer", () => {
     expect(kotlin).toContain("AtomicLong(-1L)")
     expect(kotlin).toContain("now - previous < interval")
     expect(kotlin).toContain("return null")
-    expect(kotlin).not.toMatch(/Process\.killProcess\s*\(|System\.exit\s*\(|exitProcess\s*\(/)
+    // EXIT 是显式启用的可选策略：kill 调用只存在于 ResponsePolicy.EXIT 分支
+    expect(kotlin).toContain("ResponsePolicy.EXIT")
+    expect(kotlin.indexOf("exitProcess(1)")).toBeGreaterThan(kotlin.indexOf("ResponsePolicy.EXIT"))
     expect(guide).toContain("override fun onResume()")
     expect(guide).toContain("guardOnActivityResumed")
     expect(guide).toContain("minIntervalMs")

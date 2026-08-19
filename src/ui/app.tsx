@@ -41,6 +41,15 @@ import {
 } from "./wizard.ts"
 
 type Screen = "welcome" | "wizard" | "pipeline"
+
+interface ActiveButton {
+  label: string
+  detail?: string
+  shortcut?: string
+  tone?: "accent" | "neutral" | "danger" | "input"
+  disabled?: boolean
+  onPress: () => void
+}
 type MessageRole = "assistant" | "user" | "success" | "error" | "system" | "warning"
 
 interface ChatMessage {
@@ -213,6 +222,70 @@ export function App() {
     return ""
   })
   const showComposer = createMemo(() => screen() === "welcome" && !toolRecovery())
+
+  // 对话框上方操作行的按钮:方向键左右循环切换焦点,Enter 激活聚焦按钮。
+  const [focusedButtonIndex, setFocusedButtonIndex] = createSignal(0)
+  const activeButtons = createMemo<ActiveButton[]>(() => {
+    if (screen() === "wizard") {
+      const question = currentQuestion()
+      if (question?.kind === "choice") {
+        return (
+          question.choices?.map((choice) => ({
+            label: choice.label,
+            detail: choice.detail,
+            shortcut: choice.shortcut,
+            tone: choice.shortcut === "1" ? ("accent" as const) : ("neutral" as const),
+            onPress: () => submitWizardAnswer(choice.value, choice.label),
+          })) ?? []
+        )
+      }
+      if (!question) {
+        return [
+          { label: "开始处理", shortcut: "Enter", tone: "accent" as const, detail: "按上方摘要创建流水线", onPress: startConfiguredPipeline },
+          { label: "重新填写", detail: "清空本次内存配置", onPress: () => startWizard(draft().runMode) },
+        ]
+      }
+      return []
+    }
+    if (screen() === "pipeline") {
+      if (pipelineDone()) {
+        return [
+          { label: "开始新任务", tone: "accent" as const, onPress: resetHome },
+          { label: "退出", onPress: () => renderer.destroy() },
+        ]
+      }
+      if (!busy() && pipeline()?.config.runMode === "guided" && !toolRecovery()) {
+        if (needsFailureAdvance()) {
+          return [
+            {
+              label: "跳过并回退，进入下一步",
+              shortcut: "Enter",
+              tone: "danger" as const,
+              detail: "当前 APK 已恢复为步骤开始前版本",
+              onPress: () => {
+                setNeedsFailureAdvance(false)
+                advanceGuided()
+              },
+            },
+          ]
+        }
+        const buttons: ActiveButton[] = [
+          { label: "执行此步", shortcut: "Enter", tone: "accent" as const, detail: currentStep()?.title ?? "", disabled: busy(), onPress: () => void executeGuidedStep() },
+        ]
+        if (currentStep()?.skippable) {
+          buttons.push({ label: "跳过", shortcut: "S", detail: "标记为用户选择 · 保留当前有效 APK", disabled: busy(), onPress: () => void skipGuidedStep() })
+        }
+        return buttons
+      }
+      return []
+    }
+    return []
+  })
+  // 场景切换后焦点索引自动收敛到有效范围
+  createEffect(() => {
+    const count = activeButtons().length
+    if (count > 0 && focusedButtonIndex() >= count) setFocusedButtonIndex(0)
+  })
 
   onMount(() => {
     renderer.setTerminalTitle("DroidSeal · Android release security pipeline")
@@ -846,6 +919,26 @@ export function App() {
       return
     }
 
+    // 方向键在操作行按钮间循环切换焦点;Enter 激活聚焦按钮。
+    // 文本输入场景(activeButtons 为空)不拦截,方向键留给输入框移动光标。
+    if (key === "arrowleft" || key === "arrowright") {
+      const buttons = activeButtons()
+      if (buttons.length > 1) {
+        consume()
+        const delta = key === "arrowright" ? 1 : -1
+        setFocusedButtonIndex((index) => (index + delta + buttons.length) % buttons.length)
+        return
+      }
+    }
+    if (isEnter && activeButtons().length > 0) {
+      const focused = activeButtons()[focusedButtonIndex()]
+      if (focused && !focused.disabled) {
+        consume()
+        focused.onPress()
+        return
+      }
+    }
+
     if (screen() === "wizard") {
       const question = currentQuestion()
       if (question?.kind === "choice") {
@@ -1055,67 +1148,19 @@ export function App() {
               />
             </Show>
 
-            <Show when={screen() === "wizard" && currentQuestion()?.kind === "choice"}>
-              <For each={currentQuestion()?.choices ?? []}>
-                {(choice) => (
-                  <Button
-                    shortcut={choice.shortcut}
-                    label={choice.label}
-                    detail={choice.detail}
-                    tone={choice.shortcut === "1" ? "accent" : "neutral"}
-                    onPress={() => submitWizardAnswer(choice.value, choice.label)}
-                  />
-                )}
-              </For>
-            </Show>
-
-            <Show when={screen() === "wizard" && !currentQuestion()}>
-              <Button shortcut="Enter" label="开始处理" detail="按上方摘要创建流水线" tone="accent" onPress={startConfiguredPipeline} />
-              <Button label="重新填写" detail="清空本次内存配置" onPress={() => startWizard(draft().runMode)} />
-            </Show>
-
-            <Show when={screen() === "pipeline" && pipeline()?.config.runMode === "guided" && !pipelineDone() && !toolRecovery()}>
-              <Show
-                when={needsFailureAdvance()}
-                fallback={
-                  <>
-                    <Button
-                      shortcut="Enter"
-                      label="执行此步"
-                      detail={currentStep()?.title ?? ""}
-                      tone="accent"
-                      disabled={busy()}
-                      onPress={() => void executeGuidedStep()}
-                    />
-                    <Show when={currentStep()?.skippable}>
-                      <Button
-                        shortcut="S"
-                        label="跳过"
-                        detail="标记为用户选择 · 保留当前有效 APK"
-                        disabled={busy()}
-                        onPress={() => void skipGuidedStep()}
-                      />
-                    </Show>
-                  </>
-                }
-              >
+            <For each={activeButtons()}>
+              {(button, index) => (
                 <Button
-                  shortcut="Enter"
-                  label="跳过并回退，进入下一步"
-                  detail="当前 APK 已恢复为步骤开始前版本"
-                  tone="danger"
-                  onPress={() => {
-                    setNeedsFailureAdvance(false)
-                    advanceGuided()
-                  }}
+                  label={button.label}
+                  {...(button.detail !== undefined ? { detail: button.detail } : {})}
+                  {...(button.shortcut !== undefined ? { shortcut: button.shortcut } : {})}
+                  {...(button.tone !== undefined ? { tone: button.tone } : {})}
+                  {...(button.disabled !== undefined ? { disabled: button.disabled } : {})}
+                  focused={index() === focusedButtonIndex()}
+                  onPress={button.onPress}
                 />
-              </Show>
-            </Show>
-
-            <Show when={screen() === "pipeline" && pipelineDone()}>
-              <Button label="开始新任务" tone="accent" onPress={resetHome} />
-              <Button label="退出" onPress={() => renderer.destroy()} />
-            </Show>
+              )}
+            </For>
 
             <Show when={screen() !== "welcome"}>
               <Button label="回到首页" detail="清空当前进度，返回首页" onPress={resetHome} />

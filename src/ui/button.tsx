@@ -7,12 +7,18 @@ export function Button(props: {
   shortcut?: string
   tone?: "accent" | "neutral" | "danger" | "input"
   disabled?: boolean
+  focused?: boolean
   onPress: () => void
 }) {
   const [hovered, setHovered] = createSignal(false)
   const tone = () => props.tone ?? "neutral"
   const background = () => {
     if (props.disabled) return theme.panel
+    if (props.focused) {
+      if (tone() === "danger") return "#4a2630"
+      if (tone() === "input") return "#16465e"
+      return "#1b4a66"
+    }
     if (hovered()) {
       if (tone() === "danger") return "#4a2630"
       if (tone() === "input") return "#16465e"
@@ -25,6 +31,7 @@ export function Button(props: {
   }
   const border = () => {
     if (props.disabled) return theme.border
+    if (props.focused) return "#7aa2ff"
     if (tone() === "danger") return theme.error
     if (tone() === "input") return theme.input
     if (tone() === "accent") return theme.accent
