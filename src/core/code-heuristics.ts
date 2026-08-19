@@ -250,10 +250,6 @@ export const CODE_HEURISTIC_RULES: readonly CodeHeuristicRule[] = [
 // The DEX string pool loses call-site operands (for example a boolean passed to
 // a WebSettings setter). Strict mode therefore requires corroborating API and
 // value signals instead of treating every class or method name as a vulnerability.
-function corpusHas(corpus: readonly string[], regex: RegExp): boolean {
-  return corpus.some((value) => regex.test(value))
-}
-
 function firstMatch(value: string, patterns: readonly RegExp[]): RegExpExecArray | null {
   for (const pattern of patterns) {
     const match = pattern.exec(value)
@@ -262,10 +258,18 @@ function firstMatch(value: string, patterns: readonly RegExp[]): RegExpExecArray
   return null
 }
 
+interface CorpusSignals {
+  hasCipherClass: boolean
+  hasMessageDigestClass: boolean
+  hasExternalCodeSource: boolean
+  hasExecToken: boolean
+  hasSuShell: boolean
+}
+
 function preciseRuleMatch(
   suffix: string,
   value: string,
-  corpus: readonly string[],
+  signals: CorpusSignals,
   sourceMode: boolean,
   fallback: RegExp,
 ): RegExpExecArray | null {
@@ -295,13 +299,13 @@ function preciseRuleMatch(
       if (sourceMode) {
         return /Cipher\s*\.\s*getInstance\s*\(\s*["'][^"']*(?:(?:DESede|DES|RC4|RC2|Blowfish)|\/ECB(?:\/|["']))[^"']*["']/i.exec(value)
       }
-      return corpusHas(corpus, /Ljavax\/crypto\/Cipher;/) ? fallback.exec(value) : null
+      return signals.hasCipherClass ? fallback.exec(value) : null
     }
     case "WEAK_HASH": {
       if (sourceMode) {
         return /MessageDigest\s*\.\s*getInstance\s*\(\s*["'](?:MD5|SHA-?1)["']/i.exec(value)
       }
-      return corpusHas(corpus, /Ljava\/security\/MessageDigest;/) ? fallback.exec(value) : null
+      return signals.hasMessageDigestClass ? fallback.exec(value) : null
     }
     case "INSECURE_TLS":
       return firstMatch(value, [
@@ -312,12 +316,12 @@ function preciseRuleMatch(
       ])
     case "DYNAMIC_CODE_LOADING": {
       if (sourceMode) return /(?:DexClassLoader|PathClassLoader|InMemoryDexClassLoader)\s*\(/i.exec(value)
-      const hasExternalCodeSource = corpusHas(corpus, /(?:https?:\/\/|\/sdcard\/|externalStorage|\.dex\b|\.jar\b)/i)
+      const hasExternalCodeSource = signals.hasExternalCodeSource
       return hasExternalCodeSource ? fallback.exec(value) : null
     }
     case "RUNTIME_EXEC": {
       if (sourceMode) return /(?:Runtime\s*\.\s*getRuntime\s*\(\s*\)\s*\.\s*exec\s*\(|new\s+ProcessBuilder\s*\()/i.exec(value)
-      const hasExecution = corpusHas(corpus, /^(?:exec|start)$/) || corpusHas(corpus, /(?:\/system\/(?:bin\/sh|xbin\/su)|\bsu\s+-c\b)/i)
+      const hasExecution = signals.hasExecToken || signals.hasSuShell
       return hasExecution ? fallback.exec(value) : null
     }
     default:
@@ -337,11 +341,20 @@ export function scanCodeStrings(strings: Iterable<string>, codePrefix: string): 
   const findings: Finding[] = []
   const seen = new Set<string>()
   const sourceMode = codePrefix === "SOURCE"
+  // corpus 级信号只计算一次,避免每条规则对每个字符串再全量扫描 corpus(修复大 DEX 的 O(n^2) 卡顿)
+  const corpusSet = new Set(corpus)
+  const signals: CorpusSignals = {
+    hasCipherClass: corpus.some((value) => /Ljavax\/crypto\/Cipher;/.test(value)),
+    hasMessageDigestClass: corpus.some((value) => /Ljava\/security\/MessageDigest;/.test(value)),
+    hasExternalCodeSource: corpus.some((value) => /(?:https?:\/\/|\/sdcard\/|externalStorage|\.dex\b|\.jar\b)/i.test(value)),
+    hasExecToken: corpusSet.has("exec") || corpusSet.has("start"),
+    hasSuShell: corpus.some((value) => /(?:\/system\/(?:bin\/sh|xbin\/su)|\bsu\s+-c\b)/i.test(value)),
+  }
   for (const value of corpus) {
     for (const rule of CODE_HEURISTIC_RULES) {
       const code = `${codePrefix}_${rule.suffix}`
       if (seen.has(code)) continue
-      const match = preciseRuleMatch(rule.suffix, value, corpus, sourceMode, rule.regex)
+      const match = preciseRuleMatch(rule.suffix, value, signals, sourceMode, rule.regex)
       if (!match) continue
       seen.add(code)
       findings.push({
