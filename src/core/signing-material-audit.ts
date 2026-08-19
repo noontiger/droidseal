@@ -14,7 +14,7 @@ const SKIP_DIRECTORIES = new Set([
   "dependencies",
   "out",
 ])
-const KEYSTORE_EXTENSIONS = new Set([".jks", ".keystore", ".p12", ".pfx"])
+const KEYSTORE_EXTENSIONS = new Set([".jks", ".keystore", ".p12", ".pfx", ".bks"])
 const SIGNING_PROPERTY_FILES = new Set([
   "keystore.properties",
   "key.properties",
@@ -67,7 +67,7 @@ function passwordHits(input: SigningMaterialInput): PasswordHit[] {
   const lines = input.content.split(/\r?\n/)
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index]!
-    const pattern = /\b(storePassword|keyPassword)\b\s*(?:=|:)\s*([^\s`]+)/gi
+    const pattern = /\b(storePassword|keyPassword|storepass|keypass)\b\s*(?:=|:)\s*([^\s`]+)/gi
     let match: RegExpExecArray | null
     while ((match = pattern.exec(line)) !== null) {
       const field = match[1] as PasswordHit["field"]

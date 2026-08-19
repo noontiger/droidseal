@@ -135,7 +135,7 @@ function auditGradle(relativePath: string, source: string): Finding[] {
       evidence: relativePath,
     })
   }
-  if (/(?:storePassword|keyPassword)\s*(?:=|\s)\s*["'][^"']+["']/.test(source)) {
+  if (/(?:storePassword|keyPassword|storepass|keypass)\s*(?:=|\s)\s*["'][^"']+["']/.test(source)) {
     findings.push({
       severity: "critical",
       code: "SIGNING_SECRET_IN_BUILD_SCRIPT",
