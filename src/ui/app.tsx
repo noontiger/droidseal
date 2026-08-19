@@ -293,7 +293,19 @@ export function App() {
     onCleanup(() => clearInterval(timer))
   })
 
-  // 侧栏自动滚动:处理中的步骤显示在列表顶部,方便查看当前进度
+  // 处理中强制消息区贴底:新步骤消息出现时保持在底部可见,避免停留在旧位置
+  createEffect(() => {
+    const current = steps()
+    const active = thinking()
+    const box = messageScrollBox
+    if (!box) return
+    if (active || current.some((step) => step.status === "processing")) {
+      box.scrollTop = 1_000_000
+    }
+  })
+
+  // 侧栏自动滚动:处理中的步骤显示在列表可见区中间(成功/跳过/失败 与底部产物区之间),
+  // 与主界面进度保持关联;不再贴底
   createEffect(() => {
     const current = steps()
     const processingIndex = current.findIndex((step) => step.status === "processing")
@@ -305,7 +317,9 @@ export function App() {
       const resultLines = step.result ? Math.max(1, Math.ceil((step.result.summary ?? "").length / 36)) : 0
       offset += 1 + resultLines + 1 // 标题行 + 结果行 + paddingBottom
     }
-    box.scrollTop = Math.max(0, offset)
+    // 视口高度估算:窗口高 - 头部/底栏/计数行/底部产物区等固定开销
+    const viewportEstimate = Math.max(4, dimensions().height - 21)
+    box.scrollTop = Math.max(0, offset - Math.floor(viewportEstimate / 2))
   })
 
   // Show generated paths and other defaults as editable values before they are
@@ -1224,7 +1238,7 @@ export function App() {
                   <input
                     value={composer()}
                     focused
-                    placeholder="输入消息或 /help"
+                    placeholder="输入消息或 /help · 或拖动文件到此处"
                     textColor={theme.text}
                     focusedTextColor={theme.text}
                     backgroundColor={theme.panel}
@@ -1280,7 +1294,7 @@ export function App() {
               成功 {successCount()} · 跳过 {skippedCount()} · 失败 {failedCount()}
             </text>
             <box height={1} />
-            <scrollbox ref={(el: ScrollBoxRenderable) => { progressScrollBox = el }} flexGrow={1} minHeight={0} stickyScroll stickyStart="bottom">
+            <scrollbox ref={(el: ScrollBoxRenderable) => { progressScrollBox = el }} flexGrow={1} minHeight={0}>
               <For each={steps()}>
                 {(step, index) => (
                   <box flexDirection="column" flexShrink={0} paddingBottom={1}>
