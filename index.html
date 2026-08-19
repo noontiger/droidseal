@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DroidSeal · 本地优先的 Android 安全发布流水线</title>
-<meta name="description" content="DroidSeal（Android 发布封签）：商业加固前你能做的大多数内容。本地优先、结果可验证的 14 步发布安全流水线。" />
+<meta name="description" content="DroidSeal（安卓发布封签）：商业加固前你能做的大多数内容。本地优先、结果可验证的 14 步发布安全流水线。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -283,9 +283,9 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero wrap">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Android 发布封签 · v0.1.1 Alpha</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>安卓发布封签 · v0.1.1 Alpha</span>
       <h1 data-reveal>像聊天一样，跑完 <span class="grad">Android 发布加固</span></h1>
-      <p class="sub" data-reveal>DroidSeal（Android 发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
+      <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
         <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
@@ -421,15 +421,20 @@
     <!-- FINAL CTA -->
     <section class="section-pad wrap" id="cta">
       <div class="cta-box" data-reveal>
-        <h2>把加固前的事，交给一条命令</h2>
+        <h2>三种方式，立即上手</h2>
         <p>开源 · Apache-2.0 License · 本地优先 · Windows x64 / Linux x64（Alpha v0.1.1）</p>
         <div class="copy-row" data-cursor>
           <code id="installCmd">npm install --global droidseal</code>
           <button id="copyBtn">复制</button>
         </div>
-        <div class="hero-cta">
-          <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary magnetic" data-cursor>查看 GitHub</a>
-          <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
+        <div class="copy-row" data-cursor>
+          <code id="installPipCmd">pip install droidseal</code>
+          <button id="copyPipBtn">复制</button>
+        </div>
+        <div class="hero-cta" data-cursor>
+          <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary magnetic">GitHub Releases · Windows zip / Linux tar.gz</a>
+          <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">查看 GitHub</a>
+          <a href="#pipeline" class="btn btn-ghost">查看管线</a>
         </div>
       </div>
     </section>
@@ -647,15 +652,18 @@
   }
 
   /* ============ copy install ============ */
-  var copyBtn=document.getElementById('copyBtn');
-  if(copyBtn){
-    copyBtn.addEventListener('click', function(){
-      var txt=document.getElementById('installCmd').textContent;
-      var done=function(){ copyBtn.textContent='已复制'; setTimeout(function(){copyBtn.textContent='复制';},1600); };
+  function bindCopy(btnId, cmdId){
+    var btn=document.getElementById(btnId);
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var txt=document.getElementById(cmdId).textContent;
+      var done=function(){ btn.textContent='已复制'; setTimeout(function(){btn.textContent='复制';},1600); };
       if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
       else { done(); }
     });
   }
+  bindCopy('copyBtn','installCmd');
+  bindCopy('copyPipBtn','installPipCmd');
 
   /* ============ background canvas (particles + drag) ============ */
   var canvas=document.getElementById('bg'); var ctx=canvas.getContext('2d');

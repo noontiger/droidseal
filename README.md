@@ -17,7 +17,7 @@ DroidSeal 是面向 Android 发布流程的**加固前处理 / 端到端管线�
 .
 ├── index.html        # 站点主页（交互式深色终端风）
 ├── screenshot.png    # Hero 区产品截图
-├── LICENSE           # MIT
+├── LICENSE           # Apache-2.0
 └── README.md
 ```
 
@@ -44,4 +44,4 @@ npx serve .
 
 ## 许可证
 
-[MIT](./LICENSE) © 2026 DroidSeal Contributors
+[Apache-2.0](./LICENSE) © 2026 DroidSeal Contributors
