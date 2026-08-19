@@ -87,7 +87,7 @@ describe("signing integrity", () => {
     expect(verify.summary).toContain("SIGNATURE_MISSING_AFTER_FAILED_SIGNING")
   })
 
-  test("the final artifact is never named guarded-signed when signing did not succeed", async () => {
+  test("the final artifact is never named sealed-signed when signing did not succeed", async () => {
     const workspace = await mkdtemp(path.join(tmpdir(), "droidseal-signing-"))
     const inputApk = path.join(workspace, "example.apk")
     await writeFile(inputApk, "PK\u0003\u0004fake-apk-bytes")
@@ -106,7 +106,7 @@ describe("signing integrity", () => {
 
     // The suffix is a claim about the bytes, so it must follow verification, not configuration.
     expect(pipeline.context.signatureVerified).toBeFalsy()
-    expect(path.basename(pipeline.context.finalArtifact!)).toBe("example-guarded-unsigned.apk")
+    expect(path.basename(pipeline.context.finalArtifact!)).toBe("example-sealed-unsigned.apk")
   })
 
   test("harden keeps a signed APK installable instead of stripping residual entries", async () => {
@@ -176,7 +176,7 @@ describe("signing integrity", () => {
     )
 
     expect(pipeline.context.signatureVerified).toBe(true)
-    expect(path.basename(pipeline.context.finalArtifact!)).toBe("signed-guarded-signed-preserved.apk")
+    expect(path.basename(pipeline.context.finalArtifact!)).toBe("signed-sealed-signed-preserved.apk")
 
     const finalCheck = await runProcess({
       command: toolchain.apksigner.path,

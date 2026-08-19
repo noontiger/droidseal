@@ -1815,12 +1815,12 @@ export class Pipeline {
       await mkdir(path.resolve(this.config.outputDirectory), { recursive: true })
       // The suffix is a claim about the artifact, so it must follow what verification actually
       // observed — not what the run was configured to do. A failed signing step previously still
-      // produced a file named "guarded-signed", which misrepresents an uninstallable APK.
+      // produced a file named "sealed-signed", which misrepresents an uninstallable APK.
       const suffix = !this.context.signatureVerified
-        ? "guarded-unsigned"
+        ? "sealed-unsigned"
         : this.config.signing.mode !== "skip"
-          ? "guarded-signed"
-          : "guarded-signed-preserved"
+          ? "sealed-signed"
+          : "sealed-signed-preserved"
       const finalPath = path.join(
         path.resolve(this.config.outputDirectory),
         artifactName(this.config.inputPath, suffix),

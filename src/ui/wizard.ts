@@ -102,7 +102,7 @@ function outputDefault(draft: WizardDraft): string {
 }
 
 // 最终 APK 文件名以输入项目/APK 名称为基础（与 pipeline 的 artifactName 一致），
-// 默认带 -guarded-signed 后缀；签名未通过验证时为 -guarded-unsigned。
+// 默认带 -sealed-signed 后缀；签名未通过验证时为 -sealed-unsigned。
 function outputFileBase(draft: WizardDraft): string {
   if (!draft.inputPath) return "application"
   return (
@@ -180,7 +180,7 @@ export function questionsFor(draft: WizardDraft): WizardQuestion[] {
       kind: "text",
       title: "输出目录（已提供默认地址）",
       prompt: "最终 APK 和本次报告保存到哪个目录？",
-      detail: `默认地址会显示并预填在输入框中，可直接确认或修改。最终 APK 将保存为该目录下的 ${outputFileBase(draft)}-guarded-signed.apk（若最终签名未通过验证则为 ${outputFileBase(draft)}-guarded-unsigned.apk），并生成隐藏的 .droidseal/runs 运行记录；原始 APK 不会被覆盖。`,
+      detail: `默认地址会显示并预填在输入框中，可直接确认或修改。最终 APK 将保存为该目录下的 ${outputFileBase(draft)}-sealed-signed.apk（若最终签名未通过验证则为 ${outputFileBase(draft)}-sealed-unsigned.apk），并生成隐藏的 .droidseal/runs 运行记录；原始 APK 不会被覆盖。`,
       defaultValue: outputDefault(draft),
     },
   )

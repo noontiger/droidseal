@@ -89,7 +89,7 @@ describe("release evidence archive", () => {
     const artifactDirectory = path.join(runDirectory, "artifacts")
     const reportDirectory = path.join(runDirectory, "reports")
     const sourceApk = path.join(root, "app", "build", "outputs", "apk", "free", "release", "app-free-release.apk")
-    const finalArtifact = path.join(output, "app-guarded.apk")
+    const finalArtifact = path.join(output, "app-sealed.apk")
 
     await writeTree(root, {
       "app/build/outputs/apk/free/release/app-free-release.apk": "selected-apk",
@@ -99,7 +99,7 @@ describe("release evidence archive", () => {
       "app/build/outputs/mapping/freeRelease/usage.txt": "selected-usage",
       "app/build/outputs/mapping/freeRelease/missing_rules.txt": "selected-missing-rules",
       "app/build/outputs/mapping/release/mapping.txt": "old-release-mapping",
-      "dist/app-guarded.apk": "final-apk",
+      "dist/app-sealed.apk": "final-apk",
       ".droidseal/runs/one/artifacts/droidseal-force-r8.init.gradle": "forced-r8-overlay",
     })
 
