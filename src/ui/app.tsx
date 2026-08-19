@@ -170,6 +170,17 @@ export function App() {
       body: [t("welcomeDesc1"), t("welcomeDesc2"), t("welcomeDesc3"), t("welcomeDesc4")],
     },
   ])
+  // 欢迎消息随语言切换更新(id=1 是欢迎消息)
+  createEffect(() => {
+    language()
+    setMessages((current) =>
+      current.map((message) =>
+        message.id === 1
+          ? { ...message, title: t("welcomeTitle"), body: [t("welcomeDesc1"), t("welcomeDesc2"), t("welcomeDesc3"), t("welcomeDesc4")] }
+          : message,
+      ),
+    )
+  })
   const [messageId, setMessageId] = createSignal(2)
   const [composer, setComposer] = createSignal("")
   const [secretBuffer, setSecretBuffer] = createSignal("")
@@ -463,7 +474,7 @@ export function App() {
     setSteps(STEP_DEFINITIONS.map((definition) => ({ ...definition, status: "pending" })))
     addMessage(
       "system",
-      mode === "one-click" ? "已选择一键处理" : "已选择分步处理",
+      mode === "one-click" ? t("msgOneClickSelected") : t("msgGuidedSelected"),
       [
         mode === "one-click"
           ? "填写必要信息后，所有步骤将连续执行；失败步骤自动回退并继续。"
@@ -722,7 +733,7 @@ export function App() {
       ]
       if (plan.missing.length === 0) {
         setToolRecovery(undefined)
-        addMessage("success", "环境诊断完成", detail)
+        addMessage("success", t("msgDoctorDone"), detail)
       } else {
         setToolRecovery({
           config: undefined,
@@ -740,7 +751,7 @@ export function App() {
         ])
       }
     } catch (error) {
-      addMessage("error", "环境诊断失败", [error instanceof Error ? error.message : String(error)])
+      addMessage("error", t("msgDoctorFailed"), [error instanceof Error ? error.message : String(error)])
     } finally {
       setBusy(false)
       setThinking("")
@@ -785,14 +796,14 @@ export function App() {
       return
     }
 
-    setThinking("processing · 重新执行环境诊断")
+    setThinking(`${t("headerProcessing")} ${t("msgRecheckDoctor")}`)
     const result = await active.retryStep("doctor")
     if (result.status === "failed") {
       await pauseForToolRecovery(active, recovery.resume, recovery.stepIndex)
       return
     }
 
-    addMessage("success", "工具已就绪，自动继续", ["环境诊断已经重新通过，签名配置和已有进度均已保留。"])
+    addMessage("success", t("msgToolsReady"), [t("msgToolsReadyBody")])
     if (recovery.resume === "one-click") {
       await runAll(active, recovery.stepIndex + 1)
     } else {
@@ -855,7 +866,7 @@ export function App() {
     setToolRecovery(undefined)
     setSecretBuffer("")
     setSteps(STEP_DEFINITIONS.map((definition) => ({ ...definition, status: "pending" })))
-    addMessage("system", "已返回首页", ["可以开始新的分步或一键处理。"])
+    addMessage("system", t("msgBackHome"), [t("msgBackHomeBody")])
   }
 
   const handleCommand = (raw: string): boolean => {
@@ -1196,8 +1207,8 @@ export function App() {
               <Show when={toolRecovery()?.plan.canAutoInstall}>
                 <Button
                   shortcut="D"
-                  label="下载并继续"
-                  detail="同意官方许可 · SHA-256 校验 · 自动续跑"
+                  label={t("btnDownloadContinue")}
+                  detail={t("btnDownloadContinueDetail")}
                   tone="accent"
                   disabled={busy()}
                   onPress={() => void installToolsAndContinue()}
@@ -1205,15 +1216,15 @@ export function App() {
               </Show>
               <Button
                 shortcut="H"
-                label="查看安装说明"
-                detail="手动安装后无需重新填写配置"
+                label={t("btnInstallInstructions")}
+                detail={t("btnInstallInstructionsDetail")}
                 disabled={busy()}
                 onPress={showToolInstallInstructions}
               />
               <Button
                 shortcut="R"
-                label="已安装，重新检测"
-                detail="检测通过后从暂停位置继续"
+                label={t("btnRecheckContinue")}
+                detail={t("btnRecheckContinueDetail")}
                 disabled={busy()}
                 onPress={() => void recheckToolsAndContinue()}
               />
