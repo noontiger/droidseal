@@ -1044,7 +1044,7 @@ export function App() {
           <box flexDirection="column" alignItems="flex-end" flexGrow={1} flexShrink={1}>
             <text fg={theme.text}><b>Android release pipeline</b></text>
             <text fg={theme.textMuted}>local only · v{VERSION}</text>
-            <text fg={busy() ? theme.accent : theme.success}>
+            <text fg={busy() ? theme.ice : theme.success}>
               {busy() ? `${SPINNER[spinnerIndex()]} processing` : "● ready"}
             </text>
           </box>
@@ -1289,8 +1289,8 @@ export function App() {
                       {statusGlyph(step.status)} {String(index() + 1).padStart(2, "0")} · <b>{step.title}</b>
                     </text>
                     <Show when={step.status === "processing"}>
-                      <text fg={theme.accent}>
-                        <span style={{ fg: theme.purple }}>{SPINNER[spinnerIndex()]}</span> processing…
+                      <text fg={theme.ice}>
+                        <span style={{ fg: theme.ice }}>{SPINNER[spinnerIndex()]}</span> processing…
                       </text>
                     </Show>
                     <Show when={step.result}>

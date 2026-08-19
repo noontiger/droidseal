@@ -12,6 +12,7 @@ export const theme = {
   textMuted: "#87a9ba",
   accent: "#34799c",
   accentStrong: "#79c9e7",
+  ice: "#00a8cc",
   input: "#66c8e8",
   complete: "#ffdf4d",
   purple: "#c6a0f6",
@@ -24,7 +25,7 @@ export const theme = {
 export function stepColor(status: StepStatus): string {
   const colors: Record<StepStatus, string> = {
     pending: theme.textMuted,
-    processing: theme.accent,
+    processing: theme.ice,
     success: theme.complete,
     failed: theme.error,
     skipped: theme.warning,
