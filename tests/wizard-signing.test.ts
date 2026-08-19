@@ -3,6 +3,10 @@ import { describe, expect, test } from "bun:test"
 import { buildPipelineConfig, createDraft, questionsFor, applyAnswer, summaryLines, type WizardDraft } from "../src/ui/wizard.ts"
 import type { WizardQuestion } from "../src/ui/wizard.ts"
 import { stepColor, theme } from "../src/ui/theme.ts"
+import { setLanguage } from "../src/ui/i18n.ts"
+
+// 断言依赖默认语言:固定为英文,避免受系统语言检测影响
+setLanguage("en")
 
 function baseDraft(): WizardDraft {
   return {

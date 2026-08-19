@@ -5,6 +5,10 @@ import path from "node:path"
 import { Pipeline, STEP_DEFINITIONS, stepGuidance } from "../src/core/pipeline.ts"
 import type { PipelineConfig } from "../src/core/types.ts"
 import { buildPipelineConfig, createDraft, questionsFor, summaryLines, type WizardDraft } from "../src/ui/wizard.ts"
+import { setLanguage } from "../src/ui/i18n.ts"
+
+// 断言依赖默认语言:固定为英文,避免受系统语言检测影响
+setLanguage("en")
 
 function config(): PipelineConfig {
   return {

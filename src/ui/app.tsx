@@ -14,7 +14,7 @@ import { useKeyboard, usePaste, useRenderer, useTerminalDimensions } from "@open
 import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } from "../brand.ts"
 import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
-import { language, setLanguage, t, tGuidance, tStep, tStepDesc } from "./i18n.ts"
+import { language, setLanguage, t, tGuidance, translateProgress, tStep, tStepDesc } from "./i18n.ts"
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -620,7 +620,7 @@ export function App() {
           ])
         }
       } else if (event.type === "step-progress") {
-        setThinking(`${t("headerProcessing")} ${event.message}`)
+        setThinking(`${t("headerProcessing")} ${translateProgress(event.message)}`)
       } else {
         setCurrentArtifactName(active.context.currentArtifact ? path.basename(active.context.currentArtifact) : undefined)
         setArtifactPath(active.context.currentArtifact ?? undefined)

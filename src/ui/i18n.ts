@@ -2,7 +2,23 @@
 import { createSignal } from "solid-js"
 import type { PipelineConfig } from "../core/types.ts"
 
-export const [language, setLanguage] = createSignal<"en" | "zh">("en")
+// 系统语言检测:简体/繁体中文 → zh,其余 → en
+function detectSystemLanguage(): "en" | "zh" {
+  const env = process.env.LANG ?? process.env.LC_ALL ?? process.env.LANGUAGE ?? ""
+  if (/^zh/i.test(env)) return "zh"
+  if (process.platform === "win32") {
+    try {
+      const result = Bun.spawnSync(["powershell", "-NoProfile", "-Command", "(Get-Culture).Name"], { stdout: "pipe" })
+      const name = result.stdout?.toString() ?? ""
+      if (/^zh/i.test(name)) return "zh"
+    } catch {
+      // 检测失败时回退英文
+    }
+  }
+  return "en"
+}
+
+export const [language, setLanguage] = createSignal<"en" | "zh">(detectSystemLanguage())
 
 const en = {
   // 头部
@@ -820,4 +836,69 @@ export function tGuidance(stepId: string, config: PipelineConfig): string[] {
         ? t("guidanceApplicabilityBuild")
         : undefined
   return applicability ? [common[stepId] ?? stepId, applicability] : [common[stepId] ?? stepId]
+}
+
+// 平台相关的示例路径占位符(Windows 用 C:\ 风格,其他用 /srv 中性路径)
+export function inputPathPlaceholder(kind: "apk" | "project"): string {
+  if (process.platform === "win32") return kind === "apk" ? "C:\\work\\app-release.apk" : "C:\\work\\my-android-app"
+  return kind === "apk" ? "/srv/work/app-release.apk" : "/srv/work/my-android-app"
+}
+
+export function keystorePathPlaceholder(): string {
+  return process.platform === "win32" ? "C:\\keys\\release.jks" : "/srv/keys/release.jks"
+}
+
+// 底层 pipeline 的 progress 消息翻译(中文 → 英文;未匹配时原样返回)
+const progressTranslations: Array<{ match: RegExp; to: (m: RegExpExecArray) => string }> = [
+  { match: /^搜索 PATH、JAVA_HOME 与 Android SDK$/, to: () => "Searching PATH, JAVA_HOME and the Android SDK" },
+  { match: /^复制输入 APK，原文件保持只读$/, to: () => "Copying the input APK; the original stays read-only" },
+  { match: /^检测到 Capacitor 项目：执行 Web 层（(.+?)）$/, to: (m) => `Capacitor project detected: running the Web layer (${m[1] === "完整构建" ? "full build" : "quick rebuild"})` },
+  { match: /^npm install：安装 Web 依赖$/, to: () => "npm install: installing Web dependencies" },
+  { match: /^npx cap sync android：同步 Web 资源与插件$/, to: () => "npx cap sync android: syncing Web resources and plugins" },
+  { match: /^gradlew clean：清理旧产物$/, to: () => "gradlew clean: clearing previous outputs" },
+  { match: /^检查 release 是否已启用 R8$/, to: () => "Checking whether R8 is enabled for release" },
+  { match: /^release 未开 R8：已用 init-script 覆盖强制启用（不改源码）$/, to: () => "R8 not enabled for release: forced on via an init-script override (source untouched)" },
+  { match: /^运行 assembleDebug：生成调试包（旁路产物，不参与签名\/加固）$/, to: () => "Running assembleDebug: building a debug package (bypass artifact, not signed/hardened)" },
+  { match: /^运行 assembleRelease：生成发布包$/, to: () => "Running assembleRelease: building the release package" },
+  { match: /^读取 APK ZIP 中央目录$/, to: () => "Reading the APK ZIP central directory" },
+  { match: /^直接解析 APK 二进制 Manifest \(AXML\)$/, to: () => "Parsing the APK binary Manifest (AXML) directly" },
+  { match: /^解析 APK 内 Network Security Config \(AXML\)$/, to: () => "Parsing the in-APK Network Security Config (AXML)" },
+  { match: /^使用 aapt 读取包名、版本与二进制 Manifest$/, to: () => "Reading package name, version and the binary Manifest with aapt" },
+  { match: /^检查混合应用 WebView 资源（CSP、剪贴板插件）$/, to: () => "Checking hybrid-app WebView resources (CSP, clipboard plugins)" },
+  { match: /^扫描 DEX 字符串池（密钥、弱加密、动态加载等启发式）$/, to: () => "Scanning the DEX string pool (secrets, weak crypto, dynamic-loading heuristics)" },
+  { match: /^扫描 assets\/res-raw 文本资源（硬编码密钥、私钥）$/, to: () => "Scanning assets/res-raw text resources (hardcoded secrets, private keys)" },
+  { match: /^检查 debuggable 与可无损剔除的残留条目$/, to: () => "Checking debuggable and residual entries removable without loss" },
+  { match: /^检查现有签名，避免归一化破坏无法重建的签名$/, to: () => "Checking the existing signature to avoid breaking an unrecreatable one" },
+  { match: /^强制 android:debuggable=false$/, to: () => "Forcing android:debuggable=false" },
+  { match: /^识别 assets\/public 与 assets\/www 中的 JavaScript$/, to: () => "Identifying JavaScript under assets/public and assets/www" },
+  { match: /^检查现有签名，避免 Web 资产改写破坏无法重建的签名$/, to: () => "Checking the existing signature to avoid breaking it by rewriting Web assets" },
+  { match: /^用 Terser 处理 (\d+) 个脚本并在内存中复核 ZIP$/, to: (m) => `Minifying ${m[1]} scripts with Terser and re-checking the ZIP in memory` },
+  { match: /^解析 resources\.arsc 并检测 getIdentifier 反射$/, to: () => "Parsing resources.arsc and detecting getIdentifier reflection" },
+  { match: /^检查现有签名，避免对齐破坏 v2\/v3 签名$/, to: () => "Checking the existing signature to avoid breaking v2/v3 by alignment" },
+  { match: /^按 4 字节边界对齐 APK，并对未压缩 SO 做页对齐$/, to: () => "Aligning the APK to 4-byte boundaries with page alignment for uncompressed SO" },
+  { match: /^验证签名库密码与别名$/, to: () => "Verifying the keystore password and alias" },
+  { match: /^已删除同名旧签名库以生成替换密钥（换新）$/, to: () => "Removed the same-named old keystore to generate a replacement key (renew)" },
+  { match: /^使用 apksigner 生成独立签名 APK$/, to: () => "Generating a separate signed APK with apksigner" },
+  { match: /^验证 ZIP 对齐$/, to: () => "Verifying ZIP alignment" },
+  { match: /^验证 APK 签名方案与证书$/, to: () => "Verifying the APK signing scheme and certificate" },
+  { match: /^计算 SHA-256$/, to: () => "Computing SHA-256" },
+  { match: /^确认最终 APK 的 debuggable 状态$/, to: () => "Confirming the final APK's debuggable state" },
+  // 工具安装/恢复(onProgress)
+  { match: /^连接官方源：.+$/, to: () => "Connecting to the official source" },
+  { match: /^下载 (.+)：(.+)$/, to: (m) => `Downloading ${m[1]}: ${m[2]}` },
+  { match: /^校验 SHA-256：.+$/, to: () => "Verifying SHA-256" },
+  { match: /^解压：.+$/, to: () => "Extracting archive" },
+  { match: /^准备下载并安装 Eclipse Temurin 21$/, to: () => "Preparing to download and install Eclipse Temurin 21" },
+  { match: /^读取 Android SDK 稳定软件包清单$/, to: () => "Reading the Android SDK stable package list" },
+  { match: /^准备下载并安装 Android Build Tools$/, to: () => "Preparing to download and install Android Build Tools" },
+  { match: /^生成 Gradle Wrapper（版本 (.+?)）$/, to: (m) => `Generating the Gradle Wrapper (version ${m[1]})` },
+  { match: /^下载 gradle-.+$/, to: () => "Downloading the Gradle distribution" },
+]
+
+export function translateProgress(message: string): string {
+  for (const entry of progressTranslations) {
+    const match = entry.match.exec(message)
+    if (match) return entry.to(match)
+  }
+  return message
 }

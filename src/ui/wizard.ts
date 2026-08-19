@@ -7,7 +7,7 @@ import type {
   RunMode,
   SigningMode,
 } from "../core/types.ts"
-import { t } from "./i18n.ts"
+import { inputPathPlaceholder, keystorePathPlaceholder, t } from "./i18n.ts"
 
 export type QuestionKind = "text" | "secret" | "choice"
 
@@ -137,7 +137,7 @@ export function questionsFor(draft: WizardDraft): WizardQuestion[] {
           ? t("wInputPathPromptProject")
           : t("wInputPathPromptApk"),
       detail: t("wInputPathDetail"),
-      placeholder: draft.inputKind === "project" ? t("wInputPathPhProject") : t("wInputPathPhApk"),
+      placeholder: inputPathPlaceholder(draft.inputKind ?? "apk"),
     },
   ]
 
@@ -261,7 +261,7 @@ export function questionsFor(draft: WizardDraft): WizardQuestion[] {
               : t("wKeyPathDetailExisting"),
         ...((draft.signingMode === "create" || isRenew)
           ? { defaultValue: draft.keystorePath || keystoreDefault(draft) }
-          : { placeholder: "C:\\keys\\release.jks" }),
+          : { placeholder: keystorePathPlaceholder() }),
       },
       {
         id: "keyAlias",
