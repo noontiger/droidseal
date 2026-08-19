@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      - run: bun run verify
+      - name: Package Windows x64 zip
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          Copy-Item droidseal-gui.cmd dist\ -Force
+          Compress-Archive -Path dist\* -DestinationPath "droidseal-$version-windows-x64.zip" -CompressionLevel Optimal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: droidseal-*-windows-x64.zip
+
+  build-linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      - name: Verify (capture errors)
+        shell: bash
+        run: |
+          set +e
+          bun run verify > /tmp/verify.log 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            tail -30 /tmp/verify.log | while IFS= read -r line; do echo "::error::$line"; done
+            exit $code
+          fi
+      - name: Package Linux x64 tar.gz
+        run: |
+          version="$(echo '${{ github.ref_name }}' | sed 's/^v//')"
+          tar -czf "droidseal-$version-linux-x64.tar.gz" -C dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: droidseal-*-linux-x64.tar.gz
+
+  release:
+    needs: [build-windows-x64, build-linux-x64]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Compose release body
+        run: |
+          version="$(echo '${{ github.ref_name }}' | sed 's/^v//')"
+          winSha="$(sha256sum artifacts/release-windows/*.zip | awk '{print $1}')"
+          linuxSha="$(sha256sum artifacts/release-linux/*.tar.gz | awk '{print $1}')"
+          cat > release_body.md <<EOF
+          ## DroidSeal $version
+
+          本地优先的 Android 发布安全流水线：审计 → 对齐 → 签名 → 验证 → 报告，数据不出本机。
+
+          安装：
+          - npm：npm install --global droidseal
+          - PyPI：pip install droidseal
+          - Windows：解压 zip 后双击 droidseal-gui.cmd，或 PowerShell 运行 droidseal.exe
+          - Linux：解压 tar.gz 后运行 ./droidseal
+          - 源码构建（需 Bun 1.3+）：git clone https://github.com/noontiger/droidseal && cd droidseal && bun install --frozen-lockfile && bun run dev
+
+          提示：双击 exe 被 SmartScreen 拦截时右键 → 属性 → 解除锁定；TUI 需在终端中运行。
+
+          校验：commit ${{ github.sha }} · SHA-256(Windows)：$winSha · SHA-256(Linux)：$linuxSha
+          EOF
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: DroidSeal ${{ github.ref_name }}
+          body_path: release_body.md
+          files: |
+            artifacts/release-windows/*.zip
+            artifacts/release-linux/*.tar.gz

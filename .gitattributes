@@ -1,0 +1,7 @@
+* text=auto
+*.ts text eol=lf
+*.tsx text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+licenses/* text eol=lf
+*.lock text eol=lf

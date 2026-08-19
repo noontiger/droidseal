@@ -1,0 +1,84 @@
+{
+  "name": "droidseal",
+  "version": "0.2.0",
+  "description": "A simple, local-first Android release security pipeline.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/noontiger/droidseal#readme",
+  "bugs": {
+    "url": "https://github.com/noontiger/droidseal/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noontiger/droidseal.git"
+  },
+  "bin": {
+    "droidseal": "./bin/droidseal.cjs"
+  },
+  "keywords": [
+    "android",
+    "apk",
+    "apk-security",
+    "apk-signing",
+    "apksigner",
+    "zipalign",
+    "release-engineering",
+    "android-security",
+    "tui",
+    "bun",
+    "typescript"
+  ],
+  "files": [
+    "bin/droidseal.cjs",
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "TRADEMARKS.md",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses"
+  ],
+  "scripts": {
+    "bundle:local": "bun run scripts/collect-local-dependencies.ts",
+    "dev": "bun --preload @opentui/solid/preload src/index.tsx",
+    "start": "bun --preload @opentui/solid/preload src/index.tsx",
+    "check": "tsc --noEmit",
+    "test": "bun test",
+    "build": "bun run scripts/build.ts",
+    "prepack": "bun run verify",
+    "bundle:toolchain": "bun run scripts/bundle-toolchain.ts",
+    "smoke:device": "bun run scripts/device-smoke.ts",
+    "release:check": "bun run scripts/release-check.ts",
+    "verify": "bun run check && bun test && bun run build && bun run release:check"
+  },
+  "packageManager": "bun@1.3.14",
+  "devDependencies": {
+    "@opentui/core": "0.4.5",
+    "@opentui/core-linux-x64": "0.4.5",
+    "@opentui/core-linux-x64-musl": "0.4.5",
+    "@opentui/solid": "0.4.5",
+    "solid-js": "1.9.12",
+    "@types/bun": "1.3.14",
+    "terser": "5.49.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "brace-expansion": "2.1.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "win32",
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

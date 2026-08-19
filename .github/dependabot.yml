@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    labels: ["dependencies"]
+    ignore:
+      # 这些 devDependencies 被精确锁定以保证二进制构建可复现,升级需人工评估
+      - dependency-name: "@opentui/core"
+      - dependency-name: "@opentui/solid"
+      - dependency-name: "solid-js"
+      - dependency-name: "terser"
+      - dependency-name: "typescript"
