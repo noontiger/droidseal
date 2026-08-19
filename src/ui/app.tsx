@@ -365,13 +365,20 @@ export function App() {
     if (count > 0 && focusedButtonIndex() >= count) setFocusedButtonIndex(0)
   })
 
+  // Ctrl+C 复制:优先复制当前鼠标选中内容(OpenTUI 拖选),无选中时复制当前输入
+  const copyForClipboard = () => {
+    const selection = renderer.getSelection()
+    const selected = selection?.isActive ? selection.getSelectedText() : ""
+    copyToClipboard(selected || (isSecretQuestion() ? secretBuffer() : composer()))
+  }
+
   onMount(() => {
     renderer.setTerminalTitle("DroidSeal · Android release security pipeline")
     const timer = setInterval(() => setSpinnerIndex((value) => (value + 1) % SPINNER.length), 120)
     onCleanup(() => clearInterval(timer))
-    // Ctrl+C 永不退出:拦截 SIGINT 并复制当前输入(终端 ISIG 未清除时 Ctrl+C 会先发信号)
+    // Ctrl+C 永不退出:拦截 SIGINT 并复制(终端 ISIG 未清除时 Ctrl+C 会先发信号)
     const interruptHandler = () => {
-      copyToClipboard(isSecretQuestion() ? secretBuffer() : composer())
+      copyForClipboard()
     }
     process.on("SIGINT", interruptHandler)
     onCleanup(() => process.off("SIGINT", interruptHandler))
@@ -1005,11 +1012,11 @@ export function App() {
   useKeyboard((event) => {
     if (event.ctrl) {
       const ctrlKey = (event.sequence || event.name).toLowerCase()
-      // Ctrl+C 复制当前输入、Ctrl+V 粘贴剪贴板;不再触发退出(含原始字节 \x03 / \x16)
+      // Ctrl+C 复制当前选中内容(含鼠标拖选)、Ctrl+V 粘贴剪贴板;不再触发退出(含原始字节 \x03 / \x16)
       if (ctrlKey === "c" || ctrlKey === "\u0003") {
         event.preventDefault()
         event.stopPropagation()
-        copyToClipboard(isSecretQuestion() ? secretBuffer() : composer())
+        copyForClipboard()
         return
       }
       if (ctrlKey === "v" || ctrlKey === "\u0016") {
