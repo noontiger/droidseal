@@ -132,8 +132,8 @@ describe("wizard signing flow", () => {
     )
   })
 
-  test("completed steps use the bright yellow completion color", () => {
-    expect(theme.complete).toBe("#ffdf4d")
+  test("completed steps use the mint green completion color", () => {
+    expect(theme.complete).toBe("#63d6aa")
     expect(stepColor("success")).toBe(theme.complete)
   })
 
