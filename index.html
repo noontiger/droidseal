@@ -304,26 +304,20 @@
     <!-- HERO -->
     <section class="hero wrap">
       <span class="eyebrow" data-reveal><span class="dot"></span>安卓发布封签 · v1.0.0</span>
-      <h1 data-reveal>像聊天一样，跑完 <span class="grad">安卓发布加固</span></h1>
+      <h1 data-reveal>商业加固前你能做的大多数内容</h1>
       <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
         <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
       </div>
 
+      <div class="hero-shot-wrap" data-reveal>
+        <img class="hero-shot" src="./screenshot.png" alt="DroidSeal 终端运行截图" />
+      </div>
+
       <div class="terminal" data-reveal data-cursor>
         <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="name">droidseal — zsh</span></div>
         <div class="body" id="termBody"></div>
-      </div>
-
-      <div class="pills" data-reveal>
-        <button class="pill active" data-mode="guided" data-cursor><span class="k">1</span>分步处理</button>
-        <button class="pill" data-mode="oneclick" data-cursor><span class="k">2</span>一键处理</button>
-        <button class="pill" data-mode="doctor" data-cursor><span class="k">3</span>环境诊断</button>
-      </div>
-
-      <div class="hero-shot-wrap" data-reveal>
-        <img class="hero-shot" src="./screenshot.png" alt="DroidSeal 终端运行截图" />
       </div>
     </section>
 
@@ -567,70 +561,27 @@
 
   /* ============ terminal typing ============ */
   var termBody = document.getElementById('termBody');
-  var MODES = {
-    guided: { cmd:'/guided', out:[
-      ['c-dim','→ 分步向导 · 逐个确认，可跳过'],
-      ['c-prompt','? [01] 环境诊断        执行? y'],
-      ['c-ok','[01] 环境诊断 ............ ok'],
-      ['c-prompt','? [02] 准备工作区      执行? y'],
-      ['c-ok','[02] 准备工作区 .......... ok'],
-      ['c-prompt','? [03] 签名库          执行? y'],
-      ['c-ok','[03] 签名库 .............. ok'],
-      ['c-prompt','? [04] 源码安全审计    执行? y'],
-      ['c-ok','[04] 源码安全审计 ........ ok'],
-      ['c-prompt','? [05] 构建 Release APK 执行? y'],
-      ['c-ok','[05] 构建 Release APK .... ok'],
-      ['c-prompt','? [06] APK 安全审计    执行? y'],
-      ['c-ok','[06] APK 安全审计 ........ ok'],
-      ['c-prompt','? [07] 本地安全防护    执行? y'],
-      ['c-ok','[07] 本地安全防护 ........ ok'],
-      ['c-prompt','? [08] Release 归一化  执行? y'],
-      ['c-ok','[08] Release 归一化 ...... ok'],
-      ['c-prompt','? [09] Web JS 发布处理  执行? n'],
-      ['c-dim','[09] Web JS 发布处理 .... 跳过（可选）'],
-      ['c-prompt','? [10] 资源名混淆      执行? n'],
-      ['c-dim','[10] 资源名混淆 ......... 跳过（可选）'],
-      ['c-prompt','? [11] ZIP 对齐        执行? y'],
-      ['c-ok','[11] ZIP 对齐 ............ ok'],
-      ['c-prompt','? [12] APK 签名        执行? y'],
-      ['c-ok','[12] APK 签名 ............ ok'],
-      ['c-prompt','? [13] 最终验证        执行? y'],
-      ['c-ok','[13] 最终验证 ............ ok'],
-      ['c-prompt','? [14] 生成报告        执行? y'],
-      ['c-ok','[14] 生成报告 ............ ok'],
-      ['c-cyan','› 最终 APK 与审计报告已生成']
-    ]},
-    oneclick: { cmd:'/oneclick', out:[
-      ['c-dim','→ 一键向导 · 14 步连续执行'],
-      ['c-ok','[01] 环境诊断 ............ ok'],
-      ['c-ok','[02] 准备工作区 .......... ok'],
-      ['c-ok','[03] 签名库 .............. ok'],
-      ['c-ok','[04] 源码安全审计 ........ ok'],
-      ['c-ok','[05] 构建 Release APK .... ok'],
-      ['c-ok','[06] APK 安全审计 ........ ok'],
-      ['c-ok','[07] 本地安全防护 ........ ok'],
-      ['c-ok','[08] Release 归一化 ...... ok'],
-      ['c-dim','[09] Web JS 发布处理 .... 跳过（可选）'],
-      ['c-dim','[10] 资源名混淆 ......... 跳过（可选）'],
-      ['c-ok','[11] ZIP 对齐 ............ ok'],
-      ['c-ok','[12] APK 签名 ............ ok'],
-      ['c-ok','[13] 最终验证 ............ ok'],
-      ['c-ok','[14] 生成报告 ............ ok'],
-      ['c-cyan','› 最终 APK 与审计报告已生成']
-    ]},
-    doctor: { cmd:'/doctor', out:[
-      ['c-dim','→ 环境诊断 · 只检查，不改包'],
-      ['c-ok','[✓] JDK 17 · keytool'],
-      ['c-ok','[✓] Android SDK 已定位'],
-      ['c-warn','[!] zipalign · apksigner 缺失（Build Tools）'],
-      ['c-dim','    → sdkmanager 可一键补全'],
-      ['c-cyan','› 缺失项已列出，可“下载并继续”']
-    ]}
-  };
-  var curMode = 'guided';
+  var DEMO = { cmd:'/oneclick', out:[
+    ['c-dim','→ 一键端到端 · 14 步连续执行'],
+    ['c-ok','[01] 环境诊断 ............ ok'],
+    ['c-ok','[02] 准备工作区 .......... ok'],
+    ['c-ok','[03] 签名库 .............. ok'],
+    ['c-ok','[04] 源码安全审计 ........ ok'],
+    ['c-ok','[05] 构建 Release APK .... ok'],
+    ['c-ok','[06] APK 安全审计 ........ ok'],
+    ['c-ok','[07] 本地安全防护 ........ ok'],
+    ['c-ok','[08] Release 归一化 ...... ok'],
+    ['c-dim','[09] Web JS 发布处理 .... 跳过（可选）'],
+    ['c-dim','[10] 资源名混淆 ......... 跳过（可选）'],
+    ['c-ok','[11] ZIP 对齐 ............ ok'],
+    ['c-ok','[12] APK 签名 ............ ok'],
+    ['c-ok','[13] 最终验证 ............ ok'],
+    ['c-ok','[14] 生成报告 ............ ok'],
+    ['c-cyan','› 最终 APK 与审计报告已生成']
+  ]};
   function typeTerminal(){
     if(!termBody) return;
-    var m = MODES[curMode];
+    var m = DEMO;
     if(reduce){
       termBody.innerHTML='';
       var ph=document.createElement('div'); ph.className='line';
@@ -676,12 +627,6 @@
     step();
   }
   typeTerminal();
-  document.querySelectorAll('.pill').forEach(function(p){
-    p.addEventListener('click', function(){
-      document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('active');});
-      p.classList.add('active'); curMode=p.getAttribute('data-mode'); typeTerminal();
-    });
-  });
 
   /* ============ mobile menu ============ */
   var navToggle=document.getElementById('navToggle');
