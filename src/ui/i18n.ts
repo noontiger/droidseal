@@ -22,7 +22,7 @@ export const [language, setLanguage] = createSignal<"en" | "zh">(detectSystemLan
 
 const en = {
   // 头部
-  headerTitle: "Android release pipeline",
+  headerTitle: "Android Release Seal",
   headerLocalOnly: "local only",
   headerReady: "ready",
   headerProcessing: "processing",
@@ -420,7 +420,7 @@ const en = {
 }
 
 const zh: Record<keyof typeof en, string> = {
-  headerTitle: "Android 发布流水线",
+  headerTitle: "安卓发布封签",
   headerLocalOnly: "仅本机",
   headerReady: "就绪",
   headerProcessing: "处理中",

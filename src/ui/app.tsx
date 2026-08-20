@@ -399,7 +399,7 @@ export function App() {
   }
 
   onMount(() => {
-    renderer.setTerminalTitle("DroidSeal · Android release security pipeline")
+    renderer.setTerminalTitle("DroidSeal · Android Release Seal")
     const timer = setInterval(() => setSpinnerIndex((value) => (value + 1) % SPINNER.length), 120)
     onCleanup(() => clearInterval(timer))
     // Ctrl+C 永不退出:挂接模块级信号拦截(复制当前选中/输入)
