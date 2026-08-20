@@ -41,8 +41,8 @@ if (readmeIssues.length > 0) {
 // ② 网页对(可选,需 gh-pages 工作树路径):节 id 与网格元素计数必须一致
 const webDir = process.argv[2]
 if (webDir) {
-  const zh = await read(path.join(webDir, "index.html"))
-  const en = await read(path.join(webDir, "index.en.html"))
+  const zh = await read(path.join(webDir, "index.zh.html"))
+  const en = await read(path.join(webDir, "index.html"))
   const issues: string[] = []
   for (const id of ["pipeline", "modes", "capabilities", "security", "cta"]) {
     if (!zh.includes(`id="${id}"`)) issues.push(`网页 ZH 缺少节 id="${id}"`)
