@@ -1278,7 +1278,6 @@ export function App() {
                   border={["left"]}
                   borderColor={roleColor(message.role)}
                   paddingLeft={zoomMetrics().messageIndent}
-                  paddingBottom={zoomMetrics().messageGap}
                   marginBottom={zoomMetrics().messageGap}
                 >
                   <text fg={roleColor(message.role)} selectable={false}>
