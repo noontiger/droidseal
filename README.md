@@ -2,8 +2,6 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-<img src="https://raw.githubusercontent.com/noontiger/droidseal/main/droidseal-logo.png" width="420" alt="DroidSeal" />
-
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 [![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm)](https://www.npmjs.com/package/droidseal)
 [![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi)](https://pypi.org/project/droidseal)
@@ -50,3 +48,5 @@ A defensive tool: by default it does not unpack, pack, inject hooks, or add anti
 - Open-source license: [Apache License 2.0](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 - Name & logo usage: [TRADEMARKS.md](https://github.com/noontiger/droidseal/blob/main/TRADEMARKS.md) (reviews, tutorials and sharing with attribution are welcome)
 - Third-party notices: [THIRD_PARTY_NOTICES.md](https://github.com/noontiger/droidseal/blob/main/THIRD_PARTY_NOTICES.md)
+
+<img src="https://raw.githubusercontent.com/noontiger/droidseal/main/droidseal-logo.png" width="420" alt="DroidSeal" />
