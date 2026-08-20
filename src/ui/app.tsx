@@ -1388,7 +1388,6 @@ export function App() {
             }
             paddingLeft={1}
             paddingRight={1}
-            marginBottom={1}
             onMouseUp={(event) => {
               // 右键不退出:在对话框内右键 = 粘贴剪贴板文本(或文件路径)
               if (event.button === 2) {
@@ -1498,10 +1497,8 @@ export function App() {
                 )}
               </For>
             </scrollbox>
-            <box flexShrink={0} border={["top"]} borderColor={theme.border} paddingTop={1}>
-              <box height={1} />
+            <box flexShrink={0} border={["top"]} borderColor={theme.border}>
               <text fg={theme.text}><b>{t("sidebarCurrentArtifact")}</b></text>
-              <box height={1} />
               <text fg={theme.textMuted} wrapMode="word">
                 {currentArtifactName() ?? t("sidebarNotGenerated")}
               </text>
