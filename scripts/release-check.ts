@@ -94,7 +94,7 @@ const repositoryUrl = typeof packageJson.repository === "string"
   ? packageJson.repository
   : packageJson.repository?.url
 if (packageJson.name !== "droidseal") findings.push("package.json name 必须为 droidseal")
-if (packageJson.description !== "A simple, local-first Android release security pipeline.") {
+if (packageJson.description !== "Android Release Seal — a local-first Android release security pipeline: audit, harden, align, sign, verify.") {
   findings.push("package.json description 必须使用统一英文短介绍")
 }
 if (packageJson.license !== "Apache-2.0") findings.push("package.json license 必须与 LICENSE 的 Apache-2.0 保持一致")

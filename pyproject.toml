@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "droidseal"
 # 版本号需与 package.json 保持一致
 version = "1.0.0"
-description = "A simple, local-first Android release security pipeline (Windows x64 / Linux x64 binary)."
+description = "Android Release Seal — a local-first Android release security pipeline (Windows x64 / Linux x64 binary): audit, harden, align, sign, verify."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
