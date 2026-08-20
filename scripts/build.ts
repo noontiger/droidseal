@@ -4,6 +4,7 @@ import path from "node:path"
 import solidPlugin from "@opentui/solid/bun-plugin"
 import { minify } from "terser"
 import { generateBundleCompliance } from "./bundle-compliance"
+import { patchOpenTuiScrollbar } from "./patch-opentui"
 
 const projectRoot = path.resolve(import.meta.dir, "..")
 const distDirectory = path.join(projectRoot, "dist")
@@ -19,6 +20,8 @@ const buildMetadataName = isWindows ? "droidseal-build.json" : "droidseal-build.
 const metadataPath = path.join(distDirectory, buildMetadataName)
 const runtimePackage = isWindows ? "@opentui/core-win32-x64" : "@opentui/core-linux-x64"
 const nativeLibrary = isWindows ? "opentui.dll" : "libopentui.so"
+// 构建前应用 OpenTUI 滚动条最小滑块长度补丁(node_modules 每次 install 会重置)
+await patchOpenTuiScrollbar()
 const temporaryDirectory = await mkdtemp(path.join(projectRoot, ".droidseal-build-"))
 const compiledEntryPath = path.join(temporaryDirectory, "droidseal-compiled-entry.js")
 const temporaryExecutablePath = path.join(temporaryDirectory, executableName)
