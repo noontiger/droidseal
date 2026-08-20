@@ -538,7 +538,7 @@
       // 从左到右、从上到下:按元素在父容器内 data-reveal 兄弟中的位置(行主序)设延迟
       var sibs = el.parentNode ? Array.prototype.filter.call(el.parentNode.children, function(c){ return c.getAttribute && c.getAttribute('data-reveal') !== null; }) : [];
       var idx = sibs.indexOf(el);
-      el.style.transitionDelay=(Math.floor(idx/6)*40+(idx%6)*60)+'ms'; io.observe(el);
+      el.style.transitionDelay=(idx*60)+'ms'; io.observe(el);
     });
   } else {
     document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('in'); });
