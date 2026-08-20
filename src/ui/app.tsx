@@ -117,7 +117,7 @@ function copyToClipboard(text: string): void {
 
 function roleColor(role: MessageRole): string {
   const colors: Record<MessageRole, string> = {
-    assistant: theme.accent,
+    assistant: theme.input,
     user: theme.purple,
     success: theme.success,
     error: theme.error,
