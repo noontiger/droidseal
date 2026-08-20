@@ -16,7 +16,7 @@
 - **Release**: runs `zipalign → apksigner sign → verify` in the official order, with automatic rollback on failure and independent artifacts per step;
 - **Outputs**: APK + SHA-256 + JSON/Markdown reports + a release gate + SBOM.
 
-<img width="960" alt="DroidSeal interface screenshot" src="https://github.com/user-attachments/assets/6a6033c5-a82b-4fb4-bcfe-dfbfa9958b5b" />
+<img width="960" alt="DroidSeal interface screenshot" src="droidseal-screenshot.png" />
 
 ## Install
 
