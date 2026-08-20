@@ -85,6 +85,7 @@
   h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:18px 0 12px}
   .lead{color:var(--muted);max-width:640px;font-size:16px}
   .section-pad{padding-top:110px;padding-bottom:110px}
+  #pipeline{padding-top:46px}
 
   /* ---------- header ---------- */
   header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
@@ -118,7 +119,7 @@
 
   /* ---------- hero ---------- */
   .hero{padding-top:150px;padding-bottom:90px;text-align:center}
-  .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:22px auto 18px;max-width:14ch}
+  .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:.03em;line-height:1.08;margin:22px auto 18px;max-width:15ch}
   .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),#7aa2ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero .sub{max-width:620px;margin:0 auto;color:var(--muted);font-size:17px}
   .hero-cta{display:flex;gap:14px;justify-content:center;margin:30px 0 8px;flex-wrap:wrap}
@@ -304,7 +305,7 @@
     <!-- HERO -->
     <section class="hero wrap">
       <span class="eyebrow" data-reveal><span class="dot"></span>Android Release Seal · v1.0.0</span>
-      <h1 data-reveal>Most of what you can do before commercial hardening</h1>
+      <h1 data-reveal>Most of what you can do before <span class="grad">commercial hardening</span></h1>
       <p class="sub" data-reveal>DroidSeal covers most of what you can do before commercial hardening — environment diagnostics, source &amp; APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary" data-cursor>Get Started</a>
@@ -312,14 +313,8 @@
       </div>
 
       <div class="terminal" data-reveal data-cursor>
-        <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="name">droidseal — zsh</span></div>
+        <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i></div>
         <div class="body" id="termBody"></div>
-      </div>
-
-      <div class="pills" data-reveal>
-        <button class="pill active" data-mode="guided" data-cursor><span class="k">1</span>Guided</button>
-        <button class="pill" data-mode="oneclick" data-cursor><span class="k">2</span>One-click</button>
-        <button class="pill" data-mode="doctor" data-cursor><span class="k">3</span>Doctor</button>
       </div>
 
       <div class="hero-shot-wrap" data-reveal>
@@ -567,52 +562,26 @@
 
   /* ============ terminal typing ============ */
   var termBody = document.getElementById('termBody');
-  var MODES = {
-    guided: { cmd:'/guided', out:[
-      ['c-dim','→ Guided wizard · confirm each step, skippable'],
-      ['c-prompt','? [01] Environment check       run? y'],
-      ['c-ok','[01] Environment check ........ ok'],
-      ['c-prompt','? [02] Prepare workspace      run? y'],
-      ['c-ok','[02] Prepare workspace ....... ok'],
-      ['c-prompt','? [03] Keystore              run? y'],
-      ['c-ok','[03] Keystore ............... ok'],
-      ['c-prompt','? [04] Source security audit  run? y'],
-      ['c-ok','[04] Source security audit ... ok'],
-      ['c-warn','    ↳ hardcoded secret scan .... 2 redacted'],
-      ['c-cyan','› confirm each step, roll back anytime']
-    ]},
-    oneclick: { cmd:'/oneclick', out:[
-      ['c-dim','→ One-click wizard · 14 steps in a row'],
-      ['c-ok','[01] Environment check ........ ok'],
-      ['c-ok','[02] Prepare workspace ....... ok'],
-      ['c-ok','[03] Keystore ............... ok'],
-      ['c-ok','[04] Source security audit ... ok'],
-      ['c-warn','    ↳ hardcoded secret scan .... 2 redacted'],
-      ['c-ok','[05] Build release APK ....... ok'],
-      ['c-ok','[06] APK security audit ...... ok'],
-      ['c-ok','[07] Local hardening ......... ok'],
-      ['c-ok','[08] Release normalization ... ok'],
-      ['c-dim','[09] Web JS handling ....... skipped (optional)'],
-      ['c-dim','[10] Resource obfuscation .. skipped (optional)'],
-      ['c-ok','[11] ZIP alignment .......... ok'],
-      ['c-ok','[12] APK signing ............ ok'],
-      ['c-ok','[13] Final verification ..... ok'],
-      ['c-ok','[14] Report ................ ok'],
-      ['c-cyan','› SHA-256 · JSON / Markdown generated']
-    ]},
-    doctor: { cmd:'/doctor', out:[
-      ['c-dim','→ Doctor · check only, never modifies'],
-      ['c-ok','[✓] JDK 17 · keytool'],
-      ['c-ok','[✓] Android SDK located'],
-      ['c-warn','[!] zipalign · apksigner missing (Build Tools)'],
-      ['c-dim','    → sdkmanager installs them in one click'],
-      ['c-cyan','› missing tools listed, click "download and continue"']
-    ]}
-  };
-  var curMode = 'guided';
+  var DEMO = { cmd:'droidseal', out:[
+    ['c-ok','[01] Environment check ........ ok'],
+    ['c-ok','[02] Prepare workspace ....... ok'],
+    ['c-ok','[03] Keystore ............... ok'],
+    ['c-ok','[04] Source security audit ... ok'],
+    ['c-ok','[05] Build release APK ....... ok'],
+    ['c-ok','[06] APK security audit ...... ok'],
+    ['c-ok','[07] Local hardening ......... ok'],
+    ['c-ok','[08] Release normalization ... ok'],
+    ['c-dim','[09] Web JS handling ....... skipped (optional)'],
+    ['c-dim','[10] Resource obfuscation .. skipped (optional)'],
+    ['c-ok','[11] ZIP alignment .......... ok'],
+    ['c-ok','[12] APK signing ............ ok'],
+    ['c-ok','[13] Final verification ..... ok'],
+    ['c-ok','[14] Report ................ ok'],
+    ['c-cyan','› Final APK and audit report generated']
+  ]};
   function typeTerminal(){
     if(!termBody) return;
-    var m = MODES[curMode];
+    var m = DEMO;
     if(reduce){
       termBody.innerHTML='';
       var ph=document.createElement('div'); ph.className='line';
@@ -658,12 +627,6 @@
     step();
   }
   typeTerminal();
-  document.querySelectorAll('.pill').forEach(function(p){
-    p.addEventListener('click', function(){
-      document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('active');});
-      p.classList.add('active'); curMode=p.getAttribute('data-mode'); typeTerminal();
-    });
-  });
 
   /* ============ mobile menu ============ */
   var navToggle=document.getElementById('navToggle');

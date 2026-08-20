@@ -85,6 +85,7 @@
   h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:18px 0 12px}
   .lead{color:var(--muted);max-width:640px;font-size:16px}
   .section-pad{padding-top:110px;padding-bottom:110px}
+  #pipeline{padding-top:46px}
 
   /* ---------- header ---------- */
   header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
@@ -118,7 +119,7 @@
 
   /* ---------- hero ---------- */
   .hero{padding-top:150px;padding-bottom:90px;text-align:center}
-  .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:22px auto 18px;max-width:14ch}
+  .hero h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:.03em;line-height:1.08;margin:22px auto 18px;max-width:15ch}
   .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),#7aa2ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero .sub{max-width:620px;margin:0 auto;color:var(--muted);font-size:17px}
   .hero-cta{display:flex;gap:14px;justify-content:center;margin:30px 0 8px;flex-wrap:wrap}
@@ -304,7 +305,7 @@
     <!-- HERO -->
     <section class="hero wrap">
       <span class="eyebrow" data-reveal><span class="dot"></span>安卓发布封签 · v1.0.0</span>
-      <h1 data-reveal>商业加固前你能做的大多数内容</h1>
+      <h1 data-reveal>商业加固前<span class="grad">你能做的大多数内容</span></h1>
       <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
         <a href="#cta" class="btn btn-primary" data-cursor>开始使用</a>
@@ -316,7 +317,7 @@
       </div>
 
       <div class="terminal" data-reveal data-cursor>
-        <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="name">droidseal — zsh</span></div>
+        <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i></div>
         <div class="body" id="termBody"></div>
       </div>
     </section>
@@ -561,8 +562,7 @@
 
   /* ============ terminal typing ============ */
   var termBody = document.getElementById('termBody');
-  var DEMO = { cmd:'/oneclick', out:[
-    ['c-dim','→ 一键端到端 · 14 步连续执行'],
+  var DEMO = { cmd:'droidseal', out:[
     ['c-ok','[01] 环境诊断 ............ ok'],
     ['c-ok','[02] 准备工作区 .......... ok'],
     ['c-ok','[03] 签名库 .............. ok'],
