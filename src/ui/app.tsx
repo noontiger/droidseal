@@ -1110,11 +1110,11 @@ export function App() {
 
     // 方向键在操作行按钮间循环切换焦点;Enter 激活聚焦按钮。
     // 文本输入场景(activeButtons 为空)不拦截,方向键留给输入框移动光标。
-    if (key === "arrowleft" || key === "arrowright") {
+    if (key === "left" || key === "right") {
       const buttons = activeButtons()
       if (buttons.length > 1) {
         consume()
-        const delta = key === "arrowright" ? 1 : -1
+        const delta = key === "right" ? 1 : -1
         setFocusedButtonIndex((index) => (index + delta + buttons.length) % buttons.length)
         return
       }
