@@ -1194,7 +1194,7 @@ export function App() {
   })
 
   return (
-    <box width="100%" height={dimensions().height + 1} flexDirection="column" backgroundColor={theme.background}>
+    <box width="100%" height={dimensions().height} flexDirection="column" backgroundColor={theme.background}>
       <box
         flexShrink={0}
         flexDirection="row"
