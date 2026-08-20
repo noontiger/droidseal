@@ -1,12 +1,38 @@
 # DroidSeal · 安卓发布封签
 
-[English](README.md) | [中文](README.zh-CN.md)
+[中文](README.zh-CN.md) | [English](README.md)
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
-[![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm)](https://www.npmjs.com/package/droidseal)
-[![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi)](https://pypi.org/project/droidseal)
+[![GitHub Stars](https://img.shields.io/github/stars/noontiger/droidseal?style=for-the-badge&logo=github&color=00a8cc)](https://github.com/noontiger/droidseal/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/noontiger/droidseal?style=for-the-badge&logo=github&color=7aa2ff)](https://github.com/noontiger/droidseal/forks)
+[![GitHub Issues](https://img.shields.io/github/issues/noontiger/droidseal?style=for-the-badge&logo=github&color=1d4258)](https://github.com/noontiger/droidseal/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/noontiger/droidseal?style=for-the-badge&logo=github&color=00a8cc)](https://github.com/noontiger/droidseal/commits/main)
+
+[![npm Version](https://img.shields.io/npm/v/droidseal?style=for-the-badge&logo=npm&color=00a8cc)](https://www.npmjs.com/package/droidseal)
+[![npm Downloads](https://img.shields.io/npm/dm/droidseal?style=for-the-badge&logo=npm&color=7aa2ff)](https://www.npmjs.com/package/droidseal)
+[![PyPI Version](https://img.shields.io/pypi/v/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/droidseal?style=for-the-badge&logo=pypi&color=7aa2ff)](https://pypi.org/project/droidseal)
+[![License: Apache-2.0](https://img.shields.io/github/license/noontiger/droidseal?style=for-the-badge&color=1d4258)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 
 **安卓发布封签**帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前，一键端到端。
+
+```bash
+$ droidseal
+[01] 环境诊断 ............ ok
+[02] 准备工作区 .......... ok
+[03] 签名库 .............. ok
+[04] 源码安全审计 ........ ok
+[05] 构建 Release APK .... ok
+[06] APK 安全审计 ........ ok
+[07] 本地安全防护 ........ ok
+[08] Release 归一化 ...... ok
+[09] Web JS 发布处理 .... 跳过（可选）
+[10] 资源名混淆 ......... 跳过（可选）
+[11] ZIP 对齐 ............ ok
+[12] APK 签名 ............ ok
+[13] 最终验证 ............ ok
+[14] 生成报告 ............ ok
+› 最终 APK 与审计报告已生成
+```
 
 ## 能做什么
 
