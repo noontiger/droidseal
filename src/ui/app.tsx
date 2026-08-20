@@ -1033,24 +1033,25 @@ export function App() {
   }
 
   useKeyboard((event) => {
+    const key = (event.sequence || event.name).toLowerCase()
+    // Ctrl+C 永不退出:复制当前选中/输入;Ctrl+V 粘贴。
+    // 不依赖 event.ctrl 门槛——raw mode 下 Ctrl+C 以原始字节 \x03 到达时 ctrl 标志可能未置位。
+    if ((event.ctrl && key === "c") || key === "\u0003") {
+      event.preventDefault()
+      event.stopPropagation()
+      copyForClipboard()
+      return
+    }
+    if ((event.ctrl && key === "v") || key === "\u0016") {
+      event.preventDefault()
+      event.stopPropagation()
+      const pasted = readClipboard()
+      if (!pasted) return
+      if (isSecretQuestion()) setSecretBuffer((value) => value + pasted)
+      else setComposer((value) => (value ? `${value}${pasted}` : pasted))
+      return
+    }
     if (event.ctrl) {
-      const ctrlKey = (event.sequence || event.name).toLowerCase()
-      // Ctrl+C 复制当前选中内容(含鼠标拖选)、Ctrl+V 粘贴剪贴板;不再触发退出(含原始字节 \x03 / \x16)
-      if (ctrlKey === "c" || ctrlKey === "\u0003") {
-        event.preventDefault()
-        event.stopPropagation()
-        copyForClipboard()
-        return
-      }
-      if (ctrlKey === "v" || ctrlKey === "\u0016") {
-        event.preventDefault()
-        event.stopPropagation()
-        const pasted = readClipboard()
-        if (!pasted) return
-        if (isSecretQuestion()) setSecretBuffer((value) => value + pasted)
-        else setComposer((value) => (value ? `${value}${pasted}` : pasted))
-        return
-      }
       const direction = zoomDirectionFromKey(event.name, event.sequence)
       if (direction) {
         event.preventDefault()
@@ -1061,7 +1062,6 @@ export function App() {
     }
 
     if (busy()) return
-    const key = (event.sequence || event.name).toLowerCase()
     const isEnter = event.name === "return" || event.name === "enter"
     const consume = () => {
       event.preventDefault()
