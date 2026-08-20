@@ -82,9 +82,9 @@
   section{position:relative;z-index:2}
   .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--border);padding:6px 12px;border-radius:999px;background:rgba(0,229,255,0.04)}
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-  h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:18px 0 12px}
+  h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:14px 0 10px}
   .lead{color:var(--muted);max-width:640px;font-size:16px}
-  .section-pad{padding-top:110px;padding-bottom:110px}
+  .section-pad{padding-top:64px;padding-bottom:64px}
   #pipeline{padding-top:46px}
 
   /* ---------- header ---------- */
@@ -109,10 +109,10 @@
   .mobile-menu.open{display:flex}
   .mobile-menu a{padding:13px 12px;color:var(--text);font-size:16px;border-radius:10px;transition:background .2s,color .2s,transform .2s;text-decoration:none}
   .mobile-menu a:hover{background:rgba(0,229,255,0.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(0,229,255,0.4),0 8px 20px -8px rgba(0,229,255,0.35)}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:none;transition:transform .15s,box-shadow .25s,background .25s,border-color .25s;white-space:nowrap;box-shadow:0 4px 14px -4px rgba(0,0,0,0.45)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:transform .15s,box-shadow .25s,background .25s,border-color .25s;white-space:nowrap;box-shadow:0 4px 14px -4px rgba(0,0,0,0.45)}
   .btn:hover{box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 28px -6px rgba(0,229,255,0.5)}
-  .btn-primary{background:var(--cyan);color:#04222a;box-shadow:0 6px 18px -6px rgba(0,229,255,0.5)}
-  .btn-primary:hover{box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65)}
+  .btn-primary{background:linear-gradient(135deg,var(--cyan),#7aa2ff);color:#04222a;border-color:rgba(0,229,255,0.55);box-shadow:0 6px 18px -6px rgba(0,229,255,0.55)}
+  .btn-primary:hover{box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65);border-color:rgba(255,255,255,0.85)}
   .btn-ghost{background:rgba(255,255,255,0.03);border-color:var(--border);color:var(--text);box-shadow:0 4px 14px -4px rgba(0,0,0,0.4)}
   .btn-ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,0.08);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 30px -6px rgba(0,229,255,0.55)}
   .btn svg{width:16px;height:16px}
@@ -324,7 +324,7 @@
 
     <!-- PIPELINE -->
     <section class="section-pad wrap" id="pipeline">
-      <span class="eyebrow" data-reveal><span class="dot"></span>14-Step Pipeline</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>流水线</span>
       <h2 class="title" data-reveal>14 步流水线，端到端</h2>
       <p class="lead" data-reveal>从 APK 到签名产物，全程本机完成。每步生成独立制品，可审计、可回退，默认规则开箱即用。</p>
       <div class="steps-grid">
@@ -347,23 +347,23 @@
 
     <!-- MODES -->
     <section class="section-pad wrap" id="modes">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Three Entry Points</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>三种入口</span>
       <h2 class="title" data-reveal>三种入口，按需切换</h2>
       <p class="lead" data-reveal>同一个引擎，三种节奏——分步学、一键跑，或先诊断环境再决定怎么加固。</p>
       <div class="modes-grid">
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
-          <span class="tag">[1] GUIDED · /guided</span><h3>分步处理</h3>
+          <span class="tag">[1] 分步 · /guided</span><h3>分步处理</h3>
           <p>每一步执行前再次显示用途与影响，可“执行此步”或跳过；失败自动回退到步骤开始前的 APK。</p>
         </article>
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
-          <span class="tag">[2] ONE-CLICK · /oneclick</span><h3>一键处理</h3>
+          <span class="tag">[2] 一键 · /oneclick</span><h3>一键处理</h3>
           <p>填写信息后 14 步连续执行，一般失败自动回退继续；缺工具则暂停等待下载或修复后自动续跑。</p>
         </article>
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
-          <span class="tag">[3] DOCTOR · /doctor</span><h3>环境诊断</h3>
+          <span class="tag">[3] 诊断 · /doctor</span><h3>环境诊断</h3>
           <p>定位 JDK / Android SDK 等工具，缺失项列出并提供下载与说明；只检查不改包。</p>
         </article>
       </div>
@@ -371,7 +371,7 @@
 
     <!-- CAPABILITIES -->
     <section class="section-pad wrap" id="capabilities">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Capabilities</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>能力</span>
       <h2 class="title" data-reveal>能力网格</h2>
       <p class="lead" data-reveal>不是黑盒工具，而是一套本地优先、可审计、可验证的发布前流水线。</p>
       <div class="cap-grid">
@@ -404,7 +404,7 @@
 
     <!-- SECURITY -->
     <section class="section-pad wrap" id="security">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Security & Privacy</span>
+      <span class="eyebrow" data-reveal><span class="dot"></span>安全与隐私</span>
       <h2 class="title" data-reveal>安全与隐私，默认就做对</h2>
       <div class="sec-grid">
         <div class="sec-list">
