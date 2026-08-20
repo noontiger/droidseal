@@ -1301,7 +1301,7 @@ export function App() {
             </Show>
           </scrollbox>
 
-          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1} alignItems="center">
+          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={2} alignItems="center">
             <Show when={toolRecovery()}>
               <Show when={toolRecovery()?.plan.canAutoInstall}>
                 <Button
@@ -1517,6 +1517,7 @@ export function App() {
                 )}
               </Show>
               <text fg={theme.textMuted}>{t("sidebarNoOverwrite")}</text>
+              <box height={1} />
             </box>
           </box>
         </Show>
