@@ -51,6 +51,7 @@
     "bundle:toolchain": "bun run scripts/bundle-toolchain.ts",
     "smoke:device": "bun run scripts/device-smoke.ts",
     "release:check": "bun run scripts/release-check.ts",
+    "py:wheel": "bun run scripts/py-wheel.ts",
     "verify": "bun run check && bun test && bun run build && bun run release:check"
   },
   "packageManager": "bun@1.3.14",
