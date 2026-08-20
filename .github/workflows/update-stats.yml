@@ -22,8 +22,8 @@ jobs:
         run: bun run scripts/update-stats.ts
       - name: Commit stats if changed
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "noontiger"
+          git config user.email "hidiamond@outlook.com"
           git add stats
           if ! git diff --cached --quiet; then
             git commit -m "chore: refresh README stats [skip ci]"
