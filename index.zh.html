@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DroidSeal · Local-first Android Release Security Pipeline</title>
-<meta name="description" content="DroidSeal: a local-first, verifiable 14-step Android release security pipeline covering audit, align, sign, verify and report." />
+<title>DroidSeal · 本地优先的 Android 安全发布流水线</title>
+<meta name="description" content="DroidSeal（安卓发布封签）：商业加固前你能做的大多数内容。本地优先、结果可验证的 14 步发布安全流水线。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -147,7 +147,7 @@
   .pills{display:flex;gap:10px;justify-content:center;margin:22px 0 0;flex-wrap:wrap}
   .pill{font-family:var(--mono);font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);cursor:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px -6px rgba(0,0,0,0.5)}
   .pill .k{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,0.06);font-size:11px;color:var(--cyan)}
-  .pill:hover{color:var(--text);border-color:var(--cyan-dim);box-shadow:var(--lift-cyan)}
+  .pill:hover{color:var(--text);border-color:var(--cyan);box-shadow:var(--lift-cyan)}
   .pill.active{background:rgba(0,229,255,0.1);border-color:var(--cyan);color:#fff;box-shadow:var(--lift-cyan)}
 
   /* hero screenshot */
@@ -156,8 +156,8 @@
     box-shadow:0 0 24px rgba(0,229,255,0.45),0 0 48px rgba(0,229,255,0.25),0 30px 80px rgba(0,0,0,0.55)}
 
   /* ---------- pipeline grid ---------- */
-  .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:14px;margin-top:44px}
-  .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 14px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
+  .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:10px;margin-top:28px}
+  .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 12px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
   .step::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(0,229,255,0.10),transparent 60%);opacity:0;transition:opacity .3s}
   .step:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .step:hover::before{opacity:1}
@@ -166,8 +166,8 @@
   .step p{color:var(--muted);font-size:12px;line-height:1.45}
 
   /* ---------- modes ---------- */
-  .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-  .mode{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
+  .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  .mode{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
   .mode:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .mode .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim);margin-bottom:16px}
   .mode .ico svg{width:22px;height:22px;stroke:var(--cyan)}
@@ -176,8 +176,8 @@
   .mode p{color:var(--muted);font-size:14.5px}
 
   /* ---------- capabilities ---------- */
-  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-  .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
+  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
   .cap:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .cap .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);margin-bottom:14px}
   .cap .ico svg{width:20px;height:20px;stroke:var(--cyan)}
@@ -185,9 +185,9 @@
   .cap p{color:var(--muted);font-size:14px}
 
   /* ---------- security ---------- */
-  .sec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin-top:44px}
-  .sec-list{display:flex;flex-direction:column;gap:14px}
-  .sec-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
+  .sec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;margin-top:28px}
+  .sec-list{display:flex;flex-direction:column;gap:10px}
+  .sec-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
   .sec-item:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .sec-item .ck{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim)}
   .sec-item .ck svg{width:16px;height:16px;stroke:var(--cyan)}
@@ -275,28 +275,28 @@
       <a href="#top" class="brand" data-cursor>
         <img class="logo" src="./logo.png" alt="DroidSeal" />
       </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#pipeline">Pipeline</a>
-        <a href="#modes">Modes</a>
-        <a href="#capabilities">Capabilities</a>
-        <a href="#security">Security</a>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="#pipeline">管线</a>
+        <a href="#modes">模式</a>
+        <a href="#capabilities">能力</a>
+        <a href="#security">安全</a>
       </nav>
       <div class="nav-actions">
-        <a href="index.html" data-cursor style="font-size:13px;color:var(--cyan);border:1px solid var(--border);padding:5px 10px;border-radius:8px;text-decoration:none">中文</a>
+        <a href="index.html" data-cursor style="font-size:13px;color:var(--cyan);border:1px solid var(--border);padding:5px 10px;border-radius:8px;text-decoration:none">English</a>
         <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary" data-cursor>
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .6l3.5 6.9 7.8 1.1-5.6 5.5 1.3 7.7L12 18.6 4.9 22.3l1.3-7.7L.6 9.1 8.5 8z"/></svg>
           Star on GitHub
         </a>
-        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu" data-cursor>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileMenu" data-cursor>
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#pipeline">Pipeline</a>
-      <a href="#modes">Modes</a>
-      <a href="#capabilities">Capabilities</a>
-      <a href="#security">Security</a>
+      <a href="#pipeline">管线</a>
+      <a href="#modes">模式</a>
+      <a href="#capabilities">能力</a>
+      <a href="#security">安全</a>
       <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
   </header>
@@ -304,125 +304,125 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero wrap">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Android Release Seal · v1.0.0</span>
-      <h1 data-reveal>Most of what you can do <span class="grad">before commercial hardening</span></h1>
-      <p class="sub" data-reveal>DroidSeal covers most of what you can do before commercial hardening — environment diagnostics, source &amp; APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.</p>
+      <span class="eyebrow" data-reveal><span class="dot"></span>安卓发布封签 · v1.0.0</span>
+      <h1 data-reveal><span class="grad">商业加固前</span>你能做的大多数内容</h1>
+      <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
-        <a href="#cta" class="btn btn-primary" data-cursor>Get Started</a>
-        <a href="#pipeline" class="btn btn-ghost" data-cursor>View Pipeline</a>
+        <a href="#cta" class="btn btn-primary" data-cursor>开始使用</a>
+        <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
+      </div>
+
+      <div class="hero-shot-wrap" data-reveal>
+        <img class="hero-shot" src="./screenshot.png" alt="DroidSeal 终端运行截图" />
       </div>
 
       <div class="terminal" data-reveal data-cursor>
         <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i></div>
         <div class="body" id="termBody"></div>
       </div>
-
-      <div class="hero-shot-wrap" data-reveal>
-        <img class="hero-shot" src="./screenshot.png" alt="DroidSeal terminal screenshot" />
-      </div>
     </section>
 
     <!-- PIPELINE -->
     <section class="section-pad wrap" id="pipeline">
-      <span class="eyebrow" data-reveal><span class="dot"></span>14-Step Pipeline</span>
-      <h2 class="title" data-reveal>A 14-step pipeline, end to end</h2>
-      <p class="lead" data-reveal>From APK to signed artifact, entirely on your machine. Every step produces an independent, auditable, rollback-safe artifact with sensible defaults.</p>
+      <span class="eyebrow" data-reveal><span class="dot"></span>流水线</span>
+      <h2 class="title" data-reveal>14 步流水线，端到端</h2>
+      <p class="lead" data-reveal>从 APK 到签名产物，全程本机完成。每步生成独立制品，可审计、可回退，默认规则开箱即用。</p>
       <div class="steps-grid">
-        <article class="step" data-reveal data-cursor><div class="num">01</div><h3>Environment check</h3><p>Locates JDK / Android SDK tools and flags what the selected flow is missing.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">02</div><h3>Prepare workspace</h3><p>Validates input and copies the existing APK; never modifies in place.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">03</div><h3>Keystore</h3><p>Validates the existing alias up front, or creates one with keytool.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">04</div><h3>Source security audit</h3><p>Checks R8 / resources / Manifest / plaintext signing passwords and source heuristics.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">05</div><h3>Build release APK</h3><p>Runs the project's own Gradle Wrapper and copies the artifact.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">06</div><h3>APK security audit</h3><p>Parses ZIP / DEX / ELF / AXML / ARSC; aapt only as a fallback.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">07</div><h3>Local hardening</h3><p>Verifies R8, standard DEX, anti-debug and integrity coverage.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">08</div><h3>Release normalization</h3><p>Forces debuggable=false, verifies after modification, otherwise aborts and rolls back.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">09</div><h3>Web JS handling</h3><p>Optional Terser pass over assets/public and assets/www scripts.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">10</div><h3>Resource name obfuscation</h3><p>Optionally parses resources.arsc, preserving entries hit by getIdentifier.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">11</div><h3>ZIP alignment</h3><p>zipalign -p -f 4; auto-skips when a valid signature is preserved.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">12</div><h3>APK signing</h3><p>apksigner outputs a new signed APK.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">13</div><h3>Final verification</h3><p>Verifies alignment, signing scheme, certificate, and computes SHA-256.</p></article>
-        <article class="step" data-reveal data-cursor><div class="num">14</div><h3>Report</h3><p>JSON / Markdown, SBOM, release gate and coverage matrix.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">01</div><h3>环境诊断</h3><p>定位 JDK / Android SDK 等工具，标出所选流程的缺失项。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">02</div><h3>准备工作区</h3><p>验证输入、复制已有 APK，绝不原地修改。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">03</div><h3>签名库</h3><p>提前校验现有别名，或用 keytool 新建。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">04</div><h3>源码安全审计</h3><p>检查 R8 / 资源 / Manifest / 明文签名密码与源码启发式。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">05</div><h3>构建 Release APK</h3><p>执行项目自己的 Gradle Wrapper 并复制产物。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">06</div><h3>APK 安全审计</h3><p>解析 ZIP / DEX / ELF / AXML / ARSC；aapt 仅补充回退。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">07</div><h3>本地安全防护</h3><p>核验 R8、标准 DEX、反调试与完整性覆盖。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">08</div><h3>Release 归一化</h3><p>强制 debuggable=false，修改后验证，否则中止回退。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">09</div><h3>Web JS 发布处理</h3><p>可选 Terser 处理 assets/public、assets/www 脚本。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">10</div><h3>资源名混淆</h3><p>可选解析 resources.arsc，getIdentifier 命中时保留。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">11</div><h3>ZIP 对齐</h3><p>zipalign -p -f 4；保留有效现有签名时自动跳过。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">12</div><h3>APK 签名</h3><p>apksigner 输出新的签名 APK。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">13</div><h3>最终验证</h3><p>验证对齐、签名方案、证书并计算 SHA-256。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">14</div><h3>生成报告</h3><p>JSON / Markdown、SBOM、发布门禁与覆盖矩阵。</p></article>
       </div>
     </section>
 
     <!-- MODES -->
     <section class="section-pad wrap" id="modes">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Three Entry Points</span>
-      <h2 class="title" data-reveal>Three entry points, one engine</h2>
-      <p class="lead" data-reveal>One engine, three paces — learn step by step, run it in one click, or diagnose the environment first.</p>
+      <span class="eyebrow" data-reveal><span class="dot"></span>三种入口</span>
+      <h2 class="title" data-reveal>三种入口，按需切换</h2>
+      <p class="lead" data-reveal>同一个引擎，三种节奏——分步学、一键跑，或先诊断环境再决定怎么加固。</p>
       <div class="modes-grid">
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
-          <span class="tag">[1] GUIDED · /guided</span><h3>Guided</h3>
-          <p>Shows the purpose and impact before each step; run or skip it, and failures roll back to the APK from before the step.</p>
+          <span class="tag">[1] 分步 · /guided</span><h3>分步处理</h3>
+          <p>每一步执行前再次显示用途与影响，可“执行此步”或跳过；失败自动回退到步骤开始前的 APK。</p>
         </article>
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
-          <span class="tag">[2] ONE-CLICK · /oneclick</span><h3>One-click</h3>
-          <p>Runs all 14 steps after you fill in the details; ordinary failures roll back and continue, while missing tools pause for download or repair.</p>
+          <span class="tag">[2] 一键 · /oneclick</span><h3>一键处理</h3>
+          <p>填写信息后 14 步连续执行，一般失败自动回退继续；缺工具则暂停等待下载或修复后自动续跑。</p>
         </article>
         <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
-          <span class="tag">[3] DOCTOR · /doctor</span><h3>Doctor</h3>
-          <p>Locates JDK / Android SDK tools, lists what is missing with download hints; checks only, never modifies the package.</p>
+          <span class="tag">[3] 诊断 · /doctor</span><h3>环境诊断</h3>
+          <p>定位 JDK / Android SDK 等工具，缺失项列出并提供下载与说明；只检查不改包。</p>
         </article>
       </div>
     </section>
 
     <!-- CAPABILITIES -->
     <section class="section-pad wrap" id="capabilities">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Capabilities</span>
-      <h2 class="title" data-reveal>Capability grid</h2>
-      <p class="lead" data-reveal>Not a black box — a local-first, auditable, verifiable pre-release pipeline.</p>
+      <span class="eyebrow" data-reveal><span class="dot"></span>能力</span>
+      <h2 class="title" data-reveal>能力网格</h2>
+      <p class="lead" data-reveal>不是黑盒工具，而是一套本地优先、可审计、可验证的发布前流水线。</p>
       <div class="cap-grid">
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          <h3>Local-first</h3><p>No model service calls; never uploads your APK, file paths, or signing credentials.</p>
+          <h3>本地优先</h3><p>不连接模型服务，不上传 APK、文件路径或签名凭据。</p>
         </article>
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></div>
-          <h3>Verifiable results</h3><p>Produces signature verification, SHA-256, and JSON / Markdown reports.</p>
+          <h3>结果可验证</h3><p>输出签名验证、SHA-256、JSON 与 Markdown 报告。</p>
         </article>
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
-          <h3>Rollback-safe</h3><p>Every step keeps an independent artifact; failures explain why and restore the last valid APK.</p>
+          <h3>步骤可回退</h3><p>每步独立制品，失败解释原因并恢复最近有效 APK。</p>
         </article>
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
-          <h3>Deep static audit</h3><p>Permissions / targetSdk / signing / deep links / hardcoded secrets / TLS heuristics.</p>
+          <h3>深度静态审计</h3><p>权限 / targetSdk / 签名 / 深链 / 硬编码密钥 / TLS 启发式。</p>
         </article>
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <h3>Secret redaction</h3><p>Plaintext passwords keep only path and line; values never reach reports or commands.</p>
+          <h3>密钥脱敏</h3><p>明文密码只留路径与行号，值从不进入报告或命令。</p>
         </article>
         <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
-          <h3>Evidence-first</h3><p>Reports distinguish confirmed / high / medium / low confidence and emit a CycloneDX SBOM.</p>
+          <h3>证据优先</h3><p>报告区分已确认 / 高 / 中 / 低置信度，并产出 CycloneDX SBOM。</p>
         </article>
       </div>
     </section>
 
     <!-- SECURITY -->
     <section class="section-pad wrap" id="security">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Security & Privacy</span>
-      <h2 class="title" data-reveal>Security & privacy, right by default</h2>
+      <span class="eyebrow" data-reveal><span class="dot"></span>安全与隐私</span>
+      <h2 class="title" data-reveal>安全与隐私，默认就做对</h2>
       <div class="sec-grid">
         <div class="sec-list">
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>Local-first execution</h4><p>APKs and signing credentials are handled only on your machine; no model service, no uploads.</p></div>
+            <div><h4>本地优先执行</h4><p>APK 与签名凭据只在本机处理，不连接模型服务、不上传任何数据。</p></div>
           </div>
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>Clear boundaries</h4><p>By default no unpacking, hooks, anti-debug, or runtime tampering code is injected; such attacks are treated only as a threat model.</p></div>
+            <div><h4>明确的边界</h4><p>默认不注入脱壳 / Hook / 反调试 / 运行时篡改代码；相关攻击只作为威胁模型。</p></div>
           </div>
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>Secrets never touch disk</h4><p>Plaintext passwords live only in memory, never in reports, command arguments, config files, or chat history.</p></div>
+            <div><h4>密钥绝不落盘</h4><p>明文密码只在内存，不写入报告、命令参数、配置文件或终端聊天记录。</p></div>
           </div>
           <div class="sec-item" data-reveal>
             <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-            <div><h4>Evidence-first</h4><p>Reports clearly separate &quot;verified&quot; from &quot;advisory&quot; controls and never claim a server-side closed loop.</p></div>
+            <div><h4>证据优先</h4><p>报告明确区分“已验证”与“仅建议”的控制项，不冒充服务端闭环。</p></div>
           </div>
         </div>
         <div class="sec-visual" data-reveal aria-hidden="true">
@@ -436,39 +436,38 @@
     <!-- FINAL CTA -->
     <section class="section-pad wrap" id="cta">
       <div class="cta-box" data-reveal>
-        <h2>Three ways to get started</h2>
-        <p>Open source · Apache-2.0 License · Local-first · Windows x64 / Linux x64 (v1.0.0)</p>
+        <h2>三种方式，立即上手</h2>
+        <p>开源 · Apache-2.0 License · 本地优先 · Windows x64 / Linux x64（v1.0.0）</p>
         <div class="copy-row" data-cursor>
           <code id="installCmd">npm install --global droidseal</code>
-          <button id="copyBtn">Copy</button>
+          <button id="copyBtn">复制</button>
         </div>
         <div class="copy-row" data-cursor>
           <code id="installPipCmd">pip install droidseal</code>
-          <button id="copyPipBtn">Copy</button>
+          <button id="copyPipBtn">复制</button>
         </div>
         <div class="hero-cta" data-cursor>
           <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">GitHub Releases · Windows zip / Linux tar.gz</a>
-          <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">View GitHub</a>
-          <a href="#pipeline" class="btn btn-ghost">View Pipeline</a>
+          <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">查看 GitHub</a>
         </div>
       </div>
     </section>
 
     <!-- INSTALL TROUBLESHOOT -->
     <section class="section-pad wrap" id="troubleshoot">
-      <h2 class="title" data-reveal>Trouble installing?</h2>
+      <h2 class="title" data-reveal>安装遇到问题？</h2>
       <div class="ts-grid" data-reveal>
         <div class="ts-item">
-          <h3>SmartScreen blocks the downloaded exe</h3>
-          <p>The droidseal.exe from GitHub Releases is not code-signed, so Windows may warn &quot;Windows protected your PC&quot;. Fix: right-click the exe → Properties → check &quot;Unblock&quot; → OK; or click &quot;More info → Run anyway&quot;; you can also run it directly in PowerShell.</p>
+          <h3>SmartScreen 拦截下载的 exe</h3>
+          <p>从 GitHub Releases 下载的 droidseal.exe 未做代码签名，双击时 Windows 可能提示“已保护你的电脑”。解决方法：右键 exe → 属性 → 勾选“解除锁定” → 确定；或点击“更多信息 → 仍要运行”；也可直接在 PowerShell 中运行。</p>
         </div>
         <div class="ts-item">
-          <h3>The TUI needs a terminal</h3>
-          <p>DroidSeal is a terminal program: double-clicking droidseal.exe shows &quot;interactive terminal required&quot; and exits. Open PowerShell or cmd, cd into the extracted folder and run <code>.\droidseal.exe</code>, or double-click the bundled <code>droidseal-gui.cmd</code> launcher.</p>
+          <h3>TUI 需要在终端中运行</h3>
+          <p>DroidSeal 是终端程序：直接双击 droidseal.exe 会提示“需要交互式终端”并退出。请打开 PowerShell 或 cmd，进入解压目录运行 <code>.\droidseal.exe</code>，或直接双击随包附带的 <code>droidseal-gui.cmd</code> 启动器。</p>
         </div>
         <div class="ts-item">
-          <h3>More info</h3>
-          <p>Full install, platform support, and usage are in the <a href="https://github.com/noontiger/droidseal#readme" target="_blank" rel="noopener">GitHub README</a> — Quick start and Platform &amp; status sections.</p>
+          <h3>更多说明</h3>
+          <p>完整安装、平台支持与使用方法见 <a href="https://github.com/noontiger/droidseal#readme" target="_blank" rel="noopener">GitHub README</a> 的「快速开始」与「当前状态与支持范围」。</p>
         </div>
       </div>
     </section>
@@ -479,11 +478,11 @@
       <a href="#top" class="brand" data-cursor>
         <img class="logo" src="./logo.png" alt="DroidSeal" />
       </a>
-      <nav class="links" aria-label="Footer links">
-        <a href="#pipeline" data-cursor>Pipeline</a>
-        <a href="#modes" data-cursor>Modes</a>
-        <a href="#capabilities" data-cursor>Capabilities</a>
-        <a href="#security" data-cursor>Security</a>
+      <nav class="links" aria-label="页脚链接">
+        <a href="#pipeline" data-cursor>管线</a>
+        <a href="#modes" data-cursor>模式</a>
+        <a href="#capabilities" data-cursor>能力</a>
+        <a href="#security" data-cursor>安全</a>
         <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" data-cursor>GitHub</a>
       </nav>
       <span class="copy">Apache-2.0 License · v1.0.0 · © 2026 DroidSeal</span>
@@ -535,7 +534,12 @@
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
     },{threshold:0.12});
-    document.querySelectorAll('[data-reveal]').forEach(function(el,i){ el.style.transitionDelay=(i%6*60)+'ms'; io.observe(el); });
+    document.querySelectorAll('[data-reveal]').forEach(function(el){
+      // 从左到右、从上到下:按元素在父容器内 data-reveal 兄弟中的位置(行主序)设延迟
+      var sibs = el.parentNode ? Array.prototype.filter.call(el.parentNode.children, function(c){ return c.getAttribute && c.getAttribute('data-reveal') !== null; }) : [];
+      var idx = sibs.indexOf(el);
+      el.style.transitionDelay=(Math.floor(idx/6)*40+(idx%6)*60)+'ms'; io.observe(el);
+    });
   } else {
     document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('in'); });
   }
@@ -563,21 +567,21 @@
   /* ============ terminal typing ============ */
   var termBody = document.getElementById('termBody');
   var DEMO = { cmd:'droidseal', out:[
-    ['c-ok','[01] Environment check ........ ok'],
-    ['c-ok','[02] Prepare workspace ....... ok'],
-    ['c-ok','[03] Keystore ............... ok'],
-    ['c-ok','[04] Source security audit ... ok'],
-    ['c-ok','[05] Build release APK ....... ok'],
-    ['c-ok','[06] APK security audit ...... ok'],
-    ['c-ok','[07] Local hardening ......... ok'],
-    ['c-ok','[08] Release normalization ... ok'],
-    ['c-dim','[09] Web JS handling ....... skipped (optional)'],
-    ['c-dim','[10] Resource obfuscation .. skipped (optional)'],
-    ['c-ok','[11] ZIP alignment .......... ok'],
-    ['c-ok','[12] APK signing ............ ok'],
-    ['c-ok','[13] Final verification ..... ok'],
-    ['c-ok','[14] Report ................ ok'],
-    ['c-cyan','› Final APK and audit report generated']
+    ['c-ok','[01] 环境诊断 ............ ok'],
+    ['c-ok','[02] 准备工作区 .......... ok'],
+    ['c-ok','[03] 签名库 .............. ok'],
+    ['c-ok','[04] 源码安全审计 ........ ok'],
+    ['c-ok','[05] 构建 Release APK .... ok'],
+    ['c-ok','[06] APK 安全审计 ........ ok'],
+    ['c-ok','[07] 本地安全防护 ........ ok'],
+    ['c-ok','[08] Release 归一化 ...... ok'],
+    ['c-dim','[09] Web JS 发布处理 .... 跳过（可选）'],
+    ['c-dim','[10] 资源名混淆 ......... 跳过（可选）'],
+    ['c-ok','[11] ZIP 对齐 ............ ok'],
+    ['c-ok','[12] APK 签名 ............ ok'],
+    ['c-ok','[13] 最终验证 ............ ok'],
+    ['c-ok','[14] 生成报告 ............ ok'],
+    ['c-cyan','› 最终 APK 与审计报告已生成']
   ]};
   function typeTerminal(){
     if(!termBody) return;
@@ -635,20 +639,20 @@
     navToggle.addEventListener('click', function(){
       var open=mobileMenu.classList.toggle('open');
       navToggle.setAttribute('aria-expanded', open?'true':'false');
-      navToggle.setAttribute('aria-label', open?'Close menu':'Open menu');
+      navToggle.setAttribute('aria-label', open?'关闭菜单':'打开菜单');
     });
     mobileMenu.querySelectorAll('a').forEach(function(a){
       a.addEventListener('click', function(){
         mobileMenu.classList.remove('open');
         navToggle.setAttribute('aria-expanded','false');
-        navToggle.setAttribute('aria-label','Open menu');
+        navToggle.setAttribute('aria-label','打开菜单');
       });
     });
     window.addEventListener('resize', function(){
       if(window.innerWidth>900 && mobileMenu.classList.contains('open')){
         mobileMenu.classList.remove('open');
         navToggle.setAttribute('aria-expanded','false');
-        navToggle.setAttribute('aria-label','Open menu');
+        navToggle.setAttribute('aria-label','打开菜单');
       }
     });
   }
@@ -659,7 +663,7 @@
     if(!btn) return;
     btn.addEventListener('click', function(){
       var txt=document.getElementById(cmdId).textContent;
-      var done=function(){ btn.textContent='Copied'; setTimeout(function(){btn.textContent='Copy';},1600); };
+      var done=function(){ btn.textContent='已复制'; setTimeout(function(){btn.textContent='复制';},1600); };
       if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
       else { done(); }
     });
