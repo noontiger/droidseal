@@ -11,8 +11,8 @@
 [![npm Downloads](https://img.shields.io/npm/dm/droidseal?style=for-the-badge&logo=npm&color=7aa2ff)](https://www.npmjs.com/package/droidseal)
 [![PyPI Version](https://img.shields.io/pypi/v/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/droidseal?style=for-the-badge&logo=pypi&color=7aa2ff)](https://pypi.org/project/droidseal)
-[![npm Total Downloads](https://img.shields.io/npm/dt/droidseal?style=for-the-badge&logo=npm&color=00a8cc)](https://www.npmjs.com/package/droidseal)
-[![PyPI Total Downloads](https://img.shields.io/pypi/dt/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal)
+[![npm Total Downloads](https://img.shields.io/npm/dt/droidseal?style=for-the-badge&logo=npm&color=00a8cc)](https://www.npmjs.com/package/droidseal) <a href="https://www.npmjs.com/package/droidseal"><img src="https://raw.githubusercontent.com/noontiger/droidseal/main/stats/npm-total.svg" alt="npm total downloads" /></a>
+[![PyPI Total Downloads](https://img.shields.io/pypi/dt/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal) <a href="https://pypi.org/project/droidseal"><img src="https://raw.githubusercontent.com/noontiger/droidseal/main/stats/pypi-total.svg" alt="PyPI total downloads" /></a>
 [![License: Apache-2.0](https://img.shields.io/github/license/noontiger/droidseal?style=for-the-badge&color=1d4258)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 
 **Android Release Seal** helps you do most of what you can do before commercial hardening — environment diagnostics, source & APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.

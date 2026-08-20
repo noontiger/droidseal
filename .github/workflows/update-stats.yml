@@ -1,0 +1,33 @@
+name: Update stats
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # 每日 UTC 03:17 刷新 README 统计
+  workflow_dispatch: {} # 手动触发
+  push:
+    branches: [main]
+    paths: ["scripts/update-stats.ts", ".github/workflows/update-stats.yml"]
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Generate count-up stats SVGs
+        run: bun run scripts/update-stats.ts
+      - name: Commit stats if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stats
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh README stats [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "统计无变化,跳过提交"
+          fi

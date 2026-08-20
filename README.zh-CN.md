@@ -11,8 +11,8 @@
 [![npm Downloads](https://img.shields.io/npm/dm/droidseal?style=for-the-badge&logo=npm&color=7aa2ff)](https://www.npmjs.com/package/droidseal)
 [![PyPI Version](https://img.shields.io/pypi/v/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/droidseal?style=for-the-badge&logo=pypi&color=7aa2ff)](https://pypi.org/project/droidseal)
-[![npm Total Downloads](https://img.shields.io/npm/dt/droidseal?style=for-the-badge&logo=npm&color=00a8cc)](https://www.npmjs.com/package/droidseal)
-[![PyPI Total Downloads](https://img.shields.io/pypi/dt/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal)
+[![npm Total Downloads](https://img.shields.io/npm/dt/droidseal?style=for-the-badge&logo=npm&color=00a8cc)](https://www.npmjs.com/package/droidseal) <a href="https://www.npmjs.com/package/droidseal"><img src="https://raw.githubusercontent.com/noontiger/droidseal/main/stats/npm-total.svg" alt="npm total downloads" /></a>
+[![PyPI Total Downloads](https://img.shields.io/pypi/dt/droidseal?style=for-the-badge&logo=pypi&color=00a8cc)](https://pypi.org/project/droidseal) <a href="https://pypi.org/project/droidseal"><img src="https://raw.githubusercontent.com/noontiger/droidseal/main/stats/pypi-total.svg" alt="PyPI total downloads" /></a>
 [![License: Apache-2.0](https://img.shields.io/github/license/noontiger/droidseal?style=for-the-badge&color=1d4258)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 
 **安卓发布封签**帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前，一键端到端。
