@@ -37,7 +37,7 @@ droidseal --version
 ## Platform & status
 
 - **Platforms**: Windows x64 / Linux x64;
-- **Status**: 0.2.x Alpha — the CLI, output layout, and report format may change before 1.0.
+- **Status**: 1.0.0 stable — the CLI, output layout, and report format are now stable.
 
 ## Security boundary
 
