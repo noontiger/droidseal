@@ -15,6 +15,27 @@ import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } 
 import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
 import { language, setLanguage, t, tGuidance, translateDetail, translateProgress, translateSummary, tStep, tStepDesc } from "./i18n.ts"
+
+// Ctrl+C 永不退出:模块级拦截 SIGINT/SIGTERM/SIGBREAK,任意次数都只复制,绝不退出。
+// 挂接点由 App 在 onMount 时设置;信号处理器本身永不抛错。
+let clipboardInterruptHook: (() => void) | undefined
+export function setClipboardInterruptHook(hook: (() => void) | undefined): void {
+  clipboardInterruptHook = hook
+}
+const interruptHandler = (): void => {
+  try {
+    clipboardInterruptHook?.()
+  } catch {
+    // 复制失败也绝不退出
+  }
+}
+process.on("SIGINT", interruptHandler)
+process.on("SIGTERM", interruptHandler)
+try {
+  process.on("SIGBREAK" as NodeJS.Signals, interruptHandler)
+} catch {
+  // 非 Windows 平台可能没有 SIGBREAK 信号
+}
 import {
   createToolRecoveryPlan,
   installMissingTools,
@@ -367,8 +388,13 @@ export function App() {
 
   // Ctrl+C 复制:优先复制当前鼠标选中内容(OpenTUI 拖选),无选中时复制当前输入
   const copyForClipboard = () => {
-    const selection = renderer.getSelection()
-    const selected = selection?.isActive ? selection.getSelectedText() : ""
+    let selected = ""
+    try {
+      const selection = renderer.getSelection()
+      if (selection?.isActive) selected = selection.getSelectedText()
+    } catch {
+      selected = ""
+    }
     copyToClipboard(selected || (isSecretQuestion() ? secretBuffer() : composer()))
   }
 
@@ -376,12 +402,9 @@ export function App() {
     renderer.setTerminalTitle("DroidSeal · Android release security pipeline")
     const timer = setInterval(() => setSpinnerIndex((value) => (value + 1) % SPINNER.length), 120)
     onCleanup(() => clearInterval(timer))
-    // Ctrl+C 永不退出:拦截 SIGINT 并复制(终端 ISIG 未清除时 Ctrl+C 会先发信号)
-    const interruptHandler = () => {
-      copyForClipboard()
-    }
-    process.on("SIGINT", interruptHandler)
-    onCleanup(() => process.off("SIGINT", interruptHandler))
+    // Ctrl+C 永不退出:挂接模块级信号拦截(复制当前选中/输入)
+    setClipboardInterruptHook(copyForClipboard)
+    onCleanup(() => setClipboardInterruptHook(undefined))
   })
 
   // 处理中强制消息区贴底:新步骤消息出现时保持在底部可见,避免停留在旧位置
