@@ -455,6 +455,7 @@ if (await exists(executablePath) && await exists(buildMetadataPath)) {
         "licenses/Terser-BSD-2-Clause.txt",
         "bin/droidseal.cjs",
         ...distRelativePaths.filter((p) => p === "droidseal.exe" || p === "droidseal").map((p) => `dist/${p}`),
+        ...distRelativePaths.filter((p) => p === "droidseal-gui.cmd").map((p) => `dist/${p}`),
         ...distRelativePaths
           .filter((p) => p === "droidseal-build.json" || p === "droidseal-build.linux.json")
           .map((p) => `dist/${p}`),
