@@ -4,6 +4,8 @@ DroidSeal 的用户可见变化记录在本文件中。格式参考 Keep a Chang
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-20
+
 ### Added
 
 - 新增 R8/ProGuard 规则质量精审：只检查 app release 的有效规则范围，精确报告关闭优化/裁剪/混淆、全局/整包宽 keep、缺失规则引用，并通过注释、注解/继承约束和 allow 语义降低误报。
