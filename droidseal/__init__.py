@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-__version__ = "0.2.1"  # 与 package.json / pyproject.toml 保持一致
+__version__ = "1.0.0"  # 与 package.json / pyproject.toml 保持一致
 
 
 def _fail(message: str) -> int:
