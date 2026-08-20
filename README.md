@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm)](https://www.npmjs.com/package/droidseal)
 [![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi)](https://pypi.org/project/droidseal)
 
-**A local-first Android release security pipeline**: audit → align → sign → verify → report, in one command, with your data staying on your machine.
+**Android Release Seal** helps you do most of what you can do before commercial hardening — environment diagnostics, source & APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.
 
 ## What it does
 

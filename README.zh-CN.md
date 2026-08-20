@@ -2,13 +2,11 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-<img src="https://raw.githubusercontent.com/noontiger/droidseal/main/droidseal-logo.png" width="420" alt="DroidSeal" />
-
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 [![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm)](https://www.npmjs.com/package/droidseal)
 [![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi)](https://pypi.org/project/droidseal)
 
-**本地优先的 Android 发布安全流水线**：审计 → 对齐 → 签名 → 验证 → 报告，一条命令跑完，数据不出本机。
+**安卓发布封签**帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前，一键端到端。
 
 ## 能做什么
 
@@ -16,7 +14,7 @@
 - **发布**：按官方顺序执行 `zipalign → apksigner 签名 → 验证`，失败自动回退，每步独立制品；
 - **产物**：APK + SHA-256 + JSON/Markdown 报告 + 发布门禁 + SBOM。
 
-<img width="960" alt="DroidSeal 界面截图" src="https://github.com/user-attachments/assets/6a6033c5-a82b-4fb4-bcfe-dfbfa9958b5b" />
+<img width="960" alt="DroidSeal 界面截图" src="droidseal-screenshot.png" />
 
 ## 安装
 
@@ -50,3 +48,5 @@ droidseal --version
 - 开源许可：[Apache License 2.0](https://github.com/noontiger/droidseal/blob/main/LICENSE)
 - 名称与 Logo 使用：[TRADEMARKS.md](https://github.com/noontiger/droidseal/blob/main/TRADEMARKS.md)（评测、教程、分享注明来源即可）
 - 第三方声明：[THIRD_PARTY_NOTICES.md](https://github.com/noontiger/droidseal/blob/main/THIRD_PARTY_NOTICES.md)
+
+<img src="https://raw.githubusercontent.com/noontiger/droidseal/main/droidseal-logo.png" width="420" alt="DroidSeal" />
