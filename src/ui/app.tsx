@@ -15,6 +15,23 @@ import { DROIDSEAL_LOGO, DROIDSEAL_LOGO_HEIGHT, DROIDSEAL_LOGO_WIDTH, VERSION } 
 import { Pipeline, STEP_DEFINITIONS, statusGlyph } from "../core/pipeline.ts"
 import { sha256File } from "../core/apk-audit.ts"
 import { language, setLanguage, t, tGuidance, translateDetail, translateProgress, translateSummary, tStep, tStepDesc } from "./i18n.ts"
+import { dlopen, FFIType } from "bun:ffi"
+
+// Windows:让系统忽略 Ctrl+C 控制台事件(CTRL_C_EVENT)。
+// 日志已证实 Bun 编译 exe 未挂钩该事件——无处理器时 Windows 会直接终止进程,
+// process.on("SIGINT") 从不触发。SetConsoleCtrlHandler(NULL, TRUE) 令系统忽略,
+// 之后 raw mode 下 Ctrl+C 仅以 \x03 字节到达按键处理器,照常复制。
+function ignoreConsoleCtrlC(): void {
+  try {
+    const kernel32 = dlopen("kernel32.dll", {
+      SetConsoleCtrlHandler: { args: [FFIType.ptr, FFIType.bool], returns: FFIType.bool },
+    })
+    kernel32.symbols.SetConsoleCtrlHandler(null, true)
+  } catch {
+    // 非 Windows 或 FFI 不可用时忽略
+  }
+}
+if (process.platform === "win32") ignoreConsoleCtrlC()
 
 // Ctrl+C 永不退出:模块级拦截 SIGINT/SIGTERM/SIGBREAK,任意次数都只复制,绝不退出。
 // 挂接点由 App 在 onMount 时设置;信号处理器本身永不抛错。
@@ -22,6 +39,7 @@ let clipboardInterruptHook: (() => void) | undefined
 export function setClipboardInterruptHook(hook: (() => void) | undefined): void {
   clipboardInterruptHook = hook
 }
+
 const interruptHandler = (): void => {
   try {
     clipboardInterruptHook?.()
@@ -116,13 +134,18 @@ function readClipboard(): string {
   return ""
 }
 
-// 复制文本到系统剪贴板(Ctrl+C 用);失败时静默返回
+// 复制文本到系统剪贴板(Ctrl+C 用);失败时静默返回。
+// 关键:异步 + 隐藏窗口——同步 powershell 启动会阻塞事件处理并干扰控制台模式,可能导致退出。
 function copyToClipboard(text: string): void {
   if (!text) return
   try {
     if (process.platform === "win32") {
       const safe = text.replace(/'/g, "''")
-      Bun.spawnSync(["powershell", "-NoProfile", "-Command", `Set-Clipboard -Value '${safe}'`])
+      const proc = Bun.spawn(
+        ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", `Set-Clipboard -Value '${safe}'`],
+        { windowsHide: true },
+      )
+      proc.exited.catch(() => undefined)
     } else {
       for (const command of [["xclip", "-selection", "clipboard"], ["wl-copy"]]) {
         const proc = Bun.spawn(command, { stdin: "pipe" })
@@ -405,6 +428,9 @@ export function App() {
     // Ctrl+C 永不退出:挂接模块级信号拦截(复制当前选中/输入)
     setClipboardInterruptHook(copyForClipboard)
     onCleanup(() => setClipboardInterruptHook(undefined))
+    // 兜底:注册永不清理的定时器,即使 OpenTUI 内部因 Ctrl+C 触发销毁(清空输入与定时器),
+    // 事件循环也永远不会排空,beforeExit 不触发,进程绝不自我退出。
+    setInterval(() => {}, 60_000)
   })
 
   // 处理中强制消息区贴底:新步骤消息出现时保持在底部可见,避免停留在旧位置
