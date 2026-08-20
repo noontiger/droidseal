@@ -305,6 +305,7 @@ if (!(await exists(buildMetadataPath))) {
     (relative) =>
       relative !== "droidseal" &&
       relative !== "droidseal.exe" &&
+      relative !== "droidseal-gui.cmd" &&
       relative !== "droidseal-build.json" &&
       relative !== "droidseal-build.linux.json",
   )
