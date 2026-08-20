@@ -107,13 +107,13 @@
   .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:2px;padding:10px 20px 16px;background:rgba(11,14,20,0.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,0.55)}
   .mobile-menu.open{display:flex}
   .mobile-menu a{padding:13px 12px;color:var(--text);font-size:16px;border-radius:10px;transition:background .2s,color .2s,transform .2s;text-decoration:none}
-  .mobile-menu a:hover{background:rgba(0,229,255,0.1);color:#fff;transform:translateX(4px);box-shadow:inset 0 0 0 1px rgba(0,229,255,0.4),0 8px 20px -8px rgba(0,229,255,0.35)}
+  .mobile-menu a:hover{background:rgba(0,229,255,0.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(0,229,255,0.4),0 8px 20px -8px rgba(0,229,255,0.35)}
   .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:none;transition:transform .15s,box-shadow .25s,background .25s,border-color .25s;white-space:nowrap;box-shadow:0 4px 14px -4px rgba(0,0,0,0.45)}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 28px -6px rgba(0,229,255,0.5)}
+  .btn:hover{box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 28px -6px rgba(0,229,255,0.5)}
   .btn-primary{background:var(--cyan);color:#04222a;box-shadow:0 6px 18px -6px rgba(0,229,255,0.5)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65)}
+  .btn-primary:hover{box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65)}
   .btn-ghost{background:rgba(255,255,255,0.03);border-color:var(--border);color:var(--text);box-shadow:0 4px 14px -4px rgba(0,0,0,0.4)}
-  .btn-ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,0.08);transform:translateY(-2px);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 30px -6px rgba(0,229,255,0.55)}
+  .btn-ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,0.08);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 30px -6px rgba(0,229,255,0.55)}
   .btn svg{width:16px;height:16px}
 
   /* ---------- hero ---------- */
@@ -167,7 +167,7 @@
   /* ---------- modes ---------- */
   .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
   .mode{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
-  .mode:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .mode:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .mode .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim);margin-bottom:16px}
   .mode .ico svg{width:22px;height:22px;stroke:var(--cyan)}
   .mode h3{font-size:19px;margin-bottom:8px}
@@ -177,7 +177,7 @@
   /* ---------- capabilities ---------- */
   .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
   .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
-  .cap:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .cap:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .cap .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);margin-bottom:14px}
   .cap .ico svg{width:20px;height:20px;stroke:var(--cyan)}
   .cap h3{font-size:16px;margin-bottom:6px}
@@ -187,7 +187,7 @@
   .sec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin-top:44px}
   .sec-list{display:flex;flex-direction:column;gap:14px}
   .sec-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
-  .sec-item:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .sec-item:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .sec-item .ck{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim)}
   .sec-item .ck svg{width:16px;height:16px;stroke:var(--cyan)}
   .sec-item h4{font-size:15px;margin-bottom:3px}
@@ -207,7 +207,7 @@
   .copy-row{display:inline-flex;align-items:center;gap:0;background:#0c0f16;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:13px;margin:6px 0 24px}
   .copy-row code{padding:12px 16px;color:var(--cyan)}
   .copy-row button{border:none;border-left:1px solid var(--border);background:rgba(0,229,255,0.06);color:var(--text);padding:12px 16px;cursor:none;font-family:var(--mono);font-size:13px;transition:background .2s}
-  .copy-row button:hover{background:rgba(0,229,255,0.18);transform:translateY(-2px);box-shadow:0 8px 20px -6px rgba(0,229,255,0.45)}
+  .copy-row button:hover{background:rgba(0,229,255,0.18);box-shadow:0 8px 20px -6px rgba(0,229,255,0.45)}
   .ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:40px}
   .ts-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
   .ts-item h3{font-size:15px;margin-bottom:6px;color:var(--text)}
@@ -222,7 +222,7 @@
   .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
   .foot .links{display:flex;gap:22px;color:var(--muted);font-size:14px}
   .foot .links a{transition:color .2s,transform .2s}
-  .foot .links a:hover{color:var(--cyan);transform:translateY(-1px);text-shadow:0 0 12px rgba(0,229,255,0.5)}
+  .foot .links a:hover{color:var(--cyan);text-shadow:0 0 12px rgba(0,229,255,0.5)}
   .foot .copy{color:var(--muted-2);font-size:13px;font-family:var(--mono)}
 
   /* ---------- reveal ---------- */
@@ -282,7 +282,7 @@
       </nav>
       <div class="nav-actions">
         <a href="index.en.html" data-cursor style="font-size:13px;color:var(--cyan);border:1px solid var(--border);padding:5px 10px;border-radius:8px;text-decoration:none">English</a>
-        <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary magnetic" data-cursor>
+        <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary" data-cursor>
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .6l3.5 6.9 7.8 1.1-5.6 5.5 1.3 7.7L12 18.6 4.9 22.3l1.3-7.7L.6 9.1 8.5 8z"/></svg>
           Star on GitHub
         </a>
@@ -307,7 +307,7 @@
       <h1 data-reveal>商业加固前你能做的大多数内容</h1>
       <p class="sub" data-reveal>DroidSeal（安卓发布封签）帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前 · 一键端到端。</p>
       <div class="hero-cta" data-reveal>
-        <a href="#cta" class="btn btn-primary magnetic" data-cursor>开始使用</a>
+        <a href="#cta" class="btn btn-primary" data-cursor>开始使用</a>
         <a href="#pipeline" class="btn btn-ghost" data-cursor>查看管线</a>
       </div>
 
@@ -327,20 +327,20 @@
       <h2 class="title" data-reveal>14 步流水线，端到端</h2>
       <p class="lead" data-reveal>从 APK 到签名产物，全程本机完成。每步生成独立制品，可审计、可回退，默认规则开箱即用。</p>
       <div class="steps-grid">
-        <article class="step tilt" data-reveal data-cursor><div class="num">01</div><h3>环境诊断</h3><p>定位 JDK / Android SDK 等工具，标出所选流程的缺失项。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">02</div><h3>准备工作区</h3><p>验证输入、复制已有 APK，绝不原地修改。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">03</div><h3>签名库</h3><p>提前校验现有别名，或用 keytool 新建。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">04</div><h3>源码安全审计</h3><p>检查 R8 / 资源 / Manifest / 明文签名密码与源码启发式。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">05</div><h3>构建 Release APK</h3><p>执行项目自己的 Gradle Wrapper 并复制产物。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">06</div><h3>APK 安全审计</h3><p>解析 ZIP / DEX / ELF / AXML / ARSC；aapt 仅补充回退。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">07</div><h3>本地安全防护</h3><p>核验 R8、标准 DEX、反调试与完整性覆盖。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">08</div><h3>Release 归一化</h3><p>强制 debuggable=false，修改后验证，否则中止回退。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">09</div><h3>Web JS 发布处理</h3><p>可选 Terser 处理 assets/public、assets/www 脚本。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">10</div><h3>资源名混淆</h3><p>可选解析 resources.arsc，getIdentifier 命中时保留。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">11</div><h3>ZIP 对齐</h3><p>zipalign -p -f 4；保留有效现有签名时自动跳过。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">12</div><h3>APK 签名</h3><p>apksigner 输出新的签名 APK。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">13</div><h3>最终验证</h3><p>验证对齐、签名方案、证书并计算 SHA-256。</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">14</div><h3>生成报告</h3><p>JSON / Markdown、SBOM、发布门禁与覆盖矩阵。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">01</div><h3>环境诊断</h3><p>定位 JDK / Android SDK 等工具，标出所选流程的缺失项。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">02</div><h3>准备工作区</h3><p>验证输入、复制已有 APK，绝不原地修改。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">03</div><h3>签名库</h3><p>提前校验现有别名，或用 keytool 新建。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">04</div><h3>源码安全审计</h3><p>检查 R8 / 资源 / Manifest / 明文签名密码与源码启发式。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">05</div><h3>构建 Release APK</h3><p>执行项目自己的 Gradle Wrapper 并复制产物。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">06</div><h3>APK 安全审计</h3><p>解析 ZIP / DEX / ELF / AXML / ARSC；aapt 仅补充回退。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">07</div><h3>本地安全防护</h3><p>核验 R8、标准 DEX、反调试与完整性覆盖。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">08</div><h3>Release 归一化</h3><p>强制 debuggable=false，修改后验证，否则中止回退。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">09</div><h3>Web JS 发布处理</h3><p>可选 Terser 处理 assets/public、assets/www 脚本。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">10</div><h3>资源名混淆</h3><p>可选解析 resources.arsc，getIdentifier 命中时保留。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">11</div><h3>ZIP 对齐</h3><p>zipalign -p -f 4；保留有效现有签名时自动跳过。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">12</div><h3>APK 签名</h3><p>apksigner 输出新的签名 APK。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">13</div><h3>最终验证</h3><p>验证对齐、签名方案、证书并计算 SHA-256。</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">14</div><h3>生成报告</h3><p>JSON / Markdown、SBOM、发布门禁与覆盖矩阵。</p></article>
       </div>
     </section>
 
@@ -350,17 +350,17 @@
       <h2 class="title" data-reveal>三种入口，按需切换</h2>
       <p class="lead" data-reveal>同一个引擎，三种节奏——分步学、一键跑，或先诊断环境再决定怎么加固。</p>
       <div class="modes-grid">
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
           <span class="tag">[1] GUIDED · /guided</span><h3>分步处理</h3>
           <p>每一步执行前再次显示用途与影响，可“执行此步”或跳过；失败自动回退到步骤开始前的 APK。</p>
         </article>
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
           <span class="tag">[2] ONE-CLICK · /oneclick</span><h3>一键处理</h3>
           <p>填写信息后 14 步连续执行，一般失败自动回退继续；缺工具则暂停等待下载或修复后自动续跑。</p>
         </article>
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
           <span class="tag">[3] DOCTOR · /doctor</span><h3>环境诊断</h3>
           <p>定位 JDK / Android SDK 等工具，缺失项列出并提供下载与说明；只检查不改包。</p>
@@ -374,27 +374,27 @@
       <h2 class="title" data-reveal>能力网格</h2>
       <p class="lead" data-reveal>不是黑盒工具，而是一套本地优先、可审计、可验证的发布前流水线。</p>
       <div class="cap-grid">
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
           <h3>本地优先</h3><p>不连接模型服务，不上传 APK、文件路径或签名凭据。</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></div>
           <h3>结果可验证</h3><p>输出签名验证、SHA-256、JSON 与 Markdown 报告。</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
           <h3>步骤可回退</h3><p>每步独立制品，失败解释原因并恢复最近有效 APK。</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
           <h3>深度静态审计</h3><p>权限 / targetSdk / 签名 / 深链 / 硬编码密钥 / TLS 启发式。</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
           <h3>密钥脱敏</h3><p>明文密码只留路径与行号，值从不进入报告或命令。</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
           <h3>证据优先</h3><p>报告区分已确认 / 高 / 中 / 低置信度，并产出 CycloneDX SBOM。</p>
         </article>
@@ -446,7 +446,7 @@
           <button id="copyPipBtn">复制</button>
         </div>
         <div class="hero-cta" data-cursor>
-          <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary magnetic">GitHub Releases · Windows zip / Linux tar.gz</a>
+          <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">GitHub Releases · Windows zip / Linux tar.gz</a>
           <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">查看 GitHub</a>
           <a href="#pipeline" class="btn btn-ghost">查看管线</a>
         </div>
@@ -539,7 +539,7 @@
     document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('in'); });
   }
 
-  /* ============ 3D tilt + magnetic ============ */
+  /* ============ 3D + ============ */
   if(!isTouch && !reduce){
     document.querySelectorAll('.tilt').forEach(function(el){
       el.addEventListener('mousemove', function(e){

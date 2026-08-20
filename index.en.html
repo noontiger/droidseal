@@ -94,7 +94,7 @@
   .brand .logo{width:auto;height:28px;display:block;object-fit:contain}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
   .nav-links a{transition:color .2s,transform .2s;position:relative}
-  .nav-links a:hover{color:var(--cyan);transform:translateY(-1px);text-shadow:0 0 14px rgba(0,229,255,0.55)}
+  .nav-links a:hover{color:var(--cyan);text-shadow:0 0 14px rgba(0,229,255,0.55)}
   .nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--cyan);transition:width .25s}
   .nav-links a:hover::after{width:100%}
   .nav-actions{display:flex;align-items:center;gap:14px}
@@ -107,13 +107,13 @@
   .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:2px;padding:10px 20px 16px;background:rgba(11,14,20,0.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,0.55)}
   .mobile-menu.open{display:flex}
   .mobile-menu a{padding:13px 12px;color:var(--text);font-size:16px;border-radius:10px;transition:background .2s,color .2s,transform .2s;text-decoration:none}
-  .mobile-menu a:hover{background:rgba(0,229,255,0.1);color:#fff;transform:translateX(4px);box-shadow:inset 0 0 0 1px rgba(0,229,255,0.4),0 8px 20px -8px rgba(0,229,255,0.35)}
+  .mobile-menu a:hover{background:rgba(0,229,255,0.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(0,229,255,0.4),0 8px 20px -8px rgba(0,229,255,0.35)}
   .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:none;transition:transform .15s,box-shadow .25s,background .25s,border-color .25s;white-space:nowrap;box-shadow:0 4px 14px -4px rgba(0,0,0,0.45)}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 28px -6px rgba(0,229,255,0.5)}
+  .btn:hover{box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 28px -6px rgba(0,229,255,0.5)}
   .btn-primary{background:var(--cyan);color:#04222a;box-shadow:0 6px 18px -6px rgba(0,229,255,0.5)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65)}
+  .btn-primary:hover{box-shadow:0 14px 30px -8px rgba(0,0,0,0.45),0 0 32px -4px rgba(0,229,255,0.65)}
   .btn-ghost{background:rgba(255,255,255,0.03);border-color:var(--border);color:var(--text);box-shadow:0 4px 14px -4px rgba(0,0,0,0.4)}
-  .btn-ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,0.08);transform:translateY(-2px);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 30px -6px rgba(0,229,255,0.55)}
+  .btn-ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,0.08);box-shadow:0 12px 26px -8px rgba(0,0,0,0.5),0 0 30px -6px rgba(0,229,255,0.55)}
   .btn svg{width:16px;height:16px}
 
   /* ---------- hero ---------- */
@@ -125,7 +125,7 @@
 
   /* terminal */
   .terminal{max-width:680px;margin:46px auto 0;text-align:left;background:#0c0f16;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5);font-family:var(--mono);font-size:13.5px;transition:transform .3s,box-shadow .3s}
-  .terminal:hover{transform:translateY(-4px);box-shadow:0 38px 92px rgba(0,0,0,0.58),0 0 32px -8px rgba(0,229,255,0.22)}
+  .terminal:hover{box-shadow:0 38px 92px rgba(0,0,0,0.58),0 0 32px -8px rgba(0,229,255,0.22)}
   .terminal .bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#11151d;border-bottom:1px solid var(--border)}
   .terminal .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
   .terminal .bar .r{background:#ff5f56}.terminal .bar .y{background:#ffbd2e}.terminal .bar .g{background:#27c93f}
@@ -146,7 +146,7 @@
   .pills{display:flex;gap:10px;justify-content:center;margin:22px 0 0;flex-wrap:wrap}
   .pill{font-family:var(--mono);font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);cursor:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px -6px rgba(0,0,0,0.5)}
   .pill .k{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,0.06);font-size:11px;color:var(--cyan)}
-  .pill:hover{color:var(--text);border-color:var(--cyan-dim);transform:translateY(-2px);box-shadow:var(--lift-cyan)}
+  .pill:hover{color:var(--text);border-color:var(--cyan-dim);box-shadow:var(--lift-cyan)}
   .pill.active{background:rgba(0,229,255,0.1);border-color:var(--cyan);color:#fff;box-shadow:var(--lift-cyan)}
 
   /* hero screenshot */
@@ -158,7 +158,7 @@
   .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:14px;margin-top:44px}
   .step{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 14px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
   .step::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(0,229,255,0.10),transparent 60%);opacity:0;transition:opacity .3s}
-  .step:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .step:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .step:hover::before{opacity:1}
   .step .num{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.08em}
   .step h3{font-size:14.5px;margin:7px 0 5px;font-weight:600;line-height:1.3}
@@ -167,7 +167,7 @@
   /* ---------- modes ---------- */
   .modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
   .mode{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
-  .mode:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .mode:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .mode .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim);margin-bottom:16px}
   .mode .ico svg{width:22px;height:22px;stroke:var(--cyan)}
   .mode h3{font-size:19px;margin-bottom:8px}
@@ -177,7 +177,7 @@
   /* ---------- capabilities ---------- */
   .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
   .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 18px 44px -28px rgba(0,0,0,0.85)}
-  .cap:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .cap:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .cap .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);margin-bottom:14px}
   .cap .ico svg{width:20px;height:20px;stroke:var(--cyan)}
   .cap h3{font-size:16px;margin-bottom:6px}
@@ -187,7 +187,7 @@
   .sec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin-top:44px}
   .sec-list{display:flex;flex-direction:column;gap:14px}
   .sec-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:transform .25s,border-color .25s,box-shadow .25s;box-shadow:0 16px 38px -26px rgba(0,0,0,0.8)}
-  .sec-item:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
+  .sec-item:hover{border-color:var(--cyan);box-shadow:var(--lift),var(--lift-cyan)}
   .sec-item .ck{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(0,229,255,0.1);border:1px solid var(--cyan-dim)}
   .sec-item .ck svg{width:16px;height:16px;stroke:var(--cyan)}
   .sec-item h4{font-size:15px;margin-bottom:3px}
@@ -207,7 +207,7 @@
   .copy-row{display:inline-flex;align-items:center;gap:0;background:#0c0f16;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:13px;margin:6px 0 24px}
   .copy-row code{padding:12px 16px;color:var(--cyan)}
   .copy-row button{border:none;border-left:1px solid var(--border);background:rgba(0,229,255,0.06);color:var(--text);padding:12px 16px;cursor:none;font-family:var(--mono);font-size:13px;transition:background .2s}
-  .copy-row button:hover{background:rgba(0,229,255,0.18);transform:translateY(-2px);box-shadow:0 8px 20px -6px rgba(0,229,255,0.45)}
+  .copy-row button:hover{background:rgba(0,229,255,0.18);box-shadow:0 8px 20px -6px rgba(0,229,255,0.45)}
   .ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:40px}
   .ts-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
   .ts-item h3{font-size:15px;margin-bottom:6px;color:var(--text)}
@@ -222,7 +222,7 @@
   .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
   .foot .links{display:flex;gap:22px;color:var(--muted);font-size:14px}
   .foot .links a{transition:color .2s,transform .2s}
-  .foot .links a:hover{color:var(--cyan);transform:translateY(-1px);text-shadow:0 0 12px rgba(0,229,255,0.5)}
+  .foot .links a:hover{color:var(--cyan);text-shadow:0 0 12px rgba(0,229,255,0.5)}
   .foot .copy{color:var(--muted-2);font-size:13px;font-family:var(--mono)}
 
   /* ---------- reveal ---------- */
@@ -282,7 +282,7 @@
       </nav>
       <div class="nav-actions">
         <a href="index.html" data-cursor style="font-size:13px;color:var(--cyan);border:1px solid var(--border);padding:5px 10px;border-radius:8px;text-decoration:none">中文</a>
-        <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary magnetic" data-cursor>
+        <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-primary" data-cursor>
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .6l3.5 6.9 7.8 1.1-5.6 5.5 1.3 7.7L12 18.6 4.9 22.3l1.3-7.7L.6 9.1 8.5 8z"/></svg>
           Star on GitHub
         </a>
@@ -303,11 +303,11 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero wrap">
-      <span class="eyebrow" data-reveal><span class="dot"></span>Android Release Seal · v0.2.0 Alpha</span>
-      <h1 data-reveal>Chat your way through <span class="grad">Android release hardening</span></h1>
+      <span class="eyebrow" data-reveal><span class="dot"></span>Android Release Seal · v1.0.0</span>
+      <h1 data-reveal>Most of what you can do before commercial hardening</h1>
       <p class="sub" data-reveal>DroidSeal covers most of what you can do before commercial hardening — environment diagnostics, source &amp; APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.</p>
       <div class="hero-cta" data-reveal>
-        <a href="#cta" class="btn btn-primary magnetic" data-cursor>Get Started</a>
+        <a href="#cta" class="btn btn-primary" data-cursor>Get Started</a>
         <a href="#pipeline" class="btn btn-ghost" data-cursor>View Pipeline</a>
       </div>
 
@@ -333,20 +333,20 @@
       <h2 class="title" data-reveal>A 14-step pipeline, end to end</h2>
       <p class="lead" data-reveal>From APK to signed artifact, entirely on your machine. Every step produces an independent, auditable, rollback-safe artifact with sensible defaults.</p>
       <div class="steps-grid">
-        <article class="step tilt" data-reveal data-cursor><div class="num">01</div><h3>Environment check</h3><p>Locates JDK / Android SDK tools and flags what the selected flow is missing.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">02</div><h3>Prepare workspace</h3><p>Validates input and copies the existing APK; never modifies in place.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">03</div><h3>Keystore</h3><p>Validates the existing alias up front, or creates one with keytool.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">04</div><h3>Source security audit</h3><p>Checks R8 / resources / Manifest / plaintext signing passwords and source heuristics.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">05</div><h3>Build release APK</h3><p>Runs the project's own Gradle Wrapper and copies the artifact.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">06</div><h3>APK security audit</h3><p>Parses ZIP / DEX / ELF / AXML / ARSC; aapt only as a fallback.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">07</div><h3>Local hardening</h3><p>Verifies R8, standard DEX, anti-debug and integrity coverage.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">08</div><h3>Release normalization</h3><p>Forces debuggable=false, verifies after modification, otherwise aborts and rolls back.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">09</div><h3>Web JS handling</h3><p>Optional Terser pass over assets/public and assets/www scripts.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">10</div><h3>Resource name obfuscation</h3><p>Optionally parses resources.arsc, preserving entries hit by getIdentifier.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">11</div><h3>ZIP alignment</h3><p>zipalign -p -f 4; auto-skips when a valid signature is preserved.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">12</div><h3>APK signing</h3><p>apksigner outputs a new signed APK.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">13</div><h3>Final verification</h3><p>Verifies alignment, signing scheme, certificate, and computes SHA-256.</p></article>
-        <article class="step tilt" data-reveal data-cursor><div class="num">14</div><h3>Report</h3><p>JSON / Markdown, SBOM, release gate and coverage matrix.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">01</div><h3>Environment check</h3><p>Locates JDK / Android SDK tools and flags what the selected flow is missing.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">02</div><h3>Prepare workspace</h3><p>Validates input and copies the existing APK; never modifies in place.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">03</div><h3>Keystore</h3><p>Validates the existing alias up front, or creates one with keytool.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">04</div><h3>Source security audit</h3><p>Checks R8 / resources / Manifest / plaintext signing passwords and source heuristics.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">05</div><h3>Build release APK</h3><p>Runs the project's own Gradle Wrapper and copies the artifact.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">06</div><h3>APK security audit</h3><p>Parses ZIP / DEX / ELF / AXML / ARSC; aapt only as a fallback.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">07</div><h3>Local hardening</h3><p>Verifies R8, standard DEX, anti-debug and integrity coverage.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">08</div><h3>Release normalization</h3><p>Forces debuggable=false, verifies after modification, otherwise aborts and rolls back.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">09</div><h3>Web JS handling</h3><p>Optional Terser pass over assets/public and assets/www scripts.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">10</div><h3>Resource name obfuscation</h3><p>Optionally parses resources.arsc, preserving entries hit by getIdentifier.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">11</div><h3>ZIP alignment</h3><p>zipalign -p -f 4; auto-skips when a valid signature is preserved.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">12</div><h3>APK signing</h3><p>apksigner outputs a new signed APK.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">13</div><h3>Final verification</h3><p>Verifies alignment, signing scheme, certificate, and computes SHA-256.</p></article>
+        <article class="step" data-reveal data-cursor><div class="num">14</div><h3>Report</h3><p>JSON / Markdown, SBOM, release gate and coverage matrix.</p></article>
       </div>
     </section>
 
@@ -356,17 +356,17 @@
       <h2 class="title" data-reveal>Three entry points, one engine</h2>
       <p class="lead" data-reveal>One engine, three paces — learn step by step, run it in one click, or diagnose the environment first.</p>
       <div class="modes-grid">
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div>
           <span class="tag">[1] GUIDED · /guided</span><h3>Guided</h3>
           <p>Shows the purpose and impact before each step; run or skip it, and failures roll back to the APK from before the step.</p>
         </article>
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
           <span class="tag">[2] ONE-CLICK · /oneclick</span><h3>One-click</h3>
           <p>Runs all 14 steps after you fill in the details; ordinary failures roll back and continue, while missing tools pause for download or repair.</p>
         </article>
-        <article class="mode tilt" data-reveal data-cursor>
+        <article class="mode" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3a8 8 0 105.3 14.2M11 3v4M11 3h-4"/><circle cx="11" cy="14" r="2.5"/></svg></div>
           <span class="tag">[3] DOCTOR · /doctor</span><h3>Doctor</h3>
           <p>Locates JDK / Android SDK tools, lists what is missing with download hints; checks only, never modifies the package.</p>
@@ -380,27 +380,27 @@
       <h2 class="title" data-reveal>Capability grid</h2>
       <p class="lead" data-reveal>Not a black box — a local-first, auditable, verifiable pre-release pipeline.</p>
       <div class="cap-grid">
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
           <h3>Local-first</h3><p>No model service calls; never uploads your APK, file paths, or signing credentials.</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></div>
           <h3>Verifiable results</h3><p>Produces signature verification, SHA-256, and JSON / Markdown reports.</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
           <h3>Rollback-safe</h3><p>Every step keeps an independent artifact; failures explain why and restore the last valid APK.</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
           <h3>Deep static audit</h3><p>Permissions / targetSdk / signing / deep links / hardcoded secrets / TLS heuristics.</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
           <h3>Secret redaction</h3><p>Plaintext passwords keep only path and line; values never reach reports or commands.</p>
         </article>
-        <article class="cap tilt" data-reveal data-cursor>
+        <article class="cap" data-reveal data-cursor>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
           <h3>Evidence-first</h3><p>Reports distinguish confirmed / high / medium / low confidence and emit a CycloneDX SBOM.</p>
         </article>
@@ -442,7 +442,7 @@
     <section class="section-pad wrap" id="cta">
       <div class="cta-box" data-reveal>
         <h2>Three ways to get started</h2>
-        <p>Open source · Apache-2.0 License · Local-first · Windows x64 / Linux x64 (Alpha v0.2.0)</p>
+        <p>Open source · Apache-2.0 License · Local-first · Windows x64 / Linux x64 (v1.0.0)</p>
         <div class="copy-row" data-cursor>
           <code id="installCmd">npm install --global droidseal</code>
           <button id="copyBtn">Copy</button>
@@ -452,7 +452,7 @@
           <button id="copyPipBtn">Copy</button>
         </div>
         <div class="hero-cta" data-cursor>
-          <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary magnetic">GitHub Releases · Windows zip / Linux tar.gz</a>
+          <a href="https://github.com/noontiger/droidseal/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">GitHub Releases · Windows zip / Linux tar.gz</a>
           <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" class="btn btn-ghost">View GitHub</a>
           <a href="#pipeline" class="btn btn-ghost">View Pipeline</a>
         </div>
@@ -491,7 +491,7 @@
         <a href="#security" data-cursor>Security</a>
         <a href="https://github.com/noontiger/droidseal" target="_blank" rel="noopener" data-cursor>GitHub</a>
       </nav>
-      <span class="copy">Apache-2.0 License · Alpha v0.2.0 · © 2026 DroidSeal</span>
+      <span class="copy">Apache-2.0 License · v1.0.0 · © 2026 DroidSeal</span>
     </div>
   </footer>
 
@@ -545,7 +545,7 @@
     document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('in'); });
   }
 
-  /* ============ 3D tilt + magnetic ============ */
+  /* ============ 3D + ============ */
   if(!isTouch && !reduce){
     document.querySelectorAll('.tilt').forEach(function(el){
       el.addEventListener('mousemove', function(e){
