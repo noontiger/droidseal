@@ -1301,7 +1301,7 @@ export function App() {
             </Show>
           </scrollbox>
 
-          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={2} alignItems="center">
+          <box flexShrink={0} flexDirection="row" flexWrap="wrap" gap={zoomMetrics().actionGap} paddingTop={1} paddingBottom={1} alignItems="center">
             <Show when={toolRecovery()}>
               <Show when={toolRecovery()?.plan.canAutoInstall}>
                 <Button
@@ -1498,8 +1498,8 @@ export function App() {
                 )}
               </For>
             </scrollbox>
+            <box height={1} />
             <box flexShrink={0} border={["top"]} borderColor={theme.border}>
-              <box height={1} />
               <text fg={theme.text}><b>{t("sidebarCurrentArtifact")}</b></text>
               <text fg={theme.textMuted} wrapMode="word">
                 {currentArtifactName() ?? t("sidebarNotGenerated")}
@@ -1517,7 +1517,6 @@ export function App() {
                 )}
               </Show>
               <text fg={theme.textMuted}>{t("sidebarNoOverwrite")}</text>
-              <box height={1} />
             </box>
           </box>
         </Show>
