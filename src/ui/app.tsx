@@ -1499,9 +1499,8 @@ export function App() {
               </For>
             </scrollbox>
             <box flexShrink={0} border={["top"]} borderColor={theme.border} paddingTop={1}>
+              <box height={1} />
               <text fg={theme.text}><b>{t("sidebarCurrentArtifact")}</b></text>
-              <text fg={theme.textMuted}>{t("sidebarLegend")}</text>
-              <text fg={theme.textMuted}>{t("sidebarSkipNote")}</text>
               <box height={1} />
               <text fg={theme.textMuted} wrapMode="word">
                 {currentArtifactName() ?? t("sidebarNotGenerated")}
