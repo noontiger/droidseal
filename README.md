@@ -68,48 +68,33 @@ A defensive tool: by default it does not unpack, pack, inject hooks, or add anti
 The route winds top-to-bottom: left column ①-⑦ goes down, then the flow turns at the bottom and the right column ⑧-⑭ goes back up (S-shape). Each box shows "Self: …" or "3rd-party: …".
 
 ```text
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ① Environment check                                │      │ ⑭ Report                                            │
-│ Self: tool discovery/validation/restore             │      │ Self: report/gate/SBOM/fix packs                    │
-└────────────────────────────────────────────────────┘      └────────────────────────────────────────────────────┘
-              │                                                                  ▲
-              ▼                                                                  │
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ② Prepare workspace                                │      │ ⑬ Final verification                               │
-│ Self: input validation/APK copy                     │      │ 3rd-party: apksigner verify                         │
-└────────────────────────────────────────────────────┘      │ Self: SHA-256 calculation/orchestration             │
-              │                                                  └────────────────────────────────────────────────────┘
-              ▼                                                                  ▲
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ③ Keystore                                         │      │ ⑫ APK signing                                       │
-│ 3rd-party: keytool + Self: secret-safe handling     │      │ 3rd-party: apksigner                                 │
-└────────────────────────────────────────────────────┘      │ Self: key handling/redaction                          │
-              │                                                  └────────────────────────────────────────────────────┘
-              ▼                                                                  ▲
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ④ Source security audit                            │      │ ⑪ ZIP alignment                                      │
-│ Self: project-audit/r8-rules                        │      │ 3rd-party: zipalign                                   │
-└────────────────────────────────────────────────────┘      └────────────────────────────────────────────────────┘
-              │                                                                  ▲
-              ▼                                                                  │
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ⑤ Build release APK                                │      │ ⑩ Resource obfuscation (opt-in)                     │
-│ 3rd-party: Gradle Wrapper                           │      │ Self: arsc-obfuscate                                  │
-└────────────────────────────────────────────────────┘      └────────────────────────────────────────────────────┘
-              │                                                                  ▲
-              ▼                                                                  │
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ⑥ APK security audit                               │      │ ⑨ Web JS handling (opt-in)                          │
-│ Self: ZIP/DEX/ELF/ARSC/AXML                         │      │ 3rd-party: Terser compression                        │
-│ 3rd-party: aapt supplement/fallback                 │      │ Self: whitelist/atomic write                         │
-└────────────────────────────────────────────────────┘      └────────────────────────────────────────────────────┘
-              │                                                                  ▲
-              ▼                                                                  │
-┌────────────────────────────────────────────────────┐      ┌────────────────────────────────────────────────────┐
-│ ⑦ Local hardening                                  │      │ ⑧ Release normalization                             │
-│ Self: evidence/confidence checks                   │      │ Self: manifest rewrite/debug cleanup                 │
-└──────────────┬─────────────────────────────────────┘      └──────────────┬─────────────────────────────────────┘
-               └──────────────────────► flow ──►──────────────────────────┘
+① Environment check — Self: discovery/validation/restore
+↓
+② Prepare workspace — Self: input validation/APK copy
+↓
+③ Keystore — 3rd-party: keytool / Self: secret-safe
+↓
+④ Source audit — Self: project-audit/r8-rules
+↓
+⑤ Build release APK — 3rd-party: Gradle Wrapper
+↓
+⑥ APK audit — Self: ZIP/DEX/ELF/ARSC/AXML / 3rd-party: aapt
+↓
+⑦ Local hardening — Self: evidence/confidence
+↓
+⑧ Release normalization — Self: manifest rewrite/debug cleanup
+↓
+⑨ Web JS handling (opt-in) — 3rd-party: Terser / Self: whitelist/atomic write
+↓
+⑩ Resource obfuscation (opt-in) — Self: arsc-obfuscate
+↓
+⑪ ZIP alignment — 3rd-party: zipalign
+↓
+⑫ APK signing — 3rd-party: apksigner / Self: key handling/redaction
+↓
+⑬ Final verification — 3rd-party: apksigner verify / Self: SHA-256
+↓
+⑭ Report — Self: report/gate/SBOM/fix packs
 ```
 
 All format parsing/rewriting/audit/reporting is self-developed (offline, low supply-chain footprint); rendering uses OpenTUI/Solid (third-party); external tools are only invoked where the official toolchain requires them, always through DroidSeal's own discovery, SHA-256 validation and fallback orchestration.
