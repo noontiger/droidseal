@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-181717.svg)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
-[![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm&color=cb3837)](https://www.npmjs.com/package/droidseal)
-[![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi&color=3775a9)](https://pypi.org/project/droidseal)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-181717.svg?logo=github&logoColor=white)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
+[![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/droidseal)
+[![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi&logoColor=white&color=3775a9)](https://pypi.org/project/droidseal)
 
 **Android Release Seal** helps you do most of what you can do before commercial hardening — environment diagnostics, source & APK audit, R8 obfuscation, zipalign, apksigner signing, and final verification. One command, end to end.
 

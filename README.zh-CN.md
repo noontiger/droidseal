@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-181717.svg)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
-[![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm&color=cb3837)](https://www.npmjs.com/package/droidseal)
-[![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi&color=3775a9)](https://pypi.org/project/droidseal)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-181717.svg?logo=github&logoColor=white)](https://github.com/noontiger/droidseal/blob/main/LICENSE)
+[![npm](https://img.shields.io/npm/v/droidseal.svg?logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/droidseal)
+[![PyPI](https://img.shields.io/pypi/v/droidseal.svg?logo=pypi&logoColor=white&color=3775a9)](https://pypi.org/project/droidseal)
 
 **安卓发布封签**帮你完成商业加固前能做的大多数事——环境诊断、源码与 APK 审计、R8 混淆、zipalign 对齐、apksigner 签名与最终验证，商业加固前，一键端到端。
 
