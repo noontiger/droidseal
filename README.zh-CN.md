@@ -37,7 +37,9 @@ droidseal --version
 ## 平台与状态
 
 - **平台**：Windows x64 / Linux x64；
-- **状态**：1.0.0 正式版——CLI、输出目录与报告格式现已稳定。
+- **状态**：1.0.0 正式版——CLI、输出目录与报告格式现已稳定；
+- **软件要求**：支持 ANSI/Unicode 的交互式等宽字体终端（TUI 必需）；源码运行需 Bun 1.3+；JDK/Gradle/Android Build Tools 按流程自动发现或下载（Node 仅 Capacitor Web 构建时）；
+- **硬件（实用建议，非硬性下限）**：约 500 MB 磁盘（100 MB 可执行文件 + 工具链 + 产物）、≥2 GB 内存（大 APK 更高——解析内存敏感，带失败安全上限）、x64 双核 CPU。
 
 ## 安全边界
 

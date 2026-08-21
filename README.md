@@ -37,7 +37,9 @@ droidseal --version
 ## Platform & status
 
 - **Platforms**: Windows x64 / Linux x64;
-- **Status**: 1.0.0 stable — the CLI, output layout, and report format are now stable.
+- **Status**: 1.0.0 stable — the CLI, output layout, and report format are now stable;
+- **Software requirements**: an ANSI/Unicode-capable interactive monospace terminal (required for the TUI); Bun 1.3+ for source runs; JDK/Gradle/Android Build Tools are auto-discovered or downloaded per flow (Node only for Capacitor Web builds);
+- **Hardware (practical, not hard limits)**: ~500 MB disk (the 100 MB executable + toolchain + outputs), ≥2 GB RAM (more for large APKs — parsing is memory-sensitive with failure-safe limits), x64 dual-core CPU.
 
 ## Security boundary
 
