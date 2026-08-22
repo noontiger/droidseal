@@ -3,6 +3,6 @@
   <text x="8" y="14" font-family="ui-monospace,Consolas,monospace" font-size="11" fill="#87a9ba">npm total</text>
   <text x="162" y="14" text-anchor="end" font-family="ui-monospace,Consolas,monospace" font-size="11" font-weight="600" fill="#00a8cc">
     <tspan id="n">0</tspan>
-    <animate attributeName="textContent" values="0;609" dur="1.6s" fill="freeze" begin="0.25s" calcMode="linear"/>
+    <animate attributeName="textContent" values="0;902" dur="1.6s" fill="freeze" begin="0.25s" calcMode="linear"/>
   </text>
 </svg>
